@@ -1,0 +1,10 @@
+[versions]
+agp = "8.8.0"
+annotations = "15.0"
+
+[libraries]
+annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+
