@@ -28,10 +28,13 @@ public class Platform extends Thing {
 
     @Override
     public void preImpactTest(Thing other) {
+        // Set radius to make this interactive. Will be reset after impact resolved
+        radius = (other.p0y > this.hitBox.bottom) ? 32.0 : 1.0; // TODO: remove this hack when joints are done
+        //radius = 1.0;
+
         // Find the closest point to the circle within the rectangle
         p0x = p1x = clamp(other.p0x, this.hitBox.left+1, this.hitBox.right-1);
         p0y = p1y = clamp(other.p0y, this.hitBox.top+1, this.hitBox.bottom-1);
-        radius = 1.0; // will be reset after impact resolved
         v0x = other.p0x - p0x;
         v0y = other.p0y - p0y;
     }

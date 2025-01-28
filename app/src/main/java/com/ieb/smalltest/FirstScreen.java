@@ -1,12 +1,8 @@
 package com.ieb.smalltest;
 import android.annotation.SuppressLint;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -16,47 +12,23 @@ import com.ieb.smalltest.world.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 @SuppressLint("ViewConstructor")
 public class FirstScreen extends BaseView {
     private final Paint mPaint = new Paint();
-    private final Main parent;
 
     private boolean frameActive;
     private int frameCount;
-    private int lastRpt, lastAct;
     private long lastTime;
 
-    private final boolean darkColors; // night mode if true.
-
-    private Level level;
-    private Rect src, dst, dummy;
-    private Bitmap mTiles;
-    private final AssetManager assets;
-    private int lastHeight, lastWidth; // dimensions of screen last time we did a paint.
+    private final Level level;
+    private int lastHeight, lastWidth, minDim; // dimensions of screen last time we did a paint.
 
     public FirstScreen(final Main context) throws IOException {
         super(context);
-        parent = context;
         frameActive = false;
 
-        assets = context.getAssets();
-        dummy = new Rect(0, 0, 0, 0);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
         level = new Level(context);
-
-        InputStream tileFile = assets.open("tile.png");
-        mTiles = BitmapFactory.decodeStream(tileFile, dummy, options);
-        tileFile.close();
-
-        src = new Rect();
-        dst = new Rect();
-
-        // Check for dark mode.
-        darkColors = Os.isDarkMode(this);
 
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(false);
@@ -89,6 +61,7 @@ public class FirstScreen extends BaseView {
     public void onDraw(@NotNull final Canvas canvas) {
         lastWidth = getWidth();
         lastHeight = getHeight();
+        minDim = Math.min(lastWidth, lastHeight);
 
         if (frameActive) {
             mPaint.setARGB(255, 255, 0, 0);
@@ -104,22 +77,56 @@ public class FirstScreen extends BaseView {
 
     @Override
     public boolean motionEvent(MotionEvent event) {
-        int action = event.getAction();
-        Log.i("FS", "Action: "+action);
-        switch (action){
-            case MotionEvent.ACTION_UP:{
-                Log.i("FS", "Action up");
-                break;
-            }
-            case MotionEvent.ACTION_DOWN:{
-                Log.i("FS", "Action down");
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                Log.i("FS", "Action move");
-                break;
+        // Turn touch events into button events
+        /*
+
+          | jump |action|  jump |
+          |------+------+-------|
+          | left | down | right |
+
+
+            Maybe: pressing left + right means jump? If holding right, tapping left starts a jump.
+         */
+
+        // virtual button states
+        boolean up = false, left = false, right = false, down = false, action = false;
+
+        if (event.getAction() != MotionEvent.ACTION_UP) {// 'ACTION_UP' means all touch points up?
+            // Scan all touch points
+            int count = event.getPointerCount();
+            for (int i = 0; i < count; i++) {
+                if (event.getPressure(i) < 0.5) continue;
+                double fx = event.getX(i) / (lastWidth + 1);
+                double fy = event.getY(i) / (lastHeight + 1);
+
+                // TODO: finish this and test with multi-touch
+                if (fx <= 0.33) { // left side
+                    if (fy < 0.5) { // top-left
+                        up = true;
+                    } else {
+                        left = true;
+                    }
+                } else if (fx >= 0.66) { // right side
+                    if (fy < 0.5) { // top-right
+                        up = true;
+                    } else {
+                        right = true;
+                    }
+                } else { // centre
+                    if (fy < 0.5) {
+                        action = true;
+                    } else {
+                        down = true;
+                    }
+                }
             }
         }
+
+        level.input_up(up);
+        level.input_down(down);
+        level.input_left(left);
+        level.input_right(right);
+        level.input_action(action);
 
         invalidate();
         return true;
@@ -127,8 +134,6 @@ public class FirstScreen extends BaseView {
 
     @Override
     public boolean keyEvent(KeyEvent event) {
-        lastAct = event.getAction();
-        lastRpt = Math.max(lastRpt, event.getRepeatCount());
         if (event.getRepeatCount() > 0) return true;
 
         boolean isDown = event.getAction() == KeyEvent.ACTION_DOWN;
