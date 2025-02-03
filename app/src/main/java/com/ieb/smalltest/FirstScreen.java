@@ -75,6 +75,8 @@ public class FirstScreen extends BaseView {
         level.Draw(canvas, mPaint, lastWidth, lastHeight);
     }
 
+    private boolean rightIsUp = false, leftIsUp = false;
+
     @Override
     public boolean motionEvent(MotionEvent event) {
         // Turn touch events into button events
@@ -120,6 +122,22 @@ public class FirstScreen extends BaseView {
                     }
                 }
             }
+        }
+
+        // Handle tap on opposite direction as jump
+        if (!left && !right) {
+            rightIsUp = false;
+            leftIsUp = false;
+        }
+
+        if (left && (leftIsUp || level.isInputRightHeld())){
+            left = false;
+            up = true;
+            leftIsUp = true;
+        } else if (right && (rightIsUp || level.isInputLeftHeld())) {
+            right = false;
+            up = true;
+            rightIsUp = true;
         }
 
         level.input_up(up);

@@ -97,6 +97,13 @@ public class Level {
     private boolean btnAction, btnUp, btnDown, btnRight, btnLeft;
     private boolean prevBtnAction, prevBtnUp, prevBtnDown, prevBtnRight, prevBtnLeft;
 
+    public boolean isInputLeftHeld(){
+        return btnLeft && prevBtnLeft;
+    }
+    public boolean isInputRightHeld(){
+        return btnRight && prevBtnRight;
+    }
+
     /**
      * Player 'action' button changed
      */
