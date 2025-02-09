@@ -3,7 +3,6 @@ import android.annotation.SuppressLint;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -16,16 +15,21 @@ import java.io.IOException;
 @SuppressLint("ViewConstructor")
 public class FirstScreen extends BaseView {
     private final Paint mPaint = new Paint();
+    private final Main main;
 
     private boolean frameActive;
-    private int frameCount;
-    private long lastTime;
+    private int physicsFrameCount, drawFrameCount;
+    private long lastPhysicsTimeMs, lastDrawTimeMs;
+    private double totalSeconds;
+
+    private String lastEvent = "-";
 
     private final Level level;
     private int lastHeight, lastWidth, minDim; // dimensions of screen last time we did a paint.
 
     public FirstScreen(final Main context) throws IOException {
         super(context);
+        this.main = context;
         frameActive = false;
 
         level = new Level(context);
@@ -43,15 +47,15 @@ public class FirstScreen extends BaseView {
 
         // Do frame logic, call invalidate
         frameActive = true;
-        frameCount++;
 
         long time = System.currentTimeMillis();
 
-        if (frameCount > 1){
-            lastTime += level.stepMillis(time - lastTime);
+        if (physicsFrameCount > 1){
+            lastPhysicsTimeMs += level.stepMillis(time - lastPhysicsTimeMs);
         } else {
-            lastTime = time;
+            lastPhysicsTimeMs = time;
         }
+        physicsFrameCount++;
 
         frameActive = false;
         invalidate();
@@ -69,10 +73,22 @@ public class FirstScreen extends BaseView {
             mPaint.setARGB(255, 128, 0, 255);
         }
 
-        Os.setSize(mPaint, 50);
-        Os.drawText(canvas, "f="+frameCount, 10.0f, 80.0f, mPaint);
+        long frameMs = 1;
+        if (physicsFrameCount > 0) {
+            if (drawFrameCount > 0) {
+                frameMs = lastPhysicsTimeMs - lastDrawTimeMs;
+            }
+            lastDrawTimeMs = lastPhysicsTimeMs;
+            drawFrameCount++;
+        }
 
-        level.Draw(canvas, mPaint, lastWidth, lastHeight);
+        totalSeconds += frameMs / 1000.0;
+
+        level.Draw(canvas, mPaint, lastWidth, lastHeight, (int)frameMs);
+
+        Os.setSize(mPaint, 50);
+        Os.boxText(canvas, lastEvent, 10.0f, 80.0f, mPaint);
+        Os.boxText(canvas, "t=" + totalSeconds+"; d="+frameMs+";", 10.0f, lastHeight - 80.0f, mPaint);
     }
 
     private boolean rightIsUp = false, leftIsUp = false;
@@ -87,17 +103,43 @@ public class FirstScreen extends BaseView {
           | left | down | right |
 
 
-            Maybe: pressing left + right means jump? If holding right, tapping left starts a jump.
+          Pressing left + right means jump. If holding right, tapping left starts a jump.
          */
+
+        StringBuilder sb = new StringBuilder();
+
+        int pointerCount = event.getPointerCount();
+        for (int i = 0; i < pointerCount; i++) {
+            int type = event.getToolType(i);
+            sb.append("ptr").append(i).append(": ");
+            if (type == MotionEvent.TOOL_TYPE_FINGER) sb.append("touch ");
+            if (type == MotionEvent.TOOL_TYPE_MOUSE) sb.append("mouse ");
+            if (type == MotionEvent.TOOL_TYPE_STYLUS) sb.append("pen ");
+            if (type == MotionEvent.TOOL_TYPE_UNKNOWN) sb.append("pad ");
+
+            sb.append("x[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_X, i)).append("; "); // left stick L/R
+            sb.append("y[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_Y, i)).append("; "); // left stick Up/Dn
+            sb.append("z[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_Z, i)).append("; "); // right stick L/R
+            sb.append("dx[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_HAT_X, i)).append("; "); // D-pad L/R
+            sb.append("dy[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_HAT_Y, i)).append("; "); // D-pad Up/Dn
+            sb.append("L[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_BRAKE, i)).append("; "); // Left trigger
+            sb.append("R[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_GAS, i)).append("; "); // Right trigger
+            sb.append("Lt[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_LTRIGGER, i)).append("; "); // ?
+            sb.append("Rt[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_RTRIGGER, i)).append("; "); // ?
+            sb.append("rx[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_RX, i)).append("; "); // ?
+            sb.append("ry[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_RY, i)).append("; "); // ?
+            sb.append("rz[").append(i).append("]=").append(event.getAxisValue(MotionEvent.AXIS_RZ, i)).append("; "); // right stick Up/Dn
+        }
+        lastEvent = sb.toString();
 
         // virtual button states
         boolean up = false, left = false, right = false, down = false, action = false;
 
+        // TODO: this logic is for touch. Move out to its own function.
         if (event.getAction() != MotionEvent.ACTION_UP) {// 'ACTION_UP' means all touch points up?
             // Scan all touch points
-            int count = event.getPointerCount();
-            for (int i = 0; i < count; i++) {
-                if (event.getPressure(i) < 0.5) continue;
+            for (int i = 0; i < pointerCount; i++) {
+                //if (event.getPressure(i) < 0.5) continue;
                 double fx = event.getX(i) / (lastWidth + 1);
                 double fy = event.getY(i) / (lastHeight + 1);
 
@@ -150,8 +192,21 @@ public class FirstScreen extends BaseView {
         return true;
     }
 
+    // Scan codes for my gamepad:
+    public static final int PAD_X = 307;
+    public static final int PAD_Y = 308;
+    public static final int PAD_A = 304;
+    public static final int PAD_B = 305;
+    public static final int PAD_L1 = 0;
+    public static final int PAD_R1 = 0;
+    public static final int PAD_START = 315;
+    public static final int PAD_SELECT = 314; // Should be exit
+
     @Override
     public boolean keyEvent(KeyEvent event) {
+
+        lastEvent = event.toString();
+
         if (event.getRepeatCount() > 0) return true;
 
         boolean isDown = event.getAction() == KeyEvent.ACTION_DOWN;
@@ -186,6 +241,11 @@ public class FirstScreen extends BaseView {
             case KeyEvent.KEYCODE_DPAD_UP:{
                 level.input_up(isDown);
                 //level.playerSpeed(0, -70);
+                break;
+            }
+
+            case KeyEvent.KEYCODE_BACK: {
+                main.Close();
                 break;
             }
         }

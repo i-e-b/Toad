@@ -19,7 +19,6 @@ public class Level {
      * Set of things for the level
      */
     private final Thing[] things; // TODO: better structure for larger levels
-
     private final Simulator simulator;
 
     public Level(Main context) throws IOException {
@@ -41,8 +40,8 @@ public class Level {
         things[7] = new OneWayPlatform(0, 1000, 128, 16);
     }
 
-    public void Draw(@NotNull Canvas canvas, Paint paint, int width, int height) {
-        // TODO: pass drawing through a 'Frame' to do offsets/scrolling
+    public void Draw(@NotNull Canvas canvas, Paint paint, int width, int height, int frameMs) {
+        // TODO: pass drawing through a 'Camera' to do offsets/scrolling
         for (Thing thing : things) {
             thing.draw(canvas, paint);
         }

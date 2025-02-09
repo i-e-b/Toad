@@ -30,6 +30,11 @@ public class Main extends Activity {
         }
     }
 
+    /** Finish the main activity */
+    public void Close(){
+        this.finish();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev){
         if (view != null) return view.motionEvent(ev);

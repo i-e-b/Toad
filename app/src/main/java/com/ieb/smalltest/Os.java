@@ -71,6 +71,25 @@ public class Os {
         }
     }
 
+    private static final Rect bTr = new Rect();
+    public static void boxText(Canvas canvas, String text, float x, float y, Paint mPaint){
+        int start = 0, end = 0, length = text.length();
+        float maxWidth = canvas.getWidth() - x;
+
+        // TemporaryBuffer.obtain(
+        while (start < length) {
+            end += mPaint.breakText(text, start, length, true, maxWidth, null);
+            measureText(mPaint, text, bTr);
+
+            if (start >= end) break; // `breakText` couldn't manage.
+            canvas.drawText(text, start, end, x, y, mPaint);
+            y += bTr.bottom - bTr.top;
+
+            if (start == end) break;
+            start = end;
+        }
+    }
+
     public static void drawText(Canvas canvas, String text, float x, float y, Paint mPaint) {
         canvas.drawText(text, x, y, mPaint);
     }
