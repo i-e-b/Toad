@@ -86,6 +86,7 @@ public class FirstScreen extends BaseView {
 
         level.Draw(canvas, mPaint, lastWidth, lastHeight, (int)frameMs);
 
+        mPaint.setARGB(120,0,255,255);
         Os.setSize(mPaint, 50);
         Os.boxText(canvas, lastEvent, 10.0f, 80.0f, mPaint);
         Os.boxText(canvas, "t=" + totalSeconds+"; d="+frameMs+";", 10.0f, lastHeight - 80.0f, mPaint);

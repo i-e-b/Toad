@@ -25,19 +25,20 @@ public class Level {
         simulator = new Simulator();
 
         // TODO: text-to-level, like in Minikoban.
-        things = new Thing[8];
+        things = new Thing[9];
 
         things[0] = new Toad(context);
         things[0].p0x = 100;
         things[0].p0y = 600;
 
         things[1] = new Platform(0, 500, 1000, 16);
-        things[2] = new ConveyorPlatform(450, 800, 1000, 16, -4.0);
+        things[2] = new ConveyorPlatform(450, 800, 350, 16, -6.0);
         things[3] = new Platform(0, 500, 16, 800);
         things[4] = new Platform(0, 1300, 2000, 16);
         things[5] = new Platform(1000, 500, 16, 800);
         things[6] = new OneWayPlatform(0, 800, 128, 16);
         things[7] = new OneWayPlatform(0, 1000, 128, 16);
+        things[8] = new LifterPlatform(890, 1000, 32, 300, 700.0);
     }
 
     public void Draw(@NotNull Canvas canvas, Paint paint, int width, int height, int frameMs) {
