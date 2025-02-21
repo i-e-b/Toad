@@ -1,6 +1,5 @@
 package com.ieb.smalltest.world;
 
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -22,12 +21,12 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Canvas canvas, Paint paint) {
+    public void draw(@NotNull Camera camera, Paint paint) {
         paint.setARGB(200, 100,120, 200);
-        canvas.drawRect(hitBox, paint);
+        camera.drawRect(hitBox, paint);
 
         paint.setARGB(50,0,255,255);
-        canvas.drawCircle((float)p1x, (float)p1y, (float)hitBox.width()*4, paint);
+        camera.drawCircle((float)p1x, (float)p1y, (float)hitBox.width()*4, paint);
     }
 
     @Override

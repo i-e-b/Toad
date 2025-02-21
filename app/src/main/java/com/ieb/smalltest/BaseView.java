@@ -19,12 +19,6 @@ public abstract class BaseView extends View {
         super(context);
     }
 
-    /** handle a generic motion event */
-    public abstract boolean motionEvent(MotionEvent ev);
-
-    /** handle a generic key event */
-    public abstract boolean keyEvent(KeyEvent event);
-
     /** Stop the activity timer for this view. Should be called when the view is not visible */
     public void StopTimer() {
         if (mTimer != null) {

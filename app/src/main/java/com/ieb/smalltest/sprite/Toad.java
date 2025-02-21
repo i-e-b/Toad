@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.ieb.smalltest.Main;
+import com.ieb.smalltest.world.Camera;
 import com.ieb.smalltest.world.Collision;
 import com.ieb.smalltest.world.Thing;
 
@@ -55,18 +56,18 @@ public class Toad extends Thing {
         gravity = 1.0; // fully affected by gravity
     }
 
-    public void draw(Canvas canvas, Paint paint, int x, int y){
+    public void draw(Camera camera, Paint paint, int x, int y){
 
         hitBox.bottom=(int)(y+radius);//(28*4);
         hitBox.top = hitBox.bottom - (28 * 4);
         hitBox.left = x - (int)radius;
         hitBox.right = x + (int)radius;
-        canvas.drawBitmap(mToad, run_left.rect(), hitBox, paint);
+        camera.drawBitmap(mToad, run_left.rect(), hitBox, paint);
 
         paint.setARGB(120,0,100,0);
-        canvas.drawCircle((float)p1x, (float)p1y, (float)radius, paint);
+        camera.drawCircle((float)p1x, (float)p1y, (float)radius, paint);
         paint.setARGB(120,100,0,0);
-        canvas.drawRect(hitBox, paint);
+        camera.drawRect(hitBox, paint);
     }
 
     public void stepMillis(long ms) {
@@ -74,8 +75,8 @@ public class Toad extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Canvas canvas, Paint paint) {
+    public void draw(@NotNull Camera camera, Paint paint) {
         paint.setARGB(255,0,0,0);
-        draw(canvas, paint, (int) p1x, (int) p1y);
+        draw(camera, paint, (int) p1x, (int) p1y);
     }
 }

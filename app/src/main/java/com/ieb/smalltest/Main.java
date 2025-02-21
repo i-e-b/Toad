@@ -8,6 +8,8 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import com.ieb.smalltest.input.VirtualGamepad;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -37,20 +39,21 @@ public class Main extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev){
-        if (view != null) return view.motionEvent(ev);
-        return false;
+        VirtualGamepad.motionEvent(ev);
+        return true;
     }
 
     @Override
     public boolean dispatchGenericMotionEvent (MotionEvent ev){
-        if (view != null) return view.motionEvent(ev);
-        return false;
+        VirtualGamepad.motionEvent(ev);
+        return true;
     }
 
     @Override
     public boolean dispatchKeyEvent (KeyEvent event){
-        if (view != null) return view.keyEvent(event);
-        return false;
+        VirtualGamepad.keyEvent(event);
+        if (VirtualGamepad.isSelect()) Close();
+        return true;
     }
 
     public void showFirstScreen() throws IOException {

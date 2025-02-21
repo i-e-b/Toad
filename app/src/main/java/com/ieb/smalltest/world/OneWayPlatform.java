@@ -1,6 +1,5 @@
 package com.ieb.smalltest.world;
 
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -19,12 +18,12 @@ public class OneWayPlatform extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Canvas canvas, Paint paint) {
+    public void draw(@NotNull Camera camera, Paint paint) {
         paint.setARGB(200, 0,0, 170);
-        canvas.drawRect(hitBox, paint);
+        camera.drawRect(hitBox, paint);
 
         paint.setARGB(120,0,255,255);
-        canvas.drawCircle((float)p1x, (float)p1y, (float)5.0, paint);
+        camera.drawCircle((float)p1x, (float)p1y, (float)5.0, paint);
     }
 
     @Override
@@ -36,11 +35,6 @@ public class OneWayPlatform extends Thing {
         p0x = p1x = clamp(other.p0x, this.hitBox.left+1, this.hitBox.right-1);
         p0y = p1y = clamp(other.p0y, this.hitBox.top+1, this.hitBox.bottom-1);
         radius = 1.0; // will be reset after impact resolved
-
-
-        // [TEST]: offset impact point
-        //p0x -=2;
-        //p1x -=2;
 
         v0x = other.p0x - p0x;
         v0y = other.p0y - p0y;

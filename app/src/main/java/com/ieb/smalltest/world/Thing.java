@@ -72,7 +72,7 @@ public abstract class Thing {
     public double a0y;
 
     /** Render this thing */
-    public abstract void draw(@NotNull Canvas canvas, Paint paint);
+    public abstract void draw(@NotNull Camera camera, Paint paint);
 
 
     /**

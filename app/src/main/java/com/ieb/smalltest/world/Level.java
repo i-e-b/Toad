@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.ieb.smalltest.Main;
+import com.ieb.smalltest.input.VirtualGamepad;
 import com.ieb.smalltest.sprite.Toad;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,10 +42,11 @@ public class Level {
         things[8] = new LifterPlatform(890, 1000, 32, 300, 700.0);
     }
 
-    public void Draw(@NotNull Canvas canvas, Paint paint, int width, int height, int frameMs) {
-        // TODO: pass drawing through a 'Camera' to do offsets/scrolling
+    public void Draw(@NotNull Camera camera, Paint paint, int width, int height, int frameMs) {
+        camera.centreOn(things[0].p0x, things[0].p0y);
+        
         for (Thing thing : things) {
-            thing.draw(canvas, paint);
+            thing.draw(camera, paint);
         }
     }
 
@@ -56,6 +58,35 @@ public class Level {
      */
     public long stepMillis(long ms) {
         // apply control
+        mapControls();
+        applyControlsToPhysics(ms);
+
+        // apply physics
+        double time = (double) ms;
+        double nextTime = simulator.solve(time, things);
+
+        // [TEMP] reset if out-of-bounds
+        if (things[0].p0y > 2000) {
+            things[0].p0x = 100;
+            things[0].p0y = 600;
+        }
+
+        // copy 'prev' button states for next frame
+        postFrameControlUpdate();
+
+        // return simulated time
+        return (long) (nextTime);
+    }
+
+    private void postFrameControlUpdate() {
+        prevBtnAction= btnAction;
+        prevBtnUp = btnUp;
+        prevBtnDown = btnDown;
+        prevBtnRight = btnRight;
+        prevBtnLeft = btnLeft;
+    }
+
+    private void applyControlsToPhysics(long ms) {
         if (btnRight) addPlayerSpeed(50, 0);
         if (btnLeft) addPlayerSpeed(-50, 0);
 
@@ -67,26 +98,15 @@ public class Level {
         } else {
             jumpTimeLeftMs = 300;
         }
+    }
 
-        // apply physics
-        double time = (double) ms;
-        double nextTime = simulator.solve(time, things);
-
-        // reset if out-of-bounds
-        if (things[0].p0y > 2000) {
-            things[0].p0x = 100;
-            things[0].p0y = 600;
-        }
-
-        // copy button states
-        prevBtnAction= btnAction;
-        prevBtnUp = btnUp;
-        prevBtnDown = btnDown;
-        prevBtnRight = btnRight;
-        prevBtnLeft = btnLeft;
-
-        // return simulated time
-        return (long) (nextTime);
+    /** Map current VirtualGamepad state to level controls */
+    private void mapControls() {
+        btnDown = VirtualGamepad.isDown();
+        btnRight = VirtualGamepad.isRight();
+        btnUp = VirtualGamepad.isUp();
+        btnLeft = VirtualGamepad.isLeft();
+        btnAction = VirtualGamepad.isAction();
     }
 
     public void addPlayerSpeed(double dx, int dy) {
@@ -96,46 +116,4 @@ public class Level {
 
     private boolean btnAction, btnUp, btnDown, btnRight, btnLeft;
     private boolean prevBtnAction, prevBtnUp, prevBtnDown, prevBtnRight, prevBtnLeft;
-
-    public boolean isInputLeftHeld(){
-        return btnLeft && prevBtnLeft;
-    }
-    public boolean isInputRightHeld(){
-        return btnRight && prevBtnRight;
-    }
-
-    /**
-     * Player 'action' button changed
-     */
-    public void input_action(boolean isDown) {
-        btnAction = isDown;
-    }
-
-    /**
-     * Player 'up' button changed
-     */
-    public void input_up(boolean isDown) {
-        btnUp = isDown;
-    }
-
-    /**
-     * Player 'down' button changed
-     */
-    public void input_down(boolean isDown) {
-        btnDown = isDown;
-    }
-
-    /**
-     * Player 'right' button changed
-     */
-    public void input_right(boolean isDown) {
-        btnRight = isDown;
-    }
-
-    /**
-     * Player 'left' button changed
-     */
-    public void input_left(boolean isDown) {
-        btnLeft = isDown;
-    }
 }
