@@ -39,8 +39,6 @@ public class Camera {
         dy = (int) y - (height / 2);
     }
 
-    // TODO: replace Rect uses with integers.
-
     public void drawRect(Rect rect, Paint paint) {
         box.set(rect.left - dx, rect.top - dy, rect.right - dx, rect.bottom - dy);
 

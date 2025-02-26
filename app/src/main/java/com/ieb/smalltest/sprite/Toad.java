@@ -19,8 +19,8 @@ import java.io.InputStream;
 
 public class Toad extends Thing {
 
-    private final Animation run_left = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{1, 18, 35, 18});
-    private final Animation run_right = new Animation(100, Animation.FOREVER, 16, 28, 62, new int[]{205,188,171,188});
+    private final Animation run_left = new Animation(64, Animation.FOREVER, 16, 28, 29, new int[]{1, 18, 35, 18});
+    private final Animation run_right = new Animation(64, Animation.FOREVER, 16, 28, 62, new int[]{205,188,171,188});
     private final Animation carry_left = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{52,69,86,69});
     private final Animation carry_right = new Animation(100, Animation.FOREVER, 16, 28, 62, new int[]{154,134,120,134});
 
@@ -38,40 +38,44 @@ public class Toad extends Thing {
     private final Animation duck = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{137});
     private final Animation duck_carry = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{154});
 
+    private double lastFramePx;
     private final Bitmap mToad;
 
     /** Load Toad graphics */
     public Toad(final Main context) throws IOException {
         AssetManager assets = context.getAssets();
-        Rect dummy = new Rect(0, 0, 0,0);
+        hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         InputStream toadFile = assets.open("toad.png");
-        mToad = BitmapFactory.decodeStream(toadFile, dummy, options);
+        mToad = BitmapFactory.decodeStream(toadFile, hitBox, options);
         toadFile.close();
-        hitBox = new Rect(0,0,0,0);
         type = Collision.PLAYER;
         radius = 32;
         gravity = 1.0; // fully affected by gravity
     }
 
-    public void draw(Camera camera, Paint paint, int x, int y){
+    public void draw(Camera camera, Paint paint, int x, int y) {
 
-        hitBox.bottom=(int)(y+radius);//(28*4);
+        double dx = Math.abs(p0x - lastFramePx);
+        lastFramePx = p0x;
+
+        Animation a = run_left;
+        if (v0x > 0) a = run_right;
+
+        a.advance((int)dx); // animate based on movement
+
+        hitBox.bottom = (int) (y + radius);
         hitBox.top = hitBox.bottom - (28 * 4);
-        hitBox.left = x - (int)radius;
-        hitBox.right = x + (int)radius;
-        camera.drawBitmap(mToad, run_left.rect(), hitBox, paint);
+        hitBox.left = x - (int) radius;
+        hitBox.right = x + (int) radius;
+        camera.drawBitmap(mToad, a.rect(), hitBox, paint);
 
         paint.setARGB(120,0,100,0);
         camera.drawCircle((float)p1x, (float)p1y, (float)radius, paint);
         paint.setARGB(120,100,0,0);
         camera.drawRect(hitBox, paint);
-    }
-
-    public void stepMillis(long ms) {
-        run_left.advance(ms);
     }
 
     @Override

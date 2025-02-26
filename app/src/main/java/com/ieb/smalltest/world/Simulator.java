@@ -1,5 +1,7 @@
 package com.ieb.smalltest.world;
 
+import java.util.List;
+
 /**
  * Runs a leapfrog integrator for the physics
  */
@@ -36,7 +38,7 @@ public class Simulator {
      * @param dt time elapsed since last call
      * @return Returns time advanced
      */
-    public final double solve(double dt, Thing[] objects) {
+    public final double solve(double dt, List<Thing> objects) {
         // We always solve to a fixed step-time,
         // but we change the number of steps
         // based on the frame time
@@ -48,8 +50,8 @@ public class Simulator {
         if (iter > 10) iter = 10;
 
         for (int i = 0; i < iter; i++) {
-            for (int oi = 0; oi < objects.length; oi++) {
-                Thing obj = objects[oi];
+            for (int oi = 0; oi < objects.size(); oi++) {
+                Thing obj = objects.get(oi);
                 if (obj.type == Collision.WALL) { // walls don't move
                     obj.v0x = obj.v0y = obj.v1x = obj.v1y = 0.0;
                     continue; // walls don't move
@@ -94,7 +96,7 @@ public class Simulator {
      * @param objects array of all objects
      * @param idx     index of the current object
      */
-    private void simulationStep(Thing obj, Thing[] objects, int idx) {
+    private void simulationStep(Thing obj, List<Thing> objects, int idx) {
         // Apply drag
         double drc = Math.max(0.0, 1.0 - obj.drag);
         obj.v0x *= drc;
@@ -108,9 +110,9 @@ public class Simulator {
         if (obj.radius < 0.0) return;
 
         // Check against other objects for collisions
-        for (int i = 0; i < objects.length; i++) {
+        for (int i = 0; i < objects.size(); i++) {
             if (i == idx) continue;
-            Thing other = objects[i];
+            Thing other = objects.get(i);
 
             other.preImpactTest(obj); // allow virtual impact point to be created
 
