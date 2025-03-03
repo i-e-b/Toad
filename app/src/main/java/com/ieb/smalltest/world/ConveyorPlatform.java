@@ -23,9 +23,6 @@ public class ConveyorPlatform extends Thing {
     public void draw(@NotNull Camera camera) {
         camera.setARGB(200, 120,100, 100);
         camera.drawRect(hitBox);
-
-        camera.setARGB(120,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)5.0);
     }
 
     @Override

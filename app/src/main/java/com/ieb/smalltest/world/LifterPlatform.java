@@ -26,9 +26,6 @@ public class LifterPlatform extends Thing {
     public void draw(@NotNull Camera camera) {
         camera.setARGB(200, 100,120, 200);
         camera.drawRect(hitBox);
-
-        camera.setARGB(50,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)hitBox.width()*4);
     }
 
     @Override

@@ -21,22 +21,19 @@ public class Shy extends Thing {
     private final Animation right = new Animation(64, Animation.FOREVER, 16, 16, 186, new int[]{246, 229});
 
     private double lastFramePx;
-    private final Bitmap mDude;
+    private final SpriteSheet spriteSheet;
 
     private int desireDirection = -1; // negative = left, positive = right.
 
     private final int speed = 1200, accel = 5000;
 
     /** Load Toad graphics */
-    public Shy(final Main context) throws IOException {
-        AssetManager assets = context.getAssets();
+    public Shy(final SpriteSheet spriteSheet) {
+        this.spriteSheet = spriteSheet;
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        InputStream file = assets.open("dude.png");
-        mDude = BitmapFactory.decodeStream(file, hitBox, options);
-        file.close();
         type = Collision.CREEP;
         radius = 32;
         mass = 0.8;
@@ -61,8 +58,7 @@ public class Shy extends Thing {
         double dx = Math.abs(p0x - lastFramePx);
         lastFramePx = p0x;
 
-        Animation a = left;
-        if (v0x > 0) a = right;
+        Animation a = desireDirection > 0 ? right : left;
 
         a.advance((int) dx); // animate based on movement
 
@@ -71,6 +67,6 @@ public class Shy extends Thing {
         hitBox.left = (int) p1x - (int) radius;
         hitBox.right = (int) p1x + (int) radius;
 
-        camera.drawBitmap(mDude, a.rect(), hitBox);
+        camera.drawBitmap(spriteSheet.dude, a.rect(), hitBox);
     }
 }

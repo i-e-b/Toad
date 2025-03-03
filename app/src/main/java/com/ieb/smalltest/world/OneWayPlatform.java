@@ -23,9 +23,6 @@ public class OneWayPlatform extends Thing {
     public void draw(@NotNull Camera camera) {
         camera.setARGB(200, 0,0, 170);
         camera.drawRect(hitBox);
-
-        camera.setARGB(120,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)5.0);
     }
 
     @Override

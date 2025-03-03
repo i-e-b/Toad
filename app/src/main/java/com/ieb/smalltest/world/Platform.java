@@ -22,9 +22,6 @@ public class Platform extends Thing {
     public void draw(@NotNull Camera camera) {
         camera.setARGB(200, 0,128, 0);
         camera.drawRect(hitBox);
-
-        camera.setARGB(120,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)1.0);
     }
 
     @Override

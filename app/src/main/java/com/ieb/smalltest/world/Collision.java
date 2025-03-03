@@ -1,5 +1,6 @@
 package com.ieb.smalltest.world;
 
+/** Collision types. Each `Thing` should have only one, but they can be used as flags when detecting multiple hits. */
 public abstract class Collision {
     /** free space */
     public static final int NULL = 0;

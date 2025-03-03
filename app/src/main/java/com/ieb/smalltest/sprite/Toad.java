@@ -38,21 +38,18 @@ public class Toad extends Thing {
     private final Animation duck = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{137});
     private final Animation duck_carry = new Animation(100, Animation.FOREVER, 16, 28, 29, new int[]{154});
 
-
+    private int desireDirection = 1; // negative = left, positive = right.
     private long jumpTimeLeftMs;
     private double lastFramePx;
-    private final Bitmap mToad;
+    private final SpriteSheet spriteSheet;
 
     /** Load Toad graphics */
-    public Toad(final Main context) throws IOException {
-        AssetManager assets = context.getAssets();
+    public Toad(final SpriteSheet spriteSheet) {
+        this.spriteSheet = spriteSheet;
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        InputStream toadFile = assets.open("toad.png");
-        mToad = BitmapFactory.decodeStream(toadFile, hitBox, options);
-        toadFile.close();
         type = Collision.PLAYER;
         radius = 32;
         gravity = 1.0; // fully affected by gravity
@@ -65,23 +62,17 @@ public class Toad extends Thing {
         // apply control
         mapControls();
         applyControlsToPhysics(ms);
-
-        // copy 'prev' button states for next frame
-        postFrameControlUpdate();
-    }
-
-
-    private void postFrameControlUpdate() {
-        prevBtnAction= btnAction;
-        prevBtnUp = btnUp;
-        prevBtnDown = btnDown;
-        prevBtnRight = btnRight;
-        prevBtnLeft = btnLeft;
     }
 
     private void applyControlsToPhysics(int ms) {
-        if (btnRight) addPlayerSpeed(50, 0);
-        if (btnLeft) addPlayerSpeed(-50, 0);
+        if (btnRight) {
+            addPlayerSpeed(50, 0);
+            desireDirection = 1;
+        }
+        if (btnLeft) {
+            addPlayerSpeed(-50, 0);
+            desireDirection = -1;
+        }
 
         if (btnUp){
             if (jumpTimeLeftMs > 0){
@@ -108,15 +99,13 @@ public class Toad extends Thing {
     }
 
     private boolean btnAction, btnUp, btnDown, btnRight, btnLeft;
-    private boolean prevBtnAction, prevBtnUp, prevBtnDown, prevBtnRight, prevBtnLeft;
 
     @Override
     public void draw(@NotNull Camera camera) {
         double dx = Math.abs(p0x - lastFramePx);
         lastFramePx = p0x;
 
-        Animation a = run_left;
-        if (v0x > 0) a = run_right;
+        Animation a = desireDirection > 0 ? run_right : run_left;
 
         a.advance((int) dx); // animate based on movement
 
@@ -125,6 +114,6 @@ public class Toad extends Thing {
         hitBox.left = (int) p1x - (int) radius;
         hitBox.right = (int) p1x + (int) radius;
 
-        camera.drawBitmap(mToad, a.rect(), hitBox);
+        camera.drawBitmap(spriteSheet.toad, a.rect(), hitBox);
     }
 }
