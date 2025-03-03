@@ -14,6 +14,7 @@ public class Camera {
     private Rect box;
     private int width, height;
     private int drawCount;
+    private final Paint paint = new Paint();
 
     /** Set the canvas to draw into */
     public void use(@NotNull Canvas canvas) {
@@ -39,7 +40,7 @@ public class Camera {
         dy = (int) y - (height / 2);
     }
 
-    public void drawRect(Rect rect, Paint paint) {
+    public void drawRect(Rect rect) {
         box.set(rect.left - dx, rect.top - dy, rect.right - dx, rect.bottom - dy);
 
         // skip if offscreen
@@ -50,7 +51,7 @@ public class Camera {
         canvas.drawRect(box, paint);
     }
 
-    public void drawCircle(float x, float y, float r, Paint paint) {
+    public void drawCircle(float x, float y, float r) {
         int cx = (int)x - dx;
         int cy = (int)y - dy;
 
@@ -62,7 +63,7 @@ public class Camera {
         canvas.drawCircle(x-dx, y-dy, r, paint);
     }
 
-    public void drawBitmap(Bitmap img, Rect src, Rect dst, Paint paint) {
+    public void drawBitmap(Bitmap img, Rect src, Rect dst) {
         box.set(dst.left - dx, dst.top - dy, dst.right - dx, dst.bottom - dy);
 
         // skip if offscreen
@@ -70,6 +71,10 @@ public class Camera {
         if (box.top < 0 || box.bottom > height) return;
 
         drawCount++;
-        canvas.drawBitmap(img, src, box, paint);
+        canvas.drawBitmap(img, src, box, null);
+    }
+
+    public void setARGB(int a, int r, int g, int b) {
+        paint.setARGB(a,r,g,b);
     }
 }

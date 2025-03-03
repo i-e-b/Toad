@@ -32,29 +32,41 @@ public class Simulator {
      */
     public static final double gravity = 2500.0;
 
+    /** Container for objects in the simulation */
+    private final Level level;
+
+    /** Count of iterations since last 'think' round */
+    private int thinkTrigger = 0;
+
+    public Simulator(Level level) {
+        this.level = level;
+    }
+
     /**
      * Fixed-step Leapfrog solver
      *
      * @param dt time elapsed since last call
      * @return Returns time advanced
      */
-    public final double solve(double dt, List<Thing> objects) {
+    public final double solve(double dt, List<Thing> objects, List<Constraint> constraints) {
         // We always solve to a fixed step-time,
         // but we change the number of steps
         // based on the frame time
         int iter = (int) ((speed * dt) / N); // number of iterations we will run
         double adv = ((double) iter * N) / speed; // the amount of simulation time this covers
+        int thinkAdv = (int) (((double) 10 * N) / speed); // the amount of simulation time per 'think' cycle in ms
 
         // Limit 'hidden' runs to prevent big jumps if frame timer stalls
         if (iter < 1) iter = 0;
         if (iter > 10) iter = 10;
 
         for (int i = 0; i < iter; i++) {
+            // Run the iteration on objects
             for (int oi = 0; oi < objects.size(); oi++) {
                 Thing obj = objects.get(oi);
                 if (obj.type == Collision.WALL) { // walls don't move
                     obj.v0x = obj.v0y = obj.v1x = obj.v1y = 0.0;
-                    continue; // walls don't move
+                    continue;
                 }
 
                 // Advance position
@@ -84,6 +96,20 @@ public class Simulator {
                     obj.v0y *= adj;obj.v0x *= adj;
                     obj.v1y *= adj;obj.v1x *= adj;
                 }
+            }
+
+            // Apply all constraints
+            for (int ci = 0; ci < constraints.size(); ci++){
+                Constraint c = constraints.get(ci);
+                c.apply();
+            }
+
+            // Do think round if triggered
+            if (thinkTrigger++ > 9){
+                for (int oi = 0; oi < objects.size(); oi++) {
+                    objects.get(oi).think(level, thinkAdv);
+                }
+                thinkTrigger = 0;
             }
         }
         return adv;
@@ -118,33 +144,48 @@ public class Simulator {
 
             if (other.radius <= 0.0) continue; // non-contact thing
 
-            // if the other object has a hit circle,
-            // do ball-to-ball calculations and affect both objects
-            double dx = other.p1x - obj.p1x;
-            double dy = other.p1y - obj.p1y;
-
-            double r = other.radius + obj.radius;
-            double rSqr = r * r;
-            double dSqr = (dx * dx) + (dy * dy);
-
+            double time = impactTime(obj, other);
             boolean impacted = false;
 
-            // First, do a cheap collision test
-            if (dSqr < rSqr){ // objects are overlapping
+            if (time < 0){ // objects are overlapping
                 impacted = true;
-                resolveCollision(obj, other, 0); // handle bounce
-            } else if (dSqr <= rSqr * 2) { // if impact is likely
-                double t = impactFraction(obj, other); // do exact collision test
-                if (t > -h && t <= h) { // objects collide within a solver step
-                    impacted = true;
-                    resolveCollision(obj, other, t); // resolve collision
-                }
+                pushApart(obj, other); // ensure we're not overlapping
+                resolveCollision(obj, other, 0); // handle bounce as if at surface
+            } else if (time <= h) { // objects will impact within a simulator frame
+                impacted = true;
+                resolveCollision(obj, other, time); // resolve collision forward in time
             }
 
             other.postImpactResolve(obj, impacted);
         }
     }
 
+    /** Returns true if two objects are touching, or would collide in the next simulator frame */
+    public boolean hitTest(Thing obj, Thing other){
+        return impactTime(obj, other) <= h;
+    }
+
+    private double impactTime(Thing obj, Thing other) {
+        // if the other object has a hit circle,
+        // do ball-to-ball calculations and affect both objects
+        double dx = other.p1x - obj.p1x;
+        double dy = other.p1y - obj.p1y;
+
+        double r = other.radius + obj.radius;
+        double rSqr = r * r;
+        double dSqr = (dx * dx) + (dy * dy);
+
+        // First, do a cheap collision test
+        if (dSqr < rSqr){ // objects are overlapping
+            return -1;
+        } else if (dSqr <= rSqr * 2) { // if impact is likely
+            double t = impactFraction(obj, other); // do exact collision test
+            if (t > 0 && t <= h) { // objects collide within a solver step
+                return t;
+            }
+        }
+        return 1000.0; // just a large value to say no-impact
+    }
 
     /**
      * Returns fraction of obj.v where impact occurs 0..1 if there is an impact.
@@ -183,9 +224,7 @@ public class Simulator {
      * @param other object 2
      * @param t     fraction of object velocities where impact occurs
      */
-    public final void resolveCollision(Thing obj, Thing other, double t) {
-        pushApart(obj, other); // ensure we're not overlapping
-
+    private void resolveCollision(Thing obj, Thing other, double t) {
         // calculate position of impact
         double ix1 = obj.p0x + obj.v0x * t;
         double iy1 = obj.p0y + obj.v0y * t;
@@ -220,7 +259,7 @@ public class Simulator {
         double d2 = (dx * dx) + (dy * dy);
         double rs = obj.radius + other.radius;
 
-        if (d2 > (rs * rs)) return;
+        if (d2 >= (rs * rs)) return;
 
         double d = Math.sqrt(d2); // current distance between centres
         if (d < rs) {

@@ -1,7 +1,5 @@
 package com.ieb.smalltest.world;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
@@ -72,8 +70,10 @@ public abstract class Thing {
     public double a0y;
 
     /** Render this thing */
-    public abstract void draw(@NotNull Camera camera, Paint paint);
+    public abstract void draw(@NotNull Camera camera);
 
+    /** Perform any AI functions. This is called once per 10 physics frames */
+    public abstract void think(Level level, int ms);
 
     /**
      * Do any updates before an impact is tested and resolved.

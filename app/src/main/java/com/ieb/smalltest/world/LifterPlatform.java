@@ -1,6 +1,5 @@
 package com.ieb.smalltest.world;
 
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ public class LifterPlatform extends Thing {
     public LifterPlatform(int left, int top, int width, int height, double speed) {
         hitBox = new Rect(left, top, left+width, top+height);
         this.speed = speed;
-        type = Collision.WALL;
+        type = Collision.WALL; // so creeps will walk through lifters
         mass = 100;
         radius = -1; // only the target of collision
         elasticity = 0.1;
@@ -21,12 +20,15 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Camera camera, Paint paint) {
-        paint.setARGB(200, 100,120, 200);
-        camera.drawRect(hitBox, paint);
+    public void think(Level level, int ms) {}
 
-        paint.setARGB(50,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)hitBox.width()*4, paint);
+    @Override
+    public void draw(@NotNull Camera camera) {
+        camera.setARGB(200, 100,120, 200);
+        camera.drawRect(hitBox);
+
+        camera.setARGB(50,0,255,255);
+        camera.drawCircle((float)p1x, (float)p1y, (float)hitBox.width()*4);
     }
 
     @Override

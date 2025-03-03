@@ -1,6 +1,5 @@
 package com.ieb.smalltest.world;
 
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,12 +17,15 @@ public class OneWayPlatform extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Camera camera, Paint paint) {
-        paint.setARGB(200, 0,0, 170);
-        camera.drawRect(hitBox, paint);
+    public void think(Level level, int ms) {}
 
-        paint.setARGB(120,0,255,255);
-        camera.drawCircle((float)p1x, (float)p1y, (float)5.0, paint);
+    @Override
+    public void draw(@NotNull Camera camera) {
+        camera.setARGB(200, 0,0, 170);
+        camera.drawRect(hitBox);
+
+        camera.setARGB(120,0,255,255);
+        camera.drawCircle((float)p1x, (float)p1y, (float)5.0);
     }
 
     @Override
