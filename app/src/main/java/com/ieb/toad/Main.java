@@ -1,17 +1,14 @@
-package com.ieb.smalltest;
+package com.ieb.toad;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import com.ieb.smalltest.input.VirtualGamepad;
+import com.ieb.toad.input.VirtualGamepad;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class Main extends Activity {

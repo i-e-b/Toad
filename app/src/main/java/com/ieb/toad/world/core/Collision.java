@@ -1,4 +1,4 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world.core;
 
 /** Collision types. Each `Thing` should have only one, but they can be used as flags when detecting multiple hits. */
 public abstract class Collision {

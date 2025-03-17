@@ -1,6 +1,8 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world.core;
 
 import android.graphics.Rect;
+
+import com.ieb.toad.world.Level;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,40 +36,40 @@ public abstract class Thing {
     public double mass = 1.0;
 
     /** X position of the object */
-    public double p1x;
+    protected double p1x;
 
     /** Y position of the object */
-    public double p1y;
+    protected double p1y;
 
     /** X position last iteration */
-    public double p0x;
+    public double px;
 
     /** Y position last iteration */
-    public double p0y;
+    public double py;
 
     /** X velocity of the object */
-    public double v1x;
+    protected double v1x;
 
     /** Y velocity of the object */
-    public double v1y;
+    protected double v1y;
 
     /** X velocity last iteration */
-    public double v0x;
+    public double vx;
 
     /** Y velocity last iteration */
-    public double v0y;
+    public double vy;
 
     /** X acceleration of the object */
-    public double a1x;
+    protected double a1x;
 
     /** Y acceleration of the object */
-    public double a1y;
+    protected double a1y;
 
     /** X acceleration last iteration */
-    public double a0x;
+    public double ax;
 
     /** Y acceleration last iteration */
-    public double a0y;
+    public double ay;
 
     /** Render this thing */
     public abstract void draw(@NotNull Camera camera);

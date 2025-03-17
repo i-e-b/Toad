@@ -1,4 +1,4 @@
-package com.ieb.smalltest.input;
+package com.ieb.toad.input;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -316,6 +316,7 @@ public class VirtualGamepad {
             }
         }
 
+        // TODO: this is causing the jump to be too high
         // Handle tap on opposite direction as jump
         if (!left && !right) {
             rightIsUp = false;

@@ -1,4 +1,4 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world.core;
 
 /**
  * Base for constraint types.

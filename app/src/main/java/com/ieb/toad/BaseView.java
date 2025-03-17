@@ -1,9 +1,7 @@
-package com.ieb.smalltest;
+package com.ieb.toad;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 
 import org.jetbrains.annotations.NotNull;

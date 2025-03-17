@@ -1,9 +1,13 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world;
 
-import com.ieb.smalltest.Main;
-import com.ieb.smalltest.sprite.Shy;
-import com.ieb.smalltest.sprite.SpriteSheet;
-import com.ieb.smalltest.sprite.Toad;
+import com.ieb.toad.Main;
+import com.ieb.toad.sprite.Shy;
+import com.ieb.toad.sprite.SpriteSheet;
+import com.ieb.toad.sprite.Toad;
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Constraint;
+import com.ieb.toad.world.core.Simulator;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,12 +39,12 @@ public class Level {
         constraints = new ArrayList<>();
 
         things.add(new Toad(spriteSheet));
-        things.get(0).p0x = 100;
-        things.get(0).p0y = 600;
+        things.get(0).px = 100;
+        things.get(0).py = 600;
 
         things.add(new Shy(spriteSheet));
-        things.get(1).p0x = 500;
-        things.get(1).p0y = 750;
+        things.get(1).px = 500;
+        things.get(1).py = 750;
 
         things.add(new Platform(0, 500, 1000, 16));
         things.add(new Platform(0, 500, 16, 800));
@@ -57,7 +61,7 @@ public class Level {
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
-        camera.centreOn(things.get(0).p0x, things.get(0).p0y);
+        camera.centreOn(things.get(0).px, things.get(0).py);
         
         for (Thing thing : things) {
             thing.draw(camera);
@@ -76,9 +80,9 @@ public class Level {
         double nextTime = simulator.solve(time, things, constraints);
 
         // [TEMP] reset if out-of-bounds
-        if (things.get(0).p0y > 2000) {
-            things.get(0).p0x = 100;
-            things.get(0).p0y = 600;
+        if (things.get(0).py > 2000) {
+            things.get(0).px = 100;
+            things.get(0).py = 600;
         }
 
         // return simulated time

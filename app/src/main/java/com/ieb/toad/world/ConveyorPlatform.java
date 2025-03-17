@@ -1,6 +1,10 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world;
 
 import android.graphics.Rect;
+
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,19 +35,19 @@ public class ConveyorPlatform extends Thing {
     @Override
     public void preImpactTest(Thing other) {
         // Find the closest point to the circle within the rectangle
-        p0x = p1x = clamp(other.p0x, this.hitBox.left + 1, this.hitBox.right - 1);
-        p0y = p1y = clamp(other.p0y, this.hitBox.top + 1, this.hitBox.bottom - 1);
+        px = p1x = clamp(other.px, this.hitBox.left + 1, this.hitBox.right - 1);
+        py = p1y = clamp(other.py, this.hitBox.top + 1, this.hitBox.bottom - 1);
 
         // Set radius to make this interactive. Will be reset after impact resolved
-        radius = (other.p0y > this.hitBox.bottom) ? 32.0 : 1.0; // TODO: remove this hack when joints are done
+        radius = (other.py > this.hitBox.bottom) ? 32.0 : 1.0; // TODO: remove this hack when joints are done
 
-        v0y = other.p0y - p0y;
-        if (other.p0y > hitBox.top) { // normal impact from below
-            v0x = other.p0x - p0x;
+        vy = other.py - py;
+        if (other.py > hitBox.top) { // normal impact from below
+            vx = other.px - px;
         } else { // moving impact from above
-            p0x -= speed;
+            px -= speed;
             p1x -= speed;
-            v0x = speed;// + (other.p0x - p0x);
+            vx = speed;// + (other.p0x - p0x);
         }
     }
 

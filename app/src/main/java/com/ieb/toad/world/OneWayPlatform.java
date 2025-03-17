@@ -1,6 +1,10 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world;
 
 import android.graphics.Rect;
+
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,15 +32,15 @@ public class OneWayPlatform extends Thing {
     @Override
     public void preImpactTest(Thing other) {
         // If the other thing is below the top surface, have no impact
-        if (other.p0y > hitBox.top) return;
+        if (other.py > hitBox.top) return;
 
         // Find the closest point to the circle within the rectangle
-        p0x = p1x = clamp(other.p0x, this.hitBox.left+1, this.hitBox.right-1);
-        p0y = p1y = clamp(other.p0y, this.hitBox.top+1, this.hitBox.bottom-1);
+        px = p1x = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
+        py = p1y = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
         radius = 1.0; // will be reset after impact resolved
 
-        v0x = other.p0x - p0x;
-        v0y = other.p0y - p0y;
+        vx = other.px - px;
+        vy = other.py - py;
     }
 
     @Override

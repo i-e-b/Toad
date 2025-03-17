@@ -1,20 +1,15 @@
-package com.ieb.smalltest.sprite;
+package com.ieb.toad.sprite;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-import com.ieb.smalltest.Main;
-import com.ieb.smalltest.world.Camera;
-import com.ieb.smalltest.world.Collision;
-import com.ieb.smalltest.world.Level;
-import com.ieb.smalltest.world.Thing;
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.Level;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Shy extends Thing {
     private final Animation left = new Animation(64, Animation.FOREVER, 16, 16, 0, new int[]{1, 18});
@@ -43,20 +38,20 @@ public class Shy extends Thing {
     @Override
     public void think(Level level, int ms) {
         // Switch direction if facing wall.
-        var frontSense = level.hitTest(p0x + ((radius + 2) * desireDirection), p0y);
+        var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
         if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;
 
         if (desireDirection < 0){ // left
-            if (v0x > -speed) a0x = -accel;
+            if (vx > -speed) ax = -accel;
         } else { // right
-            if (v0x < speed) a0x = accel;
+            if (vx < speed) ax = accel;
         }
     }
 
     @Override
     public void draw(@NotNull Camera camera) {
-        double dx = Math.abs(p0x - lastFramePx);
-        lastFramePx = p0x;
+        double dx = Math.abs(px - lastFramePx);
+        lastFramePx = px;
 
         Animation a = desireDirection > 0 ? right : left;
 

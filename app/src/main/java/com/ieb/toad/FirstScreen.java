@@ -1,12 +1,12 @@
-package com.ieb.smalltest;
+package com.ieb.toad;
 import android.annotation.SuppressLint;
-import com.ieb.smalltest.input.*;
+import com.ieb.toad.input.*;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.ieb.smalltest.world.Camera;
-import com.ieb.smalltest.world.Level;
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.Level;
 
 import org.jetbrains.annotations.NotNull;
 

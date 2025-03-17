@@ -1,4 +1,6 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world.core;
+
+import com.ieb.toad.world.Level;
 
 import java.util.List;
 
@@ -65,35 +67,35 @@ public class Simulator {
             for (int oi = 0; oi < objects.size(); oi++) {
                 Thing obj = objects.get(oi);
                 if (obj.type == Collision.WALL) { // walls don't move
-                    obj.v0x = obj.v0y = obj.v1x = obj.v1y = 0.0;
+                    obj.vx = obj.vy = obj.v1x = obj.v1y = 0.0;
                     continue;
                 }
 
                 // Advance position
-                obj.p1x = obj.p0x + (obj.v0x * h) + (0.5 * obj.a0x * h2);
-                obj.p1y = obj.p0y + (obj.v0y * h) + (0.5 * obj.a0y * h2);
+                obj.p1x = obj.px + (obj.vx * h) + (0.5 * obj.ax * h2);
+                obj.p1y = obj.py + (obj.vy * h) + (0.5 * obj.ay * h2);
 
                 // apply acceleration and constraints
                 simulationStep(obj, objects, oi);
 
                 // Advance velocity
-                obj.v1x = obj.v0x + (0.5 * (obj.a0x + obj.a1x) * h);
-                obj.v1y = obj.v0y + (0.5 * (obj.a0y + obj.a1y) * h);
+                obj.v1x = obj.vx + (0.5 * (obj.ax + obj.a1x) * h);
+                obj.v1y = obj.vy + (0.5 * (obj.ay + obj.a1y) * h);
 
                 // Step values forward
-                obj.v0x = obj.v1x;
-                obj.v0y = obj.v1y;
-                obj.p0x = obj.p1x;
-                obj.p0y = obj.p1y;
-                obj.a0x = obj.a1x;
-                obj.a0y = obj.a1y;
+                obj.vx = obj.v1x;
+                obj.vy = obj.v1y;
+                obj.px = obj.p1x;
+                obj.py = obj.p1y;
+                obj.ax = obj.a1x;
+                obj.ay = obj.a1y;
 
                 // Check terminal velocity
                 double maxV2 = obj.terminalVelocity * obj.terminalVelocity;
-                double v02 = (obj.v0x * obj.v0x) + (obj.v0y * obj.v0y);
+                double v02 = (obj.vx * obj.vx) + (obj.vy * obj.vy);
                 if (v02 > maxV2) { // need to restrict velocity
                     double adj = obj.terminalVelocity / Math.sqrt(v02);
-                    obj.v0y *= adj;obj.v0x *= adj;
+                    obj.vy *= adj;obj.vx *= adj;
                     obj.v1y *= adj;obj.v1x *= adj;
                 }
             }
@@ -125,8 +127,8 @@ public class Simulator {
     private void simulationStep(Thing obj, List<Thing> objects, int idx) {
         // Apply drag
         double drc = Math.max(0.0, 1.0 - obj.drag);
-        obj.v0x *= drc;
-        obj.v0y *= drc;
+        obj.vx *= drc;
+        obj.vy *= drc;
 
         // apply gravity
         obj.a1y = gravity * obj.gravity;
@@ -195,12 +197,12 @@ public class Simulator {
         // Expansion of:
         //     "d = √( (o2.px + o2.vx * t - o1.px + o1.vx * t)² + (o2.py + o2.vy * t - o1.y + o1.vy * t)²)"
         // to solve in terms of 't' 0..1 where "d = o1.radius + o2.radius"
-        double o1vx = obj.v0x, o1vy = obj.v0y, o1vx2 = o1vx * o1vx, o1vy2 = o1vy * o1vy;
-        double o1x = obj.p0x, o1y = obj.p0y, o1x2 = o1x * o1x, o1y2 = o1y * o1y;
+        double o1vx = obj.vx, o1vy = obj.vy, o1vx2 = o1vx * o1vx, o1vy2 = o1vy * o1vy;
+        double o1x = obj.px, o1y = obj.py, o1x2 = o1x * o1x, o1y2 = o1y * o1y;
         double o1r = obj.radius, o1r2 = o1r * o1r;
 
-        double o2vx = other.v0x, o2vy = other.v0y, o2vx2 = o2vx * o2vx, o2vy2 = o2vy * o2vy;
-        double o2x = other.p0x, o2y = other.p0y, o2x2 = o2x * o2x, o2y2 = o2y * o2y;
+        double o2vx = other.vx, o2vy = other.vy, o2vx2 = o2vx * o2vx, o2vy2 = o2vy * o2vy;
+        double o2x = other.px, o2y = other.py, o2x2 = o2x * o2x, o2y2 = o2y * o2y;
         double o2r = other.radius, o2r2 = o2r * o2r;
 
         double a = o1vx2 + o1vy2 - 2 * o1vx * o2vx + o2vx2 - 2 * o1vy * o2vy + o2vy2;
@@ -226,36 +228,36 @@ public class Simulator {
      */
     private void resolveCollision(Thing obj, Thing other, double t) {
         // calculate position of impact
-        double ix1 = obj.p0x + obj.v0x * t;
-        double iy1 = obj.p0y + obj.v0y * t;
+        double ix1 = obj.px + obj.vx * t;
+        double iy1 = obj.py + obj.vy * t;
 
-        double ix2 = other.p0x + other.v0x * t;
-        double iy2 = other.p0y + other.v0y * t;
+        double ix2 = other.px + other.vx * t;
+        double iy2 = other.py + other.vy * t;
 
         // calculate tangents of impact
         double nx = (ix1 - ix2) / (obj.radius + other.radius);
         double ny = (iy1 - iy2) / (obj.radius + other.radius);
 
-        double a1 = obj.v0x * nx + obj.v0y * ny;
-        double a2 = other.v0x * nx + other.v0y * ny;
+        double a1 = obj.vx * nx + obj.vy * ny;
+        double a2 = other.vx * nx + other.vy * ny;
 
         double p = 2 * (a1 - a2) / (obj.mass + other.mass);
         double coe = obj.elasticity * other.elasticity;
 
         // apply to velocity of both objects
-        obj.v0x -= coe * p * nx * other.mass;
-        obj.v0y -= coe * p * ny * other.mass;
+        obj.vx -= coe * p * nx * other.mass;
+        obj.vy -= coe * p * ny * other.mass;
 
-        other.v0x += coe * p * nx * obj.mass;
-        other.v0y += coe * p * ny * obj.mass;
+        other.vx += coe * p * nx * obj.mass;
+        other.vy += coe * p * ny * obj.mass;
     }
 
     /**
      * Check if there is an overlap between two objects
      */
     private void pushApart(Thing obj, Thing other) {
-        double dx = obj.p0x - other.p0x;
-        double dy = obj.p0y - other.p0y;
+        double dx = obj.px - other.px;
+        double dy = obj.py - other.py;
         double d2 = (dx * dx) + (dy * dy);
         double rs = obj.radius + other.radius;
 

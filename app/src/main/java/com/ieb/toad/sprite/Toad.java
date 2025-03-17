@@ -1,21 +1,16 @@
-package com.ieb.smalltest.sprite;
+package com.ieb.toad.sprite;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-import com.ieb.smalltest.Main;
-import com.ieb.smalltest.input.VirtualGamepad;
-import com.ieb.smalltest.world.Camera;
-import com.ieb.smalltest.world.Collision;
-import com.ieb.smalltest.world.Level;
-import com.ieb.smalltest.world.Thing;
+import com.ieb.toad.input.VirtualGamepad;
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.Level;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Toad extends Thing {
 
@@ -77,7 +72,7 @@ public class Toad extends Thing {
         if (btnUp){
             if (jumpTimeLeftMs > 0){
                 jumpTimeLeftMs -= ms;
-                v0y = -900;
+                vy = -900;
             }
         } else {
             jumpTimeLeftMs = 300;
@@ -94,16 +89,16 @@ public class Toad extends Thing {
     }
 
     public void addPlayerSpeed(double dx, int dy) {
-        v0y += dy;
-        v0x += dx;
+        vy += dy;
+        vx += dx;
     }
 
     private boolean btnAction, btnUp, btnDown, btnRight, btnLeft;
 
     @Override
     public void draw(@NotNull Camera camera) {
-        double dx = Math.abs(p0x - lastFramePx);
-        lastFramePx = p0x;
+        double dx = Math.abs(px - lastFramePx);
+        lastFramePx = px;
 
         Animation a = desireDirection > 0 ? run_right : run_left;
 

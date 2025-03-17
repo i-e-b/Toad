@@ -1,4 +1,4 @@
-package com.ieb.smalltest.sprite;
+package com.ieb.toad.sprite;
 
 import android.graphics.Rect;
 

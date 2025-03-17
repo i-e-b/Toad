@@ -1,11 +1,11 @@
-package com.ieb.smalltest.sprite;
+package com.ieb.toad.sprite;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-import com.ieb.smalltest.Main;
+import com.ieb.toad.Main;
 
 import java.io.IOException;
 import java.io.InputStream;

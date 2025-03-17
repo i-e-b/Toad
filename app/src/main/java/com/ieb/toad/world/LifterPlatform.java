@@ -1,6 +1,10 @@
-package com.ieb.smalltest.world;
+package com.ieb.toad.world;
 
 import android.graphics.Rect;
+
+import com.ieb.toad.world.core.Camera;
+import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,15 +37,15 @@ public class LifterPlatform extends Thing {
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = this.hitBox.width() * 4; // big radius to make falling off less likely
 
-        double offsetY = other.p0y + other.radius + radius - 1; // subtract 1 so we have an overlap to do the pushing
+        double offsetY = other.py + other.radius + radius - 1; // subtract 1 so we have an overlap to do the pushing
 
         // Place our collider *under* other's circle, in the middle of our hitbox
-        p0x = p1x = hitBox.left + (hitBox.width() / 2.0);
-        p0y = p1y = clamp(offsetY, hitBox.top + radius, hitBox.bottom + radius);
+        px = p1x = hitBox.left + (hitBox.width() / 2.0);
+        py = p1y = clamp(offsetY, hitBox.top + radius, hitBox.bottom + radius);
 
 
         // set velocity up to bump the player
-        v0y = -speed;// + (other.p0x - p0x);
+        vy = -speed;// + (other.p0x - p0x);
     }
 
     @Override
