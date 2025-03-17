@@ -16,6 +16,9 @@ public class SpriteSheet {
 
     // TODO: Auto-chop the tiles (maybe with a #F0F pixel)
     // TODO: Pre-calculate flipped versions of each tile
+    //
+    // https://stackoverflow.com/questions/4160149/how-to-draw-on-bitmap-in-android
+    // https://www.skoumal.com/en/android-how-to-draw-text-on-a-bitmap/
 
     /** Prepare for loading graphics */
     public SpriteSheet(final Main context) throws IOException {
