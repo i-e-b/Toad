@@ -2,6 +2,8 @@ package com.ieb.toad.sprite;
 
 import android.graphics.Rect;
 
+import java.util.List;
+
 /** Single animation for a sprite. Has set of:
  * source rect for the texture,
  * and frame time in ms. */
@@ -34,6 +36,26 @@ public class Animation {
         for (int i = 0; i < frameCount; i++) {
             int offset = offsets[i];
             src[i] = new Rect(offset, y, offset + w, y + h);
+            time[i] = frameTime;
+        }
+    }
+
+    /** Generate frames on a row of the texture, with a single frame time
+     * @param frameTime duration of each frame (milliseconds)
+     * @param loops number of loops before animation ends. If `Animation.FOREVER`, the animation never ends
+     * @param tileSheet source of tile rectangles
+     * @param tileIndexes indexes in tileSheet to use for this animation. Indexes can be repeated.
+     * */
+    public Animation(int frameTime, int loops, List<Rect> tileSheet, int[] tileIndexes){
+        this.loops = loops;
+        frameDur = 0;
+        frameIdx = 0;
+        frameCount = tileIndexes.length;
+        src = new Rect[frameCount];
+        time = new int[frameCount];
+        for (int i = 0; i < frameCount; i++) {
+            int offset = tileIndexes[i];
+            src[i] = tileSheet.get(offset);
             time[i] = frameTime;
         }
     }
