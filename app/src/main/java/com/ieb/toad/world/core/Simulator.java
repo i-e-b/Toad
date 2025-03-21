@@ -54,49 +54,41 @@ public class Simulator {
         // We always solve to a fixed step-time,
         // but we change the number of steps
         // based on the frame time
-        int iter = (int) ((speed * dt) / N); // number of iterations we will run
-        double adv = ((double) iter * N) / speed; // the amount of simulation time this covers
+        int iterations = (int) ((speed * dt) / N); // number of iterations we will run
+        double adv = ((double) iterations * N) / speed; // the amount of simulation time this covers
         int thinkAdv = (int) (((double) 10 * N) / speed); // the amount of simulation time per 'think' cycle in ms
 
         // Limit 'hidden' runs to prevent big jumps if frame timer stalls
-        if (iter < 1) iter = 0;
-        if (iter > 10) iter = 10;
+        if (iterations < 1) iterations = 0;
+        if (iterations > 10) iterations = 10;
 
-        for (int i = 0; i < iter; i++) {
+        for (int i = 0; i < iterations; i++) {
             // Run the iteration on objects
             for (int oi = 0; oi < objects.size(); oi++) {
                 Thing obj = objects.get(oi);
-                if (obj.type == Collision.WALL) { // walls don't move
-                    obj.vx = obj.vy = obj.v1x = obj.v1y = 0.0;
-                    continue;
-                }
 
                 // Advance position
-                obj.p1x = obj.px + (obj.vx * h) + (0.5 * obj.ax * h2);
-                obj.p1y = obj.py + (obj.vy * h) + (0.5 * obj.ay * h2);
+                obj.px += (obj.vx * h) + (0.5 * obj.a0x * h2);
+                obj.py += (obj.vy * h) + (0.5 * obj.a0y * h2);
 
                 // apply acceleration and constraints
                 simulationStep(obj, objects, oi);
 
                 // Advance velocity
-                obj.v1x = obj.vx + (0.5 * (obj.ax + obj.a1x) * h);
-                obj.v1y = obj.vy + (0.5 * (obj.ay + obj.a1y) * h);
+                obj.vx += (0.5 * (obj.a0x + obj.ax) * h);
+                obj.vy += (0.5 * (obj.a0y + obj.ay) * h);
 
                 // Step values forward
-                obj.vx = obj.v1x;
-                obj.vy = obj.v1y;
-                obj.px = obj.p1x;
-                obj.py = obj.p1y;
-                obj.ax = obj.a1x;
-                obj.ay = obj.a1y;
+                obj.a0x = obj.ax;
+                obj.a0y = obj.ay;
 
                 // Check terminal velocity
                 double maxV2 = obj.terminalVelocity * obj.terminalVelocity;
                 double v02 = (obj.vx * obj.vx) + (obj.vy * obj.vy);
                 if (v02 > maxV2) { // need to restrict velocity
                     double adj = obj.terminalVelocity / Math.sqrt(v02);
-                    obj.vy *= adj;obj.vx *= adj;
-                    obj.v1y *= adj;obj.v1x *= adj;
+                    obj.vx *= adj;
+                    obj.vy *= adj;
                 }
             }
 
@@ -118,47 +110,44 @@ public class Simulator {
     }
 
     /**
-     * Apply forces and constraints
+     * Apply forces and collisions
      *
-     * @param obj     the object under consideration
+     * @param self     the object under consideration
      * @param objects array of all objects
-     * @param idx     index of the current object
+     * @param idx     index of the current object. This must be called in order.
      */
-    private void simulationStep(Thing obj, List<Thing> objects, int idx) {
+    private void simulationStep(Thing self, List<Thing> objects, int idx) {
         // Apply drag
-        double drc = Math.max(0.0, 1.0 - obj.drag);
-        obj.vx *= drc;
-        obj.vy *= drc;
+        double drc = Math.max(0.0, 1.0 - self.drag);
+        self.vx *= drc;
+        self.vy *= drc;
 
         // apply gravity
-        obj.a1y = gravity * obj.gravity;
-
-        // If radius is negative, there is no inter-object collision.
-        // This object can still be the target of a collision (e.g. for walls)
-        if (obj.radius < 0.0) return;
+        self.ay = gravity * self.gravity;
 
         // Check against other objects for collisions
-        for (int i = 0; i < objects.size(); i++) {
-            if (i == idx) continue;
+        for (int i = idx+1; i < objects.size(); i++) {
             Thing other = objects.get(i);
 
-            other.preImpactTest(obj); // allow virtual impact point to be created
+            other.preImpactTest(self); // allow virtual impact point to be created
+            self.preImpactTest(other);
 
-            if (other.radius <= 0.0) continue; // non-contact thing
-
-            double time = impactTime(obj, other);
             boolean impacted = false;
+            if (other.radius>0 && self.radius > 0) {
+                double time = impactTime(self, other);
 
-            if (time < 0){ // objects are overlapping
-                impacted = true;
-                pushApart(obj, other); // ensure we're not overlapping
-                resolveCollision(obj, other, 0); // handle bounce as if at surface
-            } else if (time <= h) { // objects will impact within a simulator frame
-                impacted = true;
-                resolveCollision(obj, other, time); // resolve collision forward in time
+                if (time < 0) { // objects are overlapping
+                    impacted = true;
+                    pushApart(self, other); // ensure we're not overlapping
+                    resolveCollision(self, other, 0); // handle bounce as if at surface
+                } else if (time <= h) { // objects will impact within a simulator frame
+                    impacted = true;
+                    resolveCollision(self, other, time); // resolve collision forward in time
+                }
             }
 
-            other.postImpactResolve(obj, impacted);
+            other.postImpactResolve(self, impacted);
+            self.postImpactResolve(other, impacted);
         }
     }
 
@@ -170,8 +159,8 @@ public class Simulator {
     private double impactTime(Thing obj, Thing other) {
         // if the other object has a hit circle,
         // do ball-to-ball calculations and affect both objects
-        double dx = other.p1x - obj.p1x;
-        double dy = other.p1y - obj.p1y;
+        double dx = other.px - obj.px;
+        double dy = other.py - obj.py;
 
         double r = other.radius + obj.radius;
         double rSqr = r * r;
@@ -270,10 +259,10 @@ public class Simulator {
             double ms = obj.mass + other.mass;
 
             // push apart based on mass
-            obj.p1x += dx * frac * (other.mass / ms);
-            obj.p1y += dy * frac * (other.mass / ms);
-            other.p1x -= dx * frac * (obj.mass / ms);
-            other.p1y -= dy * frac * (obj.mass / ms);
+            obj.px += dx * frac * (other.mass / ms);
+            obj.py += dy * frac * (other.mass / ms);
+            other.px -= dx * frac * (obj.mass / ms);
+            other.py -= dy * frac * (obj.mass / ms);
         }
     }
 }

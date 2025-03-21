@@ -42,9 +42,9 @@ public class Shy extends Thing {
         if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;
 
         if (desireDirection < 0){ // left
-            if (vx > -speed) ax = -accel;
+            if (vx > -speed) a0x = -accel;
         } else { // right
-            if (vx < speed) ax = accel;
+            if (vx < speed) a0x = accel;
         }
     }
 
@@ -57,10 +57,10 @@ public class Shy extends Thing {
 
         a.advance((int) dx); // animate based on movement
 
-        hitBox.bottom = (int) ((int) p1y + radius);
+        hitBox.bottom = (int) ((int) py + radius);
         hitBox.top = hitBox.bottom - (16 * 4);
-        hitBox.left = (int) p1x - (int) radius;
-        hitBox.right = (int) p1x + (int) radius;
+        hitBox.left = (int) px - (int) radius;
+        hitBox.right = (int) px + (int) radius;
 
         camera.drawBitmap(spriteSheet.dude, a.rect(), hitBox);
     }

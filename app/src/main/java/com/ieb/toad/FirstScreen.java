@@ -88,7 +88,7 @@ public class FirstScreen extends BaseView {
         camera.use(canvas);
         level.Draw(camera, lastWidth, lastHeight, (int)frameMs);
 
-        VirtualGamepad.draw(canvas, mPaint, lastWidth, lastHeight);
+        VirtualGamepad.draw(canvas, mPaint, lastWidth);
 
         int dc = camera.getCount();
         mPaint.setARGB(120,0,255,255);

@@ -35,20 +35,16 @@ public class OneWayPlatform extends Thing {
         if (other.py > hitBox.top) return;
 
         // Find the closest point to the circle within the rectangle
-        px = p1x = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
-        py = p1y = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
+        px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
+        py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
         radius = 1.0; // will be reset after impact resolved
 
-        vx = other.px - px;
-        vy = other.py - py;
+        vx = 0;
+        vy = 0;
     }
 
     @Override
     public void postImpactResolve(Thing other, boolean impacted) {
         radius = -1.0;
-    }
-
-    private double clamp(double v, double min, double max) {
-        return Math.min(Math.max(v, min), max);
     }
 }

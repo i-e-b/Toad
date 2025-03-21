@@ -30,13 +30,14 @@ public class Platform extends Thing {
 
     @Override
     public void preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return; // don't collide with other walls
+
         // Set radius to make this interactive. Will be reset after impact resolved
-        radius = (other.py > this.hitBox.bottom) ? 32.0 : 1.0; // TODO: remove this hack when joints are done
-        //radius = 1.0;
+        radius = 1.0;
 
         // Find the closest point to the circle within the rectangle
-        px = p1x = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
-        py = p1y = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
+        px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
+        py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
         vx = other.px - px;
         vy = other.py - py;
     }
@@ -44,9 +45,5 @@ public class Platform extends Thing {
     @Override
     public void postImpactResolve(Thing other, boolean impacted) {
         radius = -1.0;
-    }
-
-    private double clamp(double v, double min, double max) {
-        return Math.min(Math.max(v, min), max);
     }
 }

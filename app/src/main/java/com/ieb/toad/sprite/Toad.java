@@ -104,11 +104,15 @@ public class Toad extends Thing {
 
         a.advance((int) dx); // animate based on movement
 
-        hitBox.bottom = (int) ((int) p1y + radius);
-        hitBox.top = hitBox.bottom - (28 * 4);
-        hitBox.left = (int) p1x - (int) radius;
-        hitBox.right = (int) p1x + (int) radius;
+        updateHitBox();
 
         camera.drawBitmap(spriteSheet.toad, a.rect(), hitBox);
+    }
+
+    private void updateHitBox() {
+        hitBox.bottom = (int) ((int) py + radius);
+        hitBox.top = hitBox.bottom - (28 * 4);
+        hitBox.left = (int) px - (int) radius;
+        hitBox.right = (int) px + (int) radius;
     }
 }

@@ -34,26 +34,23 @@ public class LifterPlatform extends Thing {
 
     @Override
     public void preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return; // don't collide with other walls
+
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = this.hitBox.width() * 4; // big radius to make falling off less likely
 
         double offsetY = other.py + other.radius + radius - 1; // subtract 1 so we have an overlap to do the pushing
 
-        // Place our collider *under* other's circle, in the middle of our hitbox
-        px = p1x = hitBox.left + (hitBox.width() / 2.0);
-        py = p1y = clamp(offsetY, hitBox.top + radius, hitBox.bottom + radius);
-
+        // Place our collider *under* other's circle, in the middle of our hit-box
+        px = hitBox.left + (hitBox.width() / 2.0);
+        py = clamp(offsetY, hitBox.top + radius, hitBox.bottom + radius);
 
         // set velocity up to bump the player
-        vy = -speed;// + (other.p0x - p0x);
+        vy = -speed;
     }
 
     @Override
     public void postImpactResolve(Thing other, boolean impacted) {
         radius = -1.0;
-    }
-
-    private double clamp(double v, double min, double max) {
-        return Math.min(Math.max(v, min), max);
     }
 }

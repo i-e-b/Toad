@@ -34,29 +34,26 @@ public class ConveyorPlatform extends Thing {
 
     @Override
     public void preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return; // don't collide with other walls
+
         // Find the closest point to the circle within the rectangle
-        px = p1x = clamp(other.px, this.hitBox.left + 1, this.hitBox.right - 1);
-        py = p1y = clamp(other.py, this.hitBox.top + 1, this.hitBox.bottom - 1);
+        px = clamp(other.px, this.hitBox.left + 1, this.hitBox.right - 1);
+        py = clamp(other.py, this.hitBox.top + 1, this.hitBox.bottom - 1);
 
         // Set radius to make this interactive. Will be reset after impact resolved
-        radius = (other.py > this.hitBox.bottom) ? 32.0 : 1.0; // TODO: remove this hack when joints are done
+        radius = 1.0;
 
         vy = other.py - py;
         if (other.py > hitBox.top) { // normal impact from below
             vx = other.px - px;
         } else { // moving impact from above
             px -= speed;
-            p1x -= speed;
-            vx = speed;// + (other.p0x - p0x);
+            vx = speed;
         }
     }
 
     @Override
     public void postImpactResolve(Thing other, boolean impacted) {
         radius = -1.0;
-    }
-
-    private double clamp(double v, double min, double max) {
-        return Math.min(Math.max(v, min), max);
     }
 }

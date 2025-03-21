@@ -20,8 +20,8 @@ public class PointThing extends Thing {
 
     /** Update point sensor location */
     public void locate(double x, double y){
-        px = p1x = x;
-        py = p1y = y;
+        px = x;
+        py = y;
         hitBox.top = (int)y;
         hitBox.bottom = (int)y+1;
         hitBox.left = (int)x;

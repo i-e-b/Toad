@@ -166,7 +166,7 @@ public class VirtualGamepad {
     private static final Rect box = new Rect(0,0,0,0);
 
     /** Draw a diagram of the virtual controller in the top left of the canvas */
-    public static void draw(@NotNull Canvas canvas, Paint paint, int w, int h) {
+    public static void draw(@NotNull Canvas canvas, Paint paint, int w) {
         // Triggers
         paint.setARGB((int)(200 * RTrigger)+55, 255, 255, 255);
         box.set(w - 70, 20, w - 40, 40);

@@ -36,40 +36,28 @@ public abstract class Thing {
     public double mass = 1.0;
 
     /** X position of the object */
-    protected double p1x;
-
-    /** Y position of the object */
-    protected double p1y;
-
-    /** X position last iteration */
     public double px;
 
-    /** Y position last iteration */
+    /** Y position of the object */
     public double py;
 
     /** X velocity of the object */
-    protected double v1x;
-
-    /** Y velocity of the object */
-    protected double v1y;
-
-    /** X velocity last iteration */
     public double vx;
 
-    /** Y velocity last iteration */
+    /** Y velocity of the object */
     public double vy;
 
     /** X acceleration of the object */
-    protected double a1x;
+    protected double ax;
 
     /** Y acceleration of the object */
-    protected double a1y;
+    protected double ay;
 
     /** X acceleration last iteration */
-    public double ax;
+    public double a0x;
 
     /** Y acceleration last iteration */
-    public double ay;
+    public double a0y;
 
     /** Render this thing */
     public abstract void draw(@NotNull Camera camera);
@@ -94,5 +82,10 @@ public abstract class Thing {
      * @param impacted `true` if this and other made contact
      */
     public void postImpactResolve(Thing other, boolean impacted) {
+    }
+
+
+    protected double clamp(double v, double min, double max) {
+        return Math.min(Math.max(v, min), max);
     }
 }
