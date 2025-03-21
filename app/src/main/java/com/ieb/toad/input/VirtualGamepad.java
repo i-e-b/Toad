@@ -3,6 +3,7 @@ package com.ieb.toad.input;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 /** Basic static model of a single gamepad for input.
  * This reads keyboard, touchscreen, and actual gamepad for input. */
 public class VirtualGamepad {
+    private static final String TAG = "VPad";
 
     /** True if we are getting a 'left' signal somewhere */
     public static boolean isLeft(){
@@ -91,6 +93,7 @@ public class VirtualGamepad {
      * This amalgamates all 'pointers' into one controller, along with key inputs */
     public static void motionEvent(MotionEvent event) {
         int pointerCount = event.getPointerCount();
+        boolean needTouchUpdate = false;
         for (int i = 0; i < pointerCount; i++) {
             int type = event.getToolType(i);
 
@@ -98,7 +101,8 @@ public class VirtualGamepad {
                 case MotionEvent.TOOL_TYPE_FINGER:
                 case MotionEvent.TOOL_TYPE_MOUSE:
                 case MotionEvent.TOOL_TYPE_STYLUS:
-                    handleTouch(event);
+                    needTouchUpdate = true;
+                    updateTouchInfo(event);
                     break;
 
                 case MotionEvent.TOOL_TYPE_UNKNOWN:
@@ -109,6 +113,13 @@ public class VirtualGamepad {
                     break;
             }
         }
+
+        // reset touches for pointers that are gone
+        for (int i = pointerCount; i < 6; i++){
+            touchDown[i] = false;
+        }
+
+        if (needTouchUpdate) mapTouchToPad();
     }
 
     /** Read an input event into the virtual controller model.
@@ -266,8 +277,41 @@ public class VirtualGamepad {
 
     private static boolean rightIsUp = false, leftIsUp = false;
 
+    // Touch input registers
+    private static final float[] touchX = new float[6]; //!< up to 6 touch points
+    private static final float[] touchY = new float[6];
+    private static final boolean[] touchDown = new boolean[6];
+
+    private static void updateTouchInfo(MotionEvent event){
+        int act = event.getAction() & 0xFF;
+        int idx = event.getActionIndex();
+        if (idx >= 6) return;
+
+        switch (act){
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN: // android sends these in duplicate
+            case MotionEvent.ACTION_MOVE:
+                touchX[idx] = event.getX(idx);
+                touchY[idx] = event.getY(idx);
+                touchDown[idx] = true;
+                break;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP: // android sends these in duplicate
+                touchX[idx] = -1.0f;
+                touchY[idx] = -1.0f;
+                touchDown[idx] = false;
+                break;
+
+            default:
+                touchDown[idx] = false;
+                Log.i(TAG, "?"+act);
+                break;
+        }
+    }
+
     /** Map touch to input. This is a bit complex and should be updated based on needs */
-    private static void handleTouch(MotionEvent event) {
+    private static void mapTouchToPad() {
         if (touchHeight < 3 || touchWidth < 3) return; // screen is not active yet
         /*
             Screen is split in 3 by width, then by top / bottom:
@@ -282,41 +326,38 @@ public class VirtualGamepad {
           First we work out an internal logical state, then we map it back on to the virtual controls.
          */
 
-        int pointerCount = event.getPointerCount();
-
         // virtual button states
         boolean up = false, left = false, right = false, down = false, action = false;
 
-        if (event.getAction() != MotionEvent.ACTION_UP) {// 'ACTION_UP' means all touch points up?
-            // Scan all touch points
-            for (int i = 0; i < pointerCount; i++) {
-                //if (event.getPressure(i) < 0.5) continue;
-                double fx = event.getX(i) / (touchWidth + 1);
-                double fy = event.getY(i) / (touchHeight + 1);
+        // Scan all touch points
+        for (int i = 0; i < touchDown.length; i++) {
+            if (!touchDown[i]) continue;
+            double fx = touchX[i] / (touchWidth + 1);
+            double fy = touchY[i] / (touchHeight + 1);
+            //event.getPointerCoords(i, ptr);
+            //ptr.pressure
 
-                if (fx <= 0.33) { // left side
-                    if (fy < 0.5) { // top-left
-                        up = true;
-                    } else {
-                        left = true;
-                    }
-                } else if (fx >= 0.66) { // right side
-                    if (fy < 0.5) { // top-right
-                        up = true;
-                    } else {
-                        right = true;
-                    }
-                } else { // centre
-                    if (fy < 0.5) {
-                        action = true;
-                    } else {
-                        down = true;
-                    }
+            if (fx <= 0.33) { // left side
+                if (fy < 0.5) { // top-left
+                    up = true;
+                } else {
+                    left = true;
+                }
+            } else if (fx >= 0.66) { // right side
+                if (fy < 0.5) { // top-right
+                    up = true;
+                } else {
+                    right = true;
+                }
+            } else { // centre
+                if (fy < 0.5) {
+                    action = true;
+                } else {
+                    down = true;
                 }
             }
         }
 
-        // TODO: this is causing the jump to be too high
         // Handle tap on opposite direction as jump
         if (!left && !right) {
             rightIsUp = false;
