@@ -12,19 +12,21 @@ import com.ieb.toad.world.core.Thing;
 import org.jetbrains.annotations.NotNull;
 
 public class Shy extends Thing {
-    private final Animation left = new Animation(64, Animation.FOREVER, 16, 16, 0, new int[]{1, 18});
-    private final Animation right = new Animation(64, Animation.FOREVER, 16, 16, 186, new int[]{246, 229});
+    private final Animation left;
+    private final Animation right;
 
     private double lastFramePx;
-    private final SpriteSheet spriteSheet;
 
     private int desireDirection = -1; // negative = left, positive = right.
 
     private final int speed = 1200, accel = 5000;
 
     /** Load Toad graphics */
-    public Shy(final SpriteSheet spriteSheet) {
-        this.spriteSheet = spriteSheet;
+    public Shy(final SpriteSheetManager spriteSheetManager) {
+
+        left = new Animation(64, Animation.FOREVER, spriteSheetManager.dude, new int[]{0,1});
+        right = new Animation(64, Animation.FOREVER, spriteSheetManager.dude, new int[]{0,1});
+
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -53,15 +55,15 @@ public class Shy extends Thing {
         double dx = Math.abs(px - lastFramePx);
         lastFramePx = px;
 
-        Animation a = desireDirection > 0 ? right : left;
+        Animation anim = desireDirection > 0 ? right : left;
 
-        a.advance((int) dx); // animate based on movement
+        anim.advance((int) dx); // animate based on movement
 
         hitBox.bottom = (int) ((int) py + radius);
         hitBox.top = hitBox.bottom - (16 * 4);
         hitBox.left = (int) px - (int) radius;
         hitBox.right = (int) px + (int) radius;
 
-        camera.drawBitmap(spriteSheet.dude, a.rect(), hitBox);
+        camera.drawSprite(anim, hitBox);
     }
 }

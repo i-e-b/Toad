@@ -20,14 +20,12 @@ public class Toad extends Thing {
     private int desireDirection = 1; // negative = left, positive = right.
     private long jumpTimeLeftMs;
     private double lastFramePx;
-    private final SpriteSheet spriteSheet;
 
     /** Load Toad graphics */
-    public Toad(final SpriteSheet spriteSheet) {
-        this.spriteSheet = spriteSheet;
+    public Toad(final SpriteSheetManager spriteSheetManager) {
 
-        run_left = new Animation(64, Animation.FOREVER, spriteSheet.toadTiles, new int[]{9,10,11,10});
-        run_right = new Animation(64, Animation.FOREVER, spriteSheet.toadTiles, new int[]{36,35,34,35});
+        run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, new int[]{9,10,11,10});
+        run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, new int[]{36,35,34,35});
 
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -94,7 +92,7 @@ public class Toad extends Thing {
 
         updateHitBox();
 
-        camera.drawBitmap(spriteSheet.toad, a.rect(), hitBox);
+        camera.drawSprite(a, hitBox);
     }
 
     private void updateHitBox() {

@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.ieb.toad.sprite.Animation;
+
 import org.jetbrains.annotations.NotNull;
 
 /** Helper to draw on a canvas with an offset */
@@ -76,5 +78,18 @@ public class Camera {
 
     public void setARGB(int a, int r, int g, int b) {
         paint.setARGB(a,r,g,b);
+    }
+
+    public void drawSprite(Animation a, Rect dst) {
+        box.set(dst.left - dx, dst.top - dy, dst.right - dx, dst.bottom - dy);
+
+        // skip if offscreen
+        if (box.right < 0 || box.left > width) return;
+        if (box.top < 0 || box.bottom > height) return;
+
+        // TODO: Support different sized tiles -- centre and baseline rather than fit to box.
+
+        drawCount++;
+        canvas.drawBitmap(a.bitmap(), a.rect(), box, null);
     }
 }

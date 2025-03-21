@@ -2,7 +2,7 @@ package com.ieb.toad.world;
 
 import com.ieb.toad.Main;
 import com.ieb.toad.sprite.Shy;
-import com.ieb.toad.sprite.SpriteSheet;
+import com.ieb.toad.sprite.SpriteSheetManager;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
@@ -27,10 +27,10 @@ public class Level {
     private final List<Constraint> constraints; // TODO: better structure for larger levels
     private final Simulator simulator;
     private final PointThing sampleThing; // Used for hit detection
-    private final SpriteSheet spriteSheet;
+    private final SpriteSheetManager spriteSheetManager;
 
     public Level(Main context) throws IOException {
-        spriteSheet = new SpriteSheet(context);
+        spriteSheetManager = new SpriteSheetManager(context);
         simulator = new Simulator(this);
         sampleThing = new PointThing();
 
@@ -38,11 +38,11 @@ public class Level {
         things = new ArrayList<>();
         constraints = new ArrayList<>();
 
-        things.add(new Toad(spriteSheet));
+        things.add(new Toad(spriteSheetManager));
         things.get(0).px = 100;
         things.get(0).py = 600;
 
-        things.add(new Shy(spriteSheet));
+        things.add(new Shy(spriteSheetManager));
         things.get(1).px = 500;
         things.get(1).py = 750;
 
