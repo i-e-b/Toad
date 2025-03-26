@@ -1,5 +1,6 @@
 package com.ieb.toad.world.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +38,8 @@ public class Simulator {
 
     /** Count of iterations since last 'think' round */
     private int thinkTrigger = 0;
+
+    private final List<Constraint> brokenConstraints = new ArrayList<>(16);
 
     public Simulator(SimulationManager level) {
         this.level = level;
@@ -93,8 +96,15 @@ public class Simulator {
             // Apply all constraints
             for (int ci = 0; ci < constraints.size(); ci++){
                 Constraint c = constraints.get(ci);
-                c.apply();
+                if (c.apply() == Constraint.BROKEN){
+                    brokenConstraints.add(c);
+                }
             }
+
+            for (Constraint bc : brokenConstraints) {
+                level.removeConstraint(bc);
+            }
+            brokenConstraints.clear();
 
             // Do think round if triggered
             if (thinkTrigger++ > 9){

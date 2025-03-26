@@ -46,22 +46,22 @@ public abstract class Thing {
     public double vy;
 
     /** X acceleration of the object */
-    protected double ax;
+    public double ax;
 
     /** Y acceleration of the object */
-    protected double ay;
+    public double ay;
 
     /** X acceleration last iteration */
-    public double a0x;
+    protected double a0x;
 
     /** Y acceleration last iteration */
-    public double a0y;
+    protected double a0y;
 
     /** List of constraints linked to this Thing.
      * This is for reference; constraints are applied from the Simulator
      * using the level's complete constraint list.
      */
-    List<Constraint> constraints;
+    protected List<Constraint> constraints;
 
     /** Render this thing */
     public abstract void draw(@NotNull Camera camera);

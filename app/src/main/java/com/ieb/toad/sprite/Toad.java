@@ -4,7 +4,7 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
-import com.ieb.toad.world.constraints.FixedLength;
+import com.ieb.toad.world.constraints.VerticalSpring;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
@@ -35,12 +35,13 @@ public class Toad extends Thing {
     /** User control is done during AI think time */
     @Override
     public void think(SimulationManager level, int ms) {
+        ax = ay = 0;
         // apply control
         mapControls();
-        applyControlsToPhysics(ms);
+        applyControlsToPhysics(level, ms);
     }
 
-    private void applyControlsToPhysics(int ms) {
+    private void applyControlsToPhysics(SimulationManager level, int ms) {
         if (btnRight) {
             addPlayerSpeed(50, 0);
             desireDirection = 1;
@@ -51,12 +52,19 @@ public class Toad extends Thing {
         }
 
         if (btnUp){
-            if (jumpTimeLeftMs > 0){
+            if (anyConstraints()){ // assume it's a standing-constraint for now. TODO: be more specific
+                level.removeConstraint(this.constraints.get(0));
+                jumpTimeLeftMs = 300;
+            }
+            if (jumpTimeLeftMs > 0 && !jumpUsed){
                 jumpTimeLeftMs -= ms;
                 vy = -900;
+            } else {
+                jumpUsed = true;
             }
         } else {
-            jumpTimeLeftMs = 300;
+            if (jumpTimeLeftMs > 0) jumpTimeLeftMs -= 30; // Coyote time. TODO: base on ground constraint?
+            jumpUsed = false;
         }
     }
 
@@ -74,7 +82,7 @@ public class Toad extends Thing {
         vx += dx;
     }
 
-    private boolean btnAction, btnUp, btnDown, btnRight, btnLeft;
+    private boolean btnAction, btnUp, btnDown, btnRight, btnLeft, jumpUsed;
 
     @Override
     public void draw(@NotNull Camera camera) {
@@ -96,19 +104,14 @@ public class Toad extends Thing {
         if (!impacted) return;
 
         if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
-            /*
-            // quick and dirty: apply creep's speed:
-            if (this.canLandOnTop(other)){
-                px = other.px;
-                vy = other.vy;
-            }*/
-            // quick and dirty 2: add a constraint if none already
+            // quick and dirty: add a constraint if none already
             if (!anyConstraints() && this.canLandOnTop(other)){
-                double length = this.radius+other.radius;
-                level.addConstraint(new FixedLength(this, other, length));
+                vx = other.vx; // match speed for easy landing
+                level.addConstraint(new VerticalSpring(this, other, 16));
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
             // restore jump?
+            if (this.canLandOnTop(other)) jumpTimeLeftMs = 300;
         }
     }
 }
