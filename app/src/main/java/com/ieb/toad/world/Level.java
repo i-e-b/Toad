@@ -34,7 +34,7 @@ public class Level {
         simulator = new Simulator(this);
         sampleThing = new PointThing();
 
-        // TODO: text-to-level, like in Minikoban.
+        // TODO: text-to-level, like in Minikoban?
         things = new ArrayList<>();
         constraints = new ArrayList<>();
 
@@ -46,10 +46,10 @@ public class Level {
         things.get(1).px = 500;
         things.get(1).py = 750;
 
-        things.add(new Platform(0, 500, 1000, 16));
-        things.add(new Platform(0, 500, 16, 800));
-        things.add(new Platform(0, 1300, 2000, 16));
-        things.add(new Platform(1000, 500, 16, 800));
+        things.add(new Platform(0, 500, 2000, 16)); // top
+        things.add(new Platform(0, 500, 16, 800)); // left
+        things.add(new Platform(0, 1300, 2000, 16)); // bottom
+        things.add(new Platform(1984, 500, 16, 800)); // right
 
         things.add(new OneWayPlatform(0, 800, 128, 16));
         things.add(new OneWayPlatform(0, 1000, 128, 16));

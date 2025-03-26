@@ -9,6 +9,10 @@ import com.ieb.toad.world.core.Thing;
 import org.jetbrains.annotations.NotNull;
 
 public class Platform extends Thing {
+
+    /** Hit box relative to the world */
+    public Rect hitBox;
+
     public Platform(int left, int top, int width, int height) {
         hitBox = new Rect(left, top, left+width, top+height);
         type = Collision.WALL;

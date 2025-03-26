@@ -10,6 +10,9 @@ public class Animation {
     public static final int FOREVER = -1;
     public static final int ONCE = 1;
 
+    /** sprite scale. Defaults to 4x */
+    public int scale = 4;
+
     private final SpriteSheet sheet; // reference to sprite sheet image
     private final int flip; // bitmap to use. See sprite.core.Flip
     private final Rect[] src; // rectangles relative to the sprite sheet texture.

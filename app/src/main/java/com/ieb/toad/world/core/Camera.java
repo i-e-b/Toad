@@ -80,14 +80,45 @@ public class Camera {
         paint.setARGB(a,r,g,b);
     }
 
+    /** Draw an animation sprite over a rectangle.
+     * The sprite will be centred horizontally, and aligned to
+     * the baseline of dst. The sprite may be larger or smaller than dest.*/
     public void drawSprite(Animation a, Rect dst) {
-        box.set(dst.left - dx, dst.top - dy, dst.right - dx, dst.bottom - dy);
+        Rect src = a.rect();
+
+        int w = src.width() * a.scale;
+        int hw = w / 2;
+        int cx = dst.centerX();
+        int left = cx - hw;
+        int h = src.height() * a.scale;
+
+        box.set(left - dx, dst.bottom - h - dy, left - dx + w, dst.bottom - dy);
 
         // skip if offscreen
         if (box.right < 0 || box.left > width) return;
         if (box.top < 0 || box.bottom > height) return;
 
-        // TODO: Support different sized tiles -- centre and baseline rather than fit to box.
+        drawCount++;
+        canvas.drawBitmap(a.bitmap(), a.rect(), box, null);
+    }
+
+    /** Draw an animation sprite over a circle.
+     * The sprite will be centred horizontally, and aligned to
+     * the baseline. The sprite may be larger or smaller than the circle.*/
+    public void drawSprite(Animation a, double px, double py, double radius) {
+        Rect src = a.rect();
+
+        int w = src.width() * a.scale;
+        int hw = (int)radius;
+        int left = (int)(px - hw);
+        int h = src.height() * a.scale;
+        int b = (int)(py+radius);
+
+        box.set(left - dx, b - h - dy, left - dx + w, b - dy);
+
+        // skip if offscreen
+        if (box.right < 0 || box.left > width) return;
+        if (box.top < 0 || box.bottom > height) return;
 
         drawCount++;
         canvas.drawBitmap(a.bitmap(), a.rect(), box, null);

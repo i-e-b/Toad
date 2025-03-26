@@ -1,7 +1,5 @@
 package com.ieb.toad.world.core;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.world.Level;
 
 import org.jetbrains.annotations.NotNull;
@@ -9,9 +7,6 @@ import org.jetbrains.annotations.NotNull;
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
 public abstract class Thing {
-
-    /** Hit box relative to the world */
-    public Rect hitBox;
 
     /** Type of this thing. Should be one of `world.Collision` */
     public int type;

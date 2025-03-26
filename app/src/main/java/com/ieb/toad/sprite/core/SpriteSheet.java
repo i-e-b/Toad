@@ -29,11 +29,9 @@ public class SpriteSheet {
 
         bitmap[Flip.Both] = bitmap[Flip.Vert].copy(bitmapConfig, true);
         flipTilesHorz(bitmap[Flip.Both]);
-
-        //Canvas canvas = new Canvas(bitmap[Flip.Horz]);
     }
 
-    private void flipTilesHorz(Bitmap bmp) {
+    private void flipTilesHorz(Bitmap bmp) { // TODO: optimise this after it's fully working
         for (Rect tile : tiles) { // each tile
             for (int y = tile.top; y <= tile.bottom; y++){ // each row
                 int xr = tile.right;
@@ -48,7 +46,7 @@ public class SpriteSheet {
         }
     }
 
-    private void flipTilesVert(Bitmap bmp) {
+    private void flipTilesVert(Bitmap bmp) { // TODO: optimise this after it's fully working
         for (Rect tile : tiles) { // each tile
             for (int x = tile.left; x <= tile.right; x++){ // each column
                 int yb = tile.bottom;
@@ -62,9 +60,4 @@ public class SpriteSheet {
             }
         }
     }
-
-    // TODO: Pre-calculate flipped versions of each tile
-    //
-    // https://stackoverflow.com/questions/4160149/how-to-draw-on-bitmap-in-android
-    // https://www.skoumal.com/en/android-how-to-draw-text-on-a-bitmap/
 }

@@ -47,6 +47,8 @@ public class SpriteSheetManager {
         //Bitmap stuffImg = BitmapFactory.decodeStream(stuffFile, hitBox, options);
         //stuffFile.close();
 
+        if (toadImg == null || dudeImg == null) throw new IOException("Failed to load asset images");
+
         // Find tiles in the bitmaps
         List<Rect> toadTiles = findTiles(toadImg);
         List<Rect> dudeTiles = findTiles(dudeImg);

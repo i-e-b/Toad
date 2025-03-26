@@ -10,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConveyorPlatform extends Thing {
 
+    /** Hit box relative to the world */
+    public Rect hitBox;
+
     private final double speed;
 
     public ConveyorPlatform(int left, int top, int width, int height, double speed) {

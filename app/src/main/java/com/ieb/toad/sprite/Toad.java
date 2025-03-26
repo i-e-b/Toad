@@ -2,7 +2,6 @@ package com.ieb.toad.sprite;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 
 import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
@@ -30,12 +29,11 @@ public class Toad extends Thing {
         run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
         run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9,10,11,10});
 
-        hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         type = Collision.PLAYER;
-        radius = 32;
+        radius = 30;
         gravity = 1.0; // fully affected by gravity
     }
 
@@ -90,18 +88,8 @@ public class Toad extends Thing {
         lastFramePx = px;
 
         Animation a = desireDirection > 0 ? run_right : run_left;
-
         a.advance((int) dx); // animate based on movement
 
-        updateHitBox();
-
-        camera.drawSprite(a, hitBox);
-    }
-
-    private void updateHitBox() {
-        hitBox.bottom = (int) ((int) py + radius);
-        hitBox.top = hitBox.bottom - (28 * 4);
-        hitBox.left = (int) px - (int) radius;
-        hitBox.right = (int) px + (int) radius;
+        camera.drawSprite(a, px, py, radius);
     }
 }

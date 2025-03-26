@@ -10,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class LifterPlatform extends Thing {
 
+    /** Hit box relative to the world */
+    public Rect hitBox;
+
     private final double speed;
 
     public LifterPlatform(int left, int top, int width, int height, double speed) {

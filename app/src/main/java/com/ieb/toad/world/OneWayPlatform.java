@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 /** Platform that is only solid from the top */
 public class OneWayPlatform extends Thing {
+
+    /** Hit box relative to the world */
+    public Rect hitBox;
+
     public OneWayPlatform(int left, int top, int width, int height) {
         hitBox = new Rect(left, top, left+width, top+height);
         type = Collision.WALL;

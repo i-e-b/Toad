@@ -2,7 +2,6 @@ package com.ieb.toad.sprite;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
@@ -30,12 +29,11 @@ public class Shy extends Thing {
         left = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.None, new int[]{0,1});
         right = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.Horz, new int[]{0,1});
 
-        hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         type = Collision.CREEP;
-        radius = 32;
+        radius = 30;
         mass = 0.8;
         gravity = 1.0; // fully affected by gravity
     }
@@ -62,11 +60,12 @@ public class Shy extends Thing {
 
         anim.advance((int) dx); // animate based on movement
 
-        hitBox.bottom = (int) ((int) py + radius);
+        /*hitBox.bottom = (int) ((int) py + radius);
         hitBox.top = hitBox.bottom - (16 * 4);
         hitBox.left = (int) px - (int) radius;
         hitBox.right = (int) px + (int) radius;
 
-        camera.drawSprite(anim, hitBox);
+        camera.drawSprite(anim, hitBox);*/
+        camera.drawSprite(anim, px, py, radius);
     }
 }
