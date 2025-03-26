@@ -6,8 +6,13 @@ import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
+import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Simulator;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.platforms.ConveyorPlatform;
+import com.ieb.toad.world.platforms.LifterPlatform;
+import com.ieb.toad.world.platforms.OneWayPlatform;
+import com.ieb.toad.world.platforms.Platform;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +23,7 @@ import java.util.List;
 /**
  * A level with walls, creeps, and a player
  */
-public class Level {
+public class Level implements SimulationManager {
 
     /**
      * Set of things for the level
@@ -104,5 +109,16 @@ public class Level {
             if (hit) hits = hits | obj.type;
         }
         return hits;
+    }
+
+    @Override
+    public void addConstraint(Constraint c) {
+        constraints.add(c);
+    }
+
+    @Override
+    public void removeConstraint(Constraint c) {
+        c.unlink();
+        constraints.remove(c);
     }
 }

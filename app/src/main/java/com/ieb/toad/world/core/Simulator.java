@@ -1,7 +1,5 @@
 package com.ieb.toad.world.core;
 
-import com.ieb.toad.world.Level;
-
 import java.util.List;
 
 /**
@@ -35,12 +33,12 @@ public class Simulator {
     public static final double gravity = 2500.0;
 
     /** Container for objects in the simulation */
-    private final Level level;
+    private final SimulationManager level;
 
     /** Count of iterations since last 'think' round */
     private int thinkTrigger = 0;
 
-    public Simulator(Level level) {
+    public Simulator(SimulationManager level) {
         this.level = level;
     }
 
@@ -133,7 +131,7 @@ public class Simulator {
             self.preImpactTest(other);
 
             boolean impacted = false;
-            if (other.radius>0 && self.radius > 0) {
+            if (other.radius > 0 && self.radius > 0) {
                 double time = impactTime(self, other);
 
                 if (time < 0) { // objects are overlapping
@@ -149,8 +147,8 @@ public class Simulator {
             self.postImpactTest();
             other.postImpactTest();
 
-            self.impactResolve(other, impacted);
-            other.impactResolve(self, impacted);
+            self.impactResolve(level, other, impacted);
+            other.impactResolve(level, self, impacted);
         }
     }
 

@@ -1,9 +1,10 @@
-package com.ieb.toad.world;
+package com.ieb.toad.world.platforms;
 
 import android.graphics.Rect;
 
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,7 @@ public class OneWayPlatform extends Thing {
     }
 
     @Override
-    public void think(Level level, int ms) {}
+    public void think(SimulationManager level, int ms) {}
 
     @Override
     public void draw(@NotNull Camera camera) {

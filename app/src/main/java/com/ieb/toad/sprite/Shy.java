@@ -8,7 +8,7 @@ import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
-import com.ieb.toad.world.Level;
+import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class Shy extends Thing {
     }
 
     @Override
-    public void think(Level level, int ms) {
+    public void think(SimulationManager level, int ms) {
         // Switch direction if facing wall.
         var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
         if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;

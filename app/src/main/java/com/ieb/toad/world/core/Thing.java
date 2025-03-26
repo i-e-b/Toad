@@ -1,8 +1,11 @@
 package com.ieb.toad.world.core;
 
-import com.ieb.toad.world.Level;
+import com.ieb.toad.world.constraints.FixedLength;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
@@ -54,11 +57,17 @@ public abstract class Thing {
     /** Y acceleration last iteration */
     public double a0y;
 
+    /** List of constraints linked to this Thing.
+     * This is for reference; constraints are applied from the Simulator
+     * using the level's complete constraint list.
+     */
+    List<Constraint> constraints;
+
     /** Render this thing */
     public abstract void draw(@NotNull Camera camera);
 
     /** Perform any AI functions. This is called once per 10 physics frames */
-    public abstract void think(Level level, int ms);
+    public abstract void think(SimulationManager level, int ms);
 
     /**
      * Do any updates before an impact is tested and resolved.
@@ -82,7 +91,7 @@ public abstract class Thing {
      * @param other    a nearby object
      * @param impacted `true` if this and other made contact
      */
-    public void impactResolve(Thing other, boolean impacted) {
+    public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
     }
 
 
@@ -105,4 +114,22 @@ public abstract class Thing {
     public double right(){return px + radius;}
     /** left most edge */
     public double left(){return px - radius;}
+
+    /** Link a constraint to this Thing, for use with tracking */
+    public void linkConstraint(Constraint c) {
+        if (constraints == null) constraints = new ArrayList<>(4);
+        constraints.add(c);
+    }
+
+    /** Remove a link to a constraint to this Thing, for use with tracking */
+    public void unlinkConstraint(Constraint c) {
+        if (constraints == null) return;
+        constraints.remove(c);
+    }
+
+    /** Returns true if there are any constraints linked to this thing */
+    public boolean anyConstraints(){
+        if (constraints == null) return false;
+        return !constraints.isEmpty();
+    }
 }

@@ -1,15 +1,13 @@
 package com.ieb.toad.sprite;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.constraints.FixedLength;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
-import com.ieb.toad.world.Level;
+import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +34,7 @@ public class Toad extends Thing {
 
     /** User control is done during AI think time */
     @Override
-    public void think(Level level, int ms) {
+    public void think(SimulationManager level, int ms) {
         // apply control
         mapControls();
         applyControlsToPhysics(ms);
@@ -94,14 +92,20 @@ public class Toad extends Thing {
      * @param impacted true if there was an impact
      */
     @Override
-    public void impactResolve(Thing other, boolean impacted) {
+    public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
         if (!impacted) return;
 
         if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
+            /*
             // quick and dirty: apply creep's speed:
             if (this.canLandOnTop(other)){
                 px = other.px;
                 vy = other.vy;
+            }*/
+            // quick and dirty 2: add a constraint if none already
+            if (!anyConstraints() && this.canLandOnTop(other)){
+                double length = this.radius+other.radius;
+                level.addConstraint(new FixedLength(this, other, length));
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
             // restore jump?

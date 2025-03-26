@@ -1,37 +1,35 @@
-package com.ieb.toad.world;
+package com.ieb.toad.world.platforms;
 
 import android.graphics.Rect;
 
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
-public class LifterPlatform extends Thing {
+public class Platform extends Thing {
 
     /** Hit box relative to the world */
     public Rect hitBox;
 
-    private final double speed;
-
-    public LifterPlatform(int left, int top, int width, int height, double speed) {
+    public Platform(int left, int top, int width, int height) {
         hitBox = new Rect(left, top, left+width, top+height);
-        this.speed = speed;
-        type = Collision.WALL; // so creeps will walk through lifters
-        mass = 100;
+        type = Collision.WALL;
+        mass = 10;
         radius = -1; // only the target of collision
-        elasticity = 0.1;
+        elasticity = 0.2;
         drag = 1.0; // no movement
         gravity = 0.0; // float in space
     }
 
     @Override
-    public void think(Level level, int ms) {}
+    public void think(SimulationManager level, int ms) {}
 
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.setARGB(200, 100,120, 200);
+        camera.setARGB(200, 0,128, 0);
         camera.drawRect(hitBox);
     }
 
@@ -40,16 +38,13 @@ public class LifterPlatform extends Thing {
         if (other.type == Collision.WALL) return; // don't collide with other walls
 
         // Set radius to make this interactive. Will be reset after impact resolved
-        radius = this.hitBox.width() * 4; // big radius to make falling off less likely
+        radius = 1.0;
 
-        double offsetY = other.py + other.radius + radius - 1; // subtract 1 so we have an overlap to do the pushing
-
-        // Place our collider *under* other's circle, in the middle of our hit-box
-        px = hitBox.left + (hitBox.width() / 2.0);
-        py = clamp(offsetY, hitBox.top + radius, hitBox.bottom + radius);
-
-        // set velocity up to bump the player
-        vy = -speed;
+        // Find the closest point to the circle within the rectangle
+        px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
+        py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
+        vx = other.px - px;
+        vy = other.py - py;
     }
 
     @Override
