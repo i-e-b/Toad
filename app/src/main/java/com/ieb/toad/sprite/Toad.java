@@ -88,7 +88,7 @@ public class Toad extends Thing {
         lastFramePx = px;
 
         Animation a = desireDirection > 0 ? run_right : run_left;
-        a.advance((int) dx); // animate based on movement
+        a.advance(dx); // animate based on movement
 
         camera.drawSprite(a, px, py, radius);
     }

@@ -21,11 +21,11 @@ public class Shy extends Thing {
 
     private int desireDirection = -1; // negative = left, positive = right.
 
-    private final int speed = 1200, accel = 5000;
+    public final int SPEED = 1200, ACCEL = 5000;
+    private double oldPx; // px value to restore after collision
 
     /** Load Toad graphics */
     public Shy(final SpriteSheetManager spriteSheetManager) {
-
         left = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.None, new int[]{0,1});
         right = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.Horz, new int[]{0,1});
 
@@ -45,9 +45,9 @@ public class Shy extends Thing {
         if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;
 
         if (desireDirection < 0){ // left
-            if (vx > -speed) a0x = -accel;
+            if (vx > -SPEED) a0x = -ACCEL;
         } else { // right
-            if (vx < speed) a0x = accel;
+            if (vx < SPEED) a0x = ACCEL;
         }
     }
 
@@ -57,15 +57,29 @@ public class Shy extends Thing {
         lastFramePx = px;
 
         Animation anim = desireDirection > 0 ? right : left;
+        anim.advance(dx); // animate based on movement
 
-        anim.advance((int) dx); // animate based on movement
-
-        /*hitBox.bottom = (int) ((int) py + radius);
-        hitBox.top = hitBox.bottom - (16 * 4);
-        hitBox.left = (int) px - (int) radius;
-        hitBox.right = (int) px + (int) radius;
-
-        camera.drawSprite(anim, hitBox);*/
         camera.drawSprite(anim, px, py, radius);
+    }
+
+    private boolean restore = false;
+    @Override
+    public void preImpactTest(Thing other) {
+        if (other.type != Collision.PLAYER) return; // normal collision for anything but a player
+        if ((other.py+other.radius-1) > (py-radius+1)) return; // normal collision if player is not above us
+        if (other.vy - vy < 0) return; // normal collision if player going up
+
+        // Player is above us. adjust px to make it easy to stand on top
+        restore = true;
+        oldPx = px;
+        px = clamp(other.px, px-radius, px+radius);
+    }
+
+    @Override
+    public void postImpactResolve(Thing other, boolean impacted) {
+        if (restore){
+            px = oldPx;
+            restore = false;
+        }
     }
 }

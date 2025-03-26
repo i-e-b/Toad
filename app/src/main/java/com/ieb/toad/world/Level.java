@@ -55,6 +55,7 @@ public class Level {
         things.add(new OneWayPlatform(0, 1000, 128, 16));
 
         things.add(new ConveyorPlatform(450, 800, 350, 16, -6.0));
+        things.add(new ConveyorPlatform(350, 1000, 350, 16, 10.0));
 
         things.add(new LifterPlatform(890, 1000, 32, 300, 700.0));
         things.add(new OneWayPlatform(850, 980, 112, 16));

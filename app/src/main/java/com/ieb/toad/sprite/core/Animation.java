@@ -20,7 +20,7 @@ public class Animation {
     private final int frameCount;
 
     private int loops;
-    private int frameDur;
+    private double frameDur;
     private int frameIdx;
 
     /** Generate frames on a row of the texture, with a single frame time
@@ -54,8 +54,8 @@ public class Animation {
         return loops < 1;
     }
 
-    public void advance(long ms) {
-        frameDur += (int) ms;
+    public void advance(double ms) {
+        frameDur += ms;
         while (frameDur > time[frameIdx]) {
             frameDur -= time[frameIdx];
             frameIdx++;

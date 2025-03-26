@@ -41,16 +41,19 @@ public class FirstScreen extends BaseView {
         this.setBackgroundColor(0xFF000000);
     }
 
+    /** Action on timer. Does physics and triggered frame draw
+     * @param time system time in milliseconds
+     */
     @Override
-    protected void OnTimerTick(){
+    protected void OnTimerTick(long time){
         if (frameActive) return;
 
         // Do frame logic, call invalidate
         frameActive = true;
-
-        long time = System.currentTimeMillis();
+        if (lastPhysicsTimeMs > time) lastPhysicsTimeMs = time; // clock wrapped. Shouldn't really happen.
 
         if (physicsFrameCount > 1){
+            // Do simulation
             lastPhysicsTimeMs += level.stepMillis(time - lastPhysicsTimeMs);
         } else {
             lastPhysicsTimeMs = time;
@@ -93,7 +96,7 @@ public class FirstScreen extends BaseView {
         int dc = camera.getCount();
         mPaint.setARGB(120,0,255,255);
         Os.setSize(mPaint, 50);
-        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; d="+frameMs+"; dc="+dc+";", 10.0f, lastHeight - 80.0f, mPaint);
+        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+";", 10.0f, lastHeight - 80.0f, mPaint);
     }
 }
 
