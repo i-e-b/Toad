@@ -5,6 +5,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 import com.ieb.toad.input.VirtualGamepad;
+import com.ieb.toad.sprite.core.Animation;
+import com.ieb.toad.sprite.core.Flip;
+import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.Level;
@@ -24,8 +27,8 @@ public class Toad extends Thing {
     /** Load Toad graphics */
     public Toad(final SpriteSheetManager spriteSheetManager) {
 
-        run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, new int[]{9,10,11,10});
-        run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, new int[]{36,35,34,35});
+        run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
+        run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9,10,11,10});
 
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();

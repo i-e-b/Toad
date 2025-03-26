@@ -2,7 +2,7 @@ package com.ieb.toad.world;
 
 import com.ieb.toad.Main;
 import com.ieb.toad.sprite.Shy;
-import com.ieb.toad.sprite.SpriteSheetManager;
+import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;

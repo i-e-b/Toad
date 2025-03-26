@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.ieb.toad.sprite.core.Animation;
+import com.ieb.toad.sprite.core.Flip;
+import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.Level;
@@ -24,8 +27,8 @@ public class Shy extends Thing {
     /** Load Toad graphics */
     public Shy(final SpriteSheetManager spriteSheetManager) {
 
-        left = new Animation(64, Animation.FOREVER, spriteSheetManager.dude, new int[]{0,1});
-        right = new Animation(64, Animation.FOREVER, spriteSheetManager.dude, new int[]{0,1});
+        left = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.None, new int[]{0,1});
+        right = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.Horz, new int[]{0,1});
 
         hitBox = new Rect(0,0,0,0);
         BitmapFactory.Options options = new BitmapFactory.Options();

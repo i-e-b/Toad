@@ -1,4 +1,4 @@
-package com.ieb.toad.sprite;
+package com.ieb.toad.sprite.core;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -19,11 +19,6 @@ public class SpriteSheetManager {
 
     public final SpriteSheet toad, dude;
 
-    //public final Bitmap toad, dude, stuff;
-
-    //public final List<Rect> toadTiles = new ArrayList<>();
-    //public final List<Rect> dudeTiles = new ArrayList<>();
-
     // We slice up the input image into tiles using a start and stop pixel.
     // The start pixel is (magenta, #FF00FF RGB). The top-left pixel of the tile
     // is the bottom-right neighbor of the start pixel (start pixel is
@@ -31,12 +26,6 @@ public class SpriteSheetManager {
     // We then scan the tile until we find a stop pixel (cyan, #00FFFF RGB)
     // The bottom-right pixel of the tile is the top-left neighbour of
     // the stop pixel (stop pixel is NOT part of the tile).
-
-    // TODO: Auto-chop the tiles (maybe with a #F0F pixel and #0FF)
-    // TODO: Pre-calculate flipped versions of each tile
-    //
-    // https://stackoverflow.com/questions/4160149/how-to-draw-on-bitmap-in-android
-    // https://www.skoumal.com/en/android-how-to-draw-text-on-a-bitmap/
 
     /** Prepare for loading graphics */
     public SpriteSheetManager(final Main context) throws IOException {

@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.ieb.toad.sprite.Animation;
+import com.ieb.toad.sprite.core.Animation;
 
 import org.jetbrains.annotations.NotNull;
 
