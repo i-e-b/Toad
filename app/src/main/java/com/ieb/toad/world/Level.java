@@ -99,7 +99,7 @@ public class Level {
 
             obj.preImpactTest(sampleThing);
             boolean hit = simulator.hitTest(sampleThing, obj);
-            obj.postImpactResolve(sampleThing, false);
+            obj.postImpactTest();
 
             if (hit) hits = hits | obj.type;
         }

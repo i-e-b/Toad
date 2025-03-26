@@ -53,7 +53,7 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public void postImpactResolve(Thing other, boolean impacted) {
+    public void postImpactTest() {
         radius = -1.0;
     }
 }

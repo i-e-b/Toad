@@ -25,12 +25,8 @@ public class Toad extends Thing {
 
     /** Load Toad graphics */
     public Toad(final SpriteSheetManager spriteSheetManager) {
-
         run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
         run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9,10,11,10});
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         type = Collision.PLAYER;
         radius = 30;
@@ -91,5 +87,24 @@ public class Toad extends Thing {
         a.advance(dx); // animate based on movement
 
         camera.drawSprite(a, px, py, radius);
+    }
+
+    /** Handle collisions with things.
+     * @param other thing we might have touched.
+     * @param impacted true if there was an impact
+     */
+    @Override
+    public void impactResolve(Thing other, boolean impacted) {
+        if (!impacted) return;
+
+        if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
+            // quick and dirty: apply creep's speed:
+            if (this.canLandOnTop(other)){
+                px = other.px;
+                vy = other.vy;
+            }
+        } else if (other.type == Collision.WALL) { // we might be standing on a floor
+            // restore jump?
+        }
     }
 }

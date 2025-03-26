@@ -146,8 +146,11 @@ public class Simulator {
                 }
             }
 
-            other.postImpactResolve(self, impacted);
-            self.postImpactResolve(other, impacted);
+            self.postImpactTest();
+            other.postImpactTest();
+
+            self.impactResolve(other, impacted);
+            other.impactResolve(self, impacted);
         }
     }
 

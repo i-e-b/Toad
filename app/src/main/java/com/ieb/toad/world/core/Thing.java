@@ -69,18 +69,40 @@ public abstract class Thing {
     }
 
     /**
-     * Do any updates after an impact is tested and resolved.
+     * You should reset any virtual changes made in `preImpactTest` here.
+     */
+    public void postImpactTest() {
+    }
+
+    /**
+     * Do any updates after an impact is detected
      * This allows updates based on virtual impact point for complex shapes.
-     * You should reset any virtual changes here.
+     * This is called even if no impact took place.
      *
      * @param other    a nearby object
      * @param impacted `true` if this and other made contact
      */
-    public void postImpactResolve(Thing other, boolean impacted) {
+    public void impactResolve(Thing other, boolean impacted) {
     }
 
 
     protected double clamp(double v, double min, double max) {
         return Math.min(Math.max(v, min), max);
     }
+
+
+    /** Returns true only if this thing COULD land on the other */
+    public boolean canLandOnTop(Thing other){
+        return !((this.py + this.radius - 1) > (other.py - other.radius + 1)); // must be above
+        //return !(this.vy - other.vy < 0); // true if going down relative to other
+    }
+
+    /** bottom most edge */
+    public double bottom(){return py + radius;}
+    /** top most edge */
+    public double top(){return py - radius;}
+    /** right most edge */
+    public double right(){return px + radius;}
+    /** left most edge */
+    public double left(){return px - radius;}
 }

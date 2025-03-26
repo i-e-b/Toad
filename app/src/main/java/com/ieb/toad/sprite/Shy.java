@@ -22,7 +22,7 @@ public class Shy extends Thing {
     private int desireDirection = -1; // negative = left, positive = right.
 
     public final int SPEED = 1200, ACCEL = 5000;
-    private double oldPx; // px value to restore after collision
+    private double dpx; // px value to restore after collision
 
     /** Load Toad graphics */
     public Shy(final SpriteSheetManager spriteSheetManager) {
@@ -62,24 +62,20 @@ public class Shy extends Thing {
         camera.drawSprite(anim, px, py, radius);
     }
 
-    private boolean restore = false;
     @Override
     public void preImpactTest(Thing other) {
+        dpx = 0;
         if (other.type != Collision.PLAYER) return; // normal collision for anything but a player
-        if ((other.py+other.radius-1) > (py-radius+1)) return; // normal collision if player is not above us
-        if (other.vy - vy < 0) return; // normal collision if player going up
+        if (!other.canLandOnTop(this)) return;
 
         // Player is above us. adjust px to make it easy to stand on top
-        restore = true;
-        oldPx = px;
+        dpx = px;
         px = clamp(other.px, px-radius, px+radius);
+        dpx -= px;
     }
 
     @Override
-    public void postImpactResolve(Thing other, boolean impacted) {
-        if (restore){
-            px = oldPx;
-            restore = false;
-        }
+    public void postImpactTest() {
+        px += dpx;
     }
 }
