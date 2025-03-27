@@ -34,11 +34,12 @@ public class Toad extends Thing {
 
     /** User control is done during AI think time */
     @Override
-    public void think(SimulationManager level, int ms) {
+    public int think(SimulationManager level, int ms) {
         ax = ay = 0;
         // apply control
         mapControls();
         applyControlsToPhysics(level, ms);
+        return KEEP;
     }
 
     private void applyControlsToPhysics(SimulationManager level, int ms) {

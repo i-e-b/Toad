@@ -15,7 +15,6 @@ import java.io.IOException;
 @SuppressLint("ViewConstructor")
 public class FirstScreen extends BaseView {
     private final Paint mPaint = new Paint();
-    private final Main main;
     private final Camera camera;
 
     private boolean frameActive;
@@ -24,11 +23,9 @@ public class FirstScreen extends BaseView {
     private double totalSeconds;
 
     private final Level level;
-    private int lastHeight, lastWidth; // dimensions of screen last time we did a paint.
 
     public FirstScreen(final Main context) throws IOException {
         super(context);
-        this.main = context;
         frameActive = false;
         camera = new Camera();
 
@@ -66,9 +63,10 @@ public class FirstScreen extends BaseView {
 
     @Override
     public void onDraw(@NotNull final Canvas canvas) {
-        lastWidth = getWidth();
-        lastHeight = getHeight();
-        VirtualGamepad.setTouchSize(lastWidth, lastHeight);
+        // dimensions of screen last time we did a paint.
+        int width = getWidth();
+        int height = getHeight();
+        VirtualGamepad.setTouchSize(width, height);
 
         if (frameActive) {
             mPaint.setARGB(255, 255, 0, 0);
@@ -89,14 +87,15 @@ public class FirstScreen extends BaseView {
 
         camera.resetCount();
         camera.use(canvas);
-        level.Draw(camera, lastWidth, lastHeight, (int)frameMs);
+        level.Draw(camera, width, height, (int)frameMs);
 
-        VirtualGamepad.draw(canvas, mPaint, lastWidth);
+        VirtualGamepad.draw(canvas, mPaint, width);
 
         int dc = camera.getCount();
         mPaint.setARGB(120,0,255,255);
         Os.setSize(mPaint, 50);
-        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+";", 10.0f, lastHeight - 80.0f, mPaint);
+        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+"; c="+camera+";",
+                10.0f, height - 80.0f, mPaint);
     }
 }
 

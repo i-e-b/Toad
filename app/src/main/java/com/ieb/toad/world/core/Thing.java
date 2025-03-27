@@ -11,6 +11,12 @@ import java.util.List;
  * Masses are kg, distances are 32px per metre. Time is seconds. */
 public abstract class Thing {
 
+    /** Returned by `think`. This thing should be removed from the simulation */
+    public static final int REMOVE = -1;
+
+    /** Returned by `think`. This thing should remain in the simulation */
+    public static final int KEEP = 0;
+
     /** Type of this thing. Should be one of `world.Collision` */
     public int type;
 
@@ -66,8 +72,9 @@ public abstract class Thing {
     /** Render this thing */
     public abstract void draw(@NotNull Camera camera);
 
-    /** Perform any AI functions. This is called once per 10 physics frames */
-    public abstract void think(SimulationManager level, int ms);
+    /** Perform any AI functions. This is called once per 10 physics frames.
+     * Should return KEEP or REMOVE */
+    public abstract int think(SimulationManager level, int ms);
 
     /**
      * Do any updates before an impact is tested and resolved.
@@ -131,5 +138,10 @@ public abstract class Thing {
     public boolean anyConstraints(){
         if (constraints == null) return false;
         return !constraints.isEmpty();
+    }
+
+    /** Returns list of linked constraints. May be null */
+    public List<Constraint> linkedConstraints() {
+        return constraints;
     }
 }

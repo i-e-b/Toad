@@ -13,10 +13,17 @@ import org.jetbrains.annotations.NotNull;
 public class Camera {
     private Canvas canvas;
     private int dx,dy;
+    private int cx,cy;
     private Rect box;
     private int width, height;
     private int drawCount;
     private final Paint paint = new Paint();
+
+    /** @noinspection NullableProblems*/
+    @Override
+    public String toString() {
+        return "("+cx+","+cy+")";
+    }
 
     /** Set the canvas to draw into */
     public void use(@NotNull Canvas canvas) {
@@ -38,8 +45,10 @@ public class Camera {
 
     /** Set the camera offset */
     public void centreOn(double x, double y) {
-        dx = (int) x - (width / 2);
-        dy = (int) y - (height / 2);
+        cx = (int)x;
+        cy = (int)y;
+        dx = cx - (width / 2);
+        dy = cy - (height / 2);
     }
 
     public void drawRect(Rect rect) {
@@ -109,7 +118,7 @@ public class Camera {
         Rect src = a.rect();
 
         int w = src.width() * a.scale;
-        int hw = (int)radius;
+        int hw = (int)w / 2;
         int left = (int)(px - hw);
         int h = src.height() * a.scale;
         int b = (int)(py+radius);

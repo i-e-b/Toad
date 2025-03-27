@@ -40,6 +40,7 @@ public class Simulator {
     private int thinkTrigger = 0;
 
     private final List<Constraint> brokenConstraints = new ArrayList<>(16);
+    private final List<Thing> deadThings = new ArrayList<>(16);
 
     public Simulator(SimulationManager level) {
         this.level = level;
@@ -96,23 +97,22 @@ public class Simulator {
             // Apply all constraints
             for (int ci = 0; ci < constraints.size(); ci++){
                 Constraint c = constraints.get(ci);
-                if (c.apply() == Constraint.BROKEN){
-                    brokenConstraints.add(c);
-                }
+                if (c.apply() == Constraint.BROKEN) brokenConstraints.add(c);
             }
 
-            for (Constraint bc : brokenConstraints) {
-                level.removeConstraint(bc);
-            }
+            for (Constraint bc : brokenConstraints) level.removeConstraint(bc);
             brokenConstraints.clear();
 
             // Do think round if triggered
             if (thinkTrigger++ > 9){
                 for (int oi = 0; oi < objects.size(); oi++) {
-                    objects.get(oi).think(level, thinkAdv);
+                    if (objects.get(oi).think(level, thinkAdv) == Thing.REMOVE) deadThings.add(objects.get(oi));
                 }
                 thinkTrigger = 0;
             }
+
+            for (Thing dead : deadThings) level.removeThing(dead);
+            deadThings.clear();
         }
         return adv;
     }

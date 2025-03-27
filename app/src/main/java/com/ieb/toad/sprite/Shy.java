@@ -1,8 +1,5 @@
 package com.ieb.toad.sprite;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -25,12 +22,9 @@ public class Shy extends Thing {
     private double dpx; // px value to restore after collision
 
     /** Load Toad graphics */
-    public Shy(final SpriteSheetManager spriteSheetManager) {
-        left = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.None, new int[]{0,1});
-        right = new Animation(16, Animation.FOREVER, spriteSheetManager.dude, Flip.Horz, new int[]{0,1});
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+    public Shy(final SpriteSheetManager sprites) {
+        left = new Animation(16, Animation.FOREVER, sprites.dude, Flip.None, new int[]{0,1});
+        right = new Animation(16, Animation.FOREVER, sprites.dude, Flip.Horz, new int[]{0,1});
 
         type = Collision.CREEP;
         radius = 30;
@@ -39,7 +33,7 @@ public class Shy extends Thing {
     }
 
     @Override
-    public void think(SimulationManager level, int ms) {
+    public int think(SimulationManager level, int ms) {
         // Switch direction if facing wall.
         var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
         if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;
@@ -49,6 +43,7 @@ public class Shy extends Thing {
         } else { // right
             if (vx < SPEED) a0x = ACCEL;
         }
+        return KEEP;
     }
 
     @Override

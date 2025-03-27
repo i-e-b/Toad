@@ -1,6 +1,7 @@
 package com.ieb.toad.world;
 
 import com.ieb.toad.Main;
+import com.ieb.toad.sprite.Coin;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.sprite.Toad;
@@ -50,6 +51,10 @@ public class Level implements SimulationManager {
         things.add(new Shy(spriteSheetManager));
         things.get(1).px = 500;
         things.get(1).py = 750;
+
+        things.add(new Coin(spriteSheetManager));
+        things.get(2).px = 905;
+        things.get(2).py = 950;
 
         things.add(new Platform(0, 500, 2000, 16)); // top
         things.add(new Platform(0, 500, 16, 800)); // left
@@ -120,5 +125,16 @@ public class Level implements SimulationManager {
     public void removeConstraint(Constraint c) {
         c.unlink();
         constraints.remove(c);
+    }
+
+    @Override
+    public void removeThing(Thing t) {
+        if (t.anyConstraints()){
+            for (Constraint c : t.linkedConstraints()) {
+                c.unlink();
+                constraints.remove(c);
+            }
+        }
+        things.remove(t);
     }
 }

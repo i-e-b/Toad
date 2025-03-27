@@ -14,6 +14,8 @@ public abstract class Collision {
     /** An AI sensor */
     public static final int SENSOR = 4;
 
+    /** A collectable thing */
+    public static final int COLLECTABLE = 8;
     // ...
 
     /** player hit box */

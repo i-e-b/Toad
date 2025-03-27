@@ -17,7 +17,7 @@ import java.util.List;
 /** A helper for loading images, and doing basic manipulation */
 public class SpriteSheetManager {
 
-    public final SpriteSheet toad, dude;
+    public final SpriteSheet toad, dude, stuff;
 
     // We slice up the input image into tiles using a start and stop pixel.
     // The start pixel is (magenta, #FF00FF RGB). The top-left pixel of the tile
@@ -43,19 +43,21 @@ public class SpriteSheetManager {
         Bitmap dudeImg = BitmapFactory.decodeStream(dudeFile, hitBox, options);
         dudeFile.close();
 
-        //InputStream stuffFile = assets.open("stuff.png");
-        //Bitmap stuffImg = BitmapFactory.decodeStream(stuffFile, hitBox, options);
-        //stuffFile.close();
+        InputStream stuffFile = assets.open("stuff.png");
+        Bitmap stuffImg = BitmapFactory.decodeStream(stuffFile, hitBox, options);
+        stuffFile.close();
 
         if (toadImg == null || dudeImg == null) throw new IOException("Failed to load asset images");
 
         // Find tiles in the bitmaps
         List<Rect> toadTiles = findTiles(toadImg);
         List<Rect> dudeTiles = findTiles(dudeImg);
+        List<Rect> stuffTiles = findTiles(stuffImg);
 
         // Create the sprite sheets
         toad = new SpriteSheet(toadImg, toadTiles);
         dude = new SpriteSheet(dudeImg, dudeTiles);
+        stuff = new SpriteSheet(stuffImg, stuffTiles);
     }
 
     private List<Rect> findTiles(Bitmap source) {

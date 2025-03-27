@@ -28,7 +28,7 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public void think(SimulationManager level, int ms) {}
+    public int think(SimulationManager level, int ms) {return KEEP;}
 
     @Override
     public void draw(@NotNull Camera camera) {

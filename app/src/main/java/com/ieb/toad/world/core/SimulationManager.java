@@ -10,4 +10,7 @@ public interface SimulationManager {
 
     /** unlink and remove a constraint from the simulation. No effect if constraint is not present. */
     void removeConstraint(Constraint c);
+
+    /** Remove a thing from the simulation. This will also break any linked constraints */
+    void removeThing(Thing t);
 }

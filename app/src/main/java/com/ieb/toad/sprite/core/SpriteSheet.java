@@ -1,7 +1,6 @@
 package com.ieb.toad.sprite.core;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import java.util.List;
