@@ -118,7 +118,7 @@ public class Camera {
         Rect src = a.rect();
 
         int w = src.width() * a.scale;
-        int hw = (int)w / 2;
+        int hw = w / 2;
         int left = (int)(px - hw);
         int h = src.height() * a.scale;
         int b = (int)(py+radius);

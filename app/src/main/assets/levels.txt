@@ -1,0 +1,37 @@
+! Lines starting '!' are comments
+! Levels are laid out in 1 block segments (64 sim units)
+! `-` and ` ` are open space
+! `#` is block type 1; `@` is block type 2
+! Player start is `P`
+! Levels start with `:Level x`, and are up to 62 rooms. (0-9,A-Z,a-z)
+! `s`=shy guy; `c`=coin;
+! `^`=spikes
+
+:Level 0
+--3
+012
+
+:Room 0
+###################
+#                 #
+#          @@     #
+# P    @@  @@     -
+###################
+:Room 1
+###################
+#                 #
+#          @@     #
+- s    @@^^@@     -
+###################
+:Room 2
+########   ########
+#      @@         #
+#          @@     #
+-  ccc @@^^@@     #
+###################
+:Room 3
+###################
+#                 #
+#                 #
+#  c c       c c  #
+########   ########
