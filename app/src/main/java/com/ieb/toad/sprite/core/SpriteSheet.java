@@ -33,7 +33,7 @@ public class SpriteSheet {
     private void flipTilesHorz(Bitmap bmp) { // TODO: optimise this after it's fully working
         for (Rect tile : tiles) { // each tile
             for (int y = tile.top; y <= tile.bottom; y++){ // each row
-                int xr = tile.right;
+                int xr = tile.right-1;
                 for (int x = tile.left; x < xr; x++){ // mirror left to right
                     int lc = bmp.getPixel(x,y);
                     int rc = bmp.getPixel(xr,y);
@@ -48,7 +48,7 @@ public class SpriteSheet {
     private void flipTilesVert(Bitmap bmp) { // TODO: optimise this after it's fully working
         for (Rect tile : tiles) { // each tile
             for (int x = tile.left; x <= tile.right; x++){ // each column
-                int yb = tile.bottom;
+                int yb = tile.bottom-1;
                 for (int y = tile.top; y < yb; y++){ // mirror top to bottom
                     int tc = bmp.getPixel(x,y);
                     int bc = bmp.getPixel(x,yb);

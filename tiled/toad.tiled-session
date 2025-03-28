@@ -1,0 +1,61 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "level0.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "level tiles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1.43
+        },
+        "level0.js": {
+            "scale": 1.07060546875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -0.4670254492383492,
+                "y": 127.96497309130717
+            }
+        },
+        "level0.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 2.5221,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -128.6626224178264,
+                "y": 155.42603386067165
+            }
+        }
+    },
+    "last.exportedFilePath": "/home/iain/code/Toad/tiled",
+    "last.imagePath": "/home/iain/code/Toad/app/src/main/assets",
+    "map.fixedSize": false,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "level0.tmx"
+    ],
+    "project": "toad.tiled-project",
+    "recentFiles": [
+        "level0.tmx",
+        "level tiles.tsx",
+        "level0.js"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 1,
+    "tileset.spacing": 1,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

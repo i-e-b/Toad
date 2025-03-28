@@ -130,6 +130,6 @@ public class Camera {
         if (box.top < 0 || box.bottom > height) return;
 
         drawCount++;
-        canvas.drawBitmap(a.bitmap(), a.rect(), box, null);
+        canvas.drawBitmap(a.bitmap(), src, box, null);
     }
 }

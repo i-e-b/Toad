@@ -82,7 +82,7 @@ public class SpriteSheetManager {
             for (int x = 0; x < w; x++) {
                 int c = source.getPixel(x, y); // TODO: optimise this after it's fully working
                 if ((c&0x00FFFFFF) == 0x00FF00FF) starts.add(new Point(x+1,y+1));
-                if ((c&0x00FFFFFF) == 0x0000FFFF) stops.add(new Point(x-1,y-1));
+                if ((c&0x00FFFFFF) == 0x0000FFFF) stops.add(new Point(x,y));
             }
         }
 
@@ -103,7 +103,6 @@ public class SpriteSheetManager {
             }
 
             output.add(new Rect(start.x, start.y, minX, minY));
-            Log.i("Tile", "("+start.x+", "+start.y+", "+minX+", "+minY+")");
         }
         return output;
     }

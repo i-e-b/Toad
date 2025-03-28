@@ -29,13 +29,14 @@ public class FirstScreen extends BaseView {
         frameActive = false;
         camera = new Camera();
 
+        // TODO: move this out of constructor, show loading screen
         level = new Level(context);
 
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(false);
         mPaint.setDither(false);
         mPaint.setBlendMode(BlendMode.SRC_OVER);
-        this.setBackgroundColor(0xFF000000);
+        this.setBackgroundColor(0xFFb9d9e5);
     }
 
     /** Action on timer. Does physics and triggered frame draw
@@ -94,7 +95,7 @@ public class FirstScreen extends BaseView {
         int dc = camera.getCount();
         mPaint.setARGB(120,0,255,255);
         Os.setSize(mPaint, 50);
-        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+"; c="+camera+";",
+        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+"; c="+camera,
                 10.0f, height - 80.0f, mPaint);
     }
 }

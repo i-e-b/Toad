@@ -159,6 +159,12 @@ public class VirtualGamepad {
             case KeyEvent.KEYCODE_DPAD_LEFT: DPadHorz = isDown ? -1.0f : 0.0f; break;
             case KeyEvent.KEYCODE_DPAD_DOWN: DPadVert = isDown ? 1.0f : 0.0f; break;
             case KeyEvent.KEYCODE_DPAD_UP: DPadVert = isDown ? -1.0f : 0.0f; break;
+
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_F1: // common macro button
+                ButtonX = isDown ? 1.0f : 0.0f;
+                break;
         }
     }
 

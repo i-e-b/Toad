@@ -10,6 +10,7 @@ import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Simulator;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.loader.TiledLoader;
 import com.ieb.toad.world.platforms.ConveyorPlatform;
 import com.ieb.toad.world.platforms.LifterPlatform;
 import com.ieb.toad.world.platforms.OneWayPlatform;
@@ -34,13 +35,18 @@ public class Level implements SimulationManager {
     private final Simulator simulator;
     private final PointThing sampleThing; // Used for hit detection
     private final SpriteSheetManager spriteSheetManager;
+    private final TiledLoader loader;
 
     public Level(Main context) throws IOException {
         spriteSheetManager = new SpriteSheetManager(context);
         simulator = new Simulator(this);
         sampleThing = new PointThing();
+        loader = new TiledLoader(context);
 
-        // TODO: text-to-level, like in Minikoban?
+
+        loader.loadLevel(0);
+
+
         things = new ArrayList<>();
         constraints = new ArrayList<>();
 
