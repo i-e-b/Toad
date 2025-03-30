@@ -63,18 +63,6 @@ public class Camera {
         canvas.drawRect(dstRect, paint);
     }
 
-    public void drawCircle(float x, float y, float r) {
-        int cx = (int)x - dx;
-        int cy = (int)y - dy;
-
-        // skip if offscreen
-        if (cx < -r || cx > width+r) return;
-        if (cy < -r || cy > height+r) return;
-
-        drawCount++;
-        canvas.drawCircle(x-dx, y-dy, r, paint);
-    }
-
     public void drawBitmap(Bitmap img, int left, int top, int scale) {
         if (img == null) return;
         drawCount++;

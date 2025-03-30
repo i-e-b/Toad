@@ -29,8 +29,8 @@ public class Platform extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.setARGB(128, 0,128, 0);
-        camera.drawRect(hitBox);
+        //camera.setARGB(128, 0,128, 0);
+        //camera.drawRect(hitBox);
     }
 
     @Override

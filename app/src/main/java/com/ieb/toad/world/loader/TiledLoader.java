@@ -95,13 +95,20 @@ public class TiledLoader {
 
     /** return chunks from the background layer that are at least partially visible on camera */
     public Enumeration<LayerChunk> getBackgroundChunks(Rect coverage) {
-        return null;
+        // TODO: filter based on location
+        return backgroundChunks.elements();
     }
 
     /** return chunks from the main layer that are at least partially visible on camera */
     public Enumeration<LayerChunk> getMainChunks(Rect coverage) {
         // TODO: filter based on location
         return mainChunks.elements();
+    }
+
+    /** return chunks from the foreground layer that are at least partially visible on camera */
+    public Enumeration<LayerChunk> getForegroundChunks(Rect coverage) {
+        // TODO: filter based on location
+        return foregroundChunks.elements();
     }
 
     private Document parseXML(InputStream source) {
@@ -185,7 +192,6 @@ public class TiledLoader {
             chunks.put(chunk.key, chunk);
 
             String[] csv = obj.getTextContent().split("[,\r\n]");
-            if (csv.length != iw * ih) Log.w(TAG, "processTileLayer: chunk at " + ix + "," + iy + " is not the expected size");
             int idx = 0;
             for (String t : csv) {
                 if (t.isBlank()) continue;
@@ -312,7 +318,7 @@ public class TiledLoader {
                     break;
 
                 default:
-                    Log.w(TAG, "loadLevel: unknown platform type: "+type);
+                    Log.w(TAG, "loadLevel: unknown platform type: '"+type+"' at id="+objId);
                     break;
             }
         }
@@ -332,7 +338,9 @@ public class TiledLoader {
 
     private String getStrAttr(NamedNodeMap attrs,String name){
         if (attrs == null) return "";
-        String val = attrs.getNamedItem(name).getNodeValue();
+        Node attr = attrs.getNamedItem(name);
+        if (attr == null) return "";
+        String val = attr.getNodeValue();
         if (val == null) return "";
         return val;
     }

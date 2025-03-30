@@ -29,8 +29,8 @@ public class ConveyorPlatform extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.setARGB(128, 120,100, 100);
-        camera.drawRect(hitBox);
+        //camera.setARGB(128, 120,100, 100);
+        //camera.drawRect(hitBox);
     }
 
     @Override

@@ -102,9 +102,9 @@ public class FirstScreen extends BaseView {
         VirtualGamepad.draw(canvas, mPaint, width);
 
         int dc = camera.getCount();
-        mPaint.setARGB(120,0,255,255);
+        mPaint.setARGB(120,0,0,0);
         Os.setSize(mPaint, 50);
-        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime+"; c="+camera,
+        Os.boxText(canvas, "t=" + ((int)totalSeconds)+"; ft="+frameMs+"; dc="+dc+"; it="+idleTime,
                 10.0f, height - 80.0f, mPaint);
     }
 }

@@ -1,5 +1,7 @@
 package com.ieb.toad.world;
 
+import android.graphics.Rect;
+
 import com.ieb.toad.Main;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
@@ -53,21 +55,29 @@ public class Level implements SimulationManager {
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
         camera.centreOn(level.toad.px, level.toad.py);
+        Rect coverage = camera.getCoverage();
 
         // background
+        drawLayer(camera, level.getBackgroundChunks(coverage));
 
         // main
-        Enumeration<LayerChunk> chunks = level.getMainChunks(camera.getCoverage()); // get layer image bits
-        while (chunks.hasMoreElements()) {
-            LayerChunk chunk = chunks.nextElement();
-            camera.drawBitmap(chunk.getBitmap(), chunk.left, chunk.top, TiledLoader.SCALE);
-        }
+        drawLayer(camera, level.getMainChunks(coverage));
 
         for (Thing thing : things) {
             thing.draw(camera);
         }
 
         // foreground
+        drawLayer(camera, level.getForegroundChunks(coverage));
+    }
+
+    private void drawLayer(Camera camera, Enumeration<LayerChunk> chunks) {
+        // TODO: need to handle animated tiles somehow
+        if (chunks == null) return;
+        while (chunks.hasMoreElements()) {
+            LayerChunk chunk = chunks.nextElement();
+            camera.drawBitmap(chunk.getBitmap(), chunk.left, chunk.top, TiledLoader.SCALE);
+        }
     }
 
 
@@ -76,6 +86,7 @@ public class Level implements SimulationManager {
      * Returns number of milliseconds run.
      */
     public long stepMillis(long ms) {
+        if (!loadedOk) return ms;
 
         // apply physics
         double time = (double) ms;

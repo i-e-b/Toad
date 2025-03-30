@@ -30,14 +30,17 @@ public class OneWayPlatform extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.setARGB(128, 0,0, 170);
-        camera.drawRect(hitBox);
+        //camera.setARGB(128, 0,0, 170);
+        //camera.drawRect(hitBox);
     }
 
     @Override
     public void preImpactTest(Thing other) {
         // If the other thing is below the top surface, have no impact
         if (other.py > hitBox.top) return;
+
+        // If the other is travelling up, don't interact yet
+        if (other.vy < 0 ) return;
 
         // Find the closest point to the circle within the rectangle
         px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
