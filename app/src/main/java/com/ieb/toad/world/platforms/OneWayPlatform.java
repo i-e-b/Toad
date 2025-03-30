@@ -30,7 +30,7 @@ public class OneWayPlatform extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.setARGB(200, 0,0, 170);
+        camera.setARGB(128, 0,0, 170);
         camera.drawRect(hitBox);
     }
 

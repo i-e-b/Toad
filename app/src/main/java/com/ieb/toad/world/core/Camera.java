@@ -14,7 +14,7 @@ public class Camera {
     private Canvas canvas;
     private int dx,dy;
     private int cx,cy;
-    private Rect box;
+    private Rect dstRect, srcRect;
     private int width, height;
     private int drawCount;
     private final Paint paint = new Paint();
@@ -32,7 +32,8 @@ public class Camera {
         height = canvas.getHeight();
         dx = 0;
         dy = 0;
-        box = new Rect();
+        dstRect = new Rect();
+        srcRect = new Rect();
     }
 
     public void resetCount(){
@@ -52,14 +53,14 @@ public class Camera {
     }
 
     public void drawRect(Rect rect) {
-        box.set(rect.left - dx, rect.top - dy, rect.right - dx, rect.bottom - dy);
+        dstRect.set(rect.left - dx, rect.top - dy, rect.right - dx, rect.bottom - dy);
 
         // skip if offscreen
-        if (box.right < 0 || box.left > width) return;
-        if (box.bottom < 0 || box.top > height) return;
+        if (dstRect.right < 0 || dstRect.left > width) return;
+        if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
-        canvas.drawRect(box, paint);
+        canvas.drawRect(dstRect, paint);
     }
 
     public void drawCircle(float x, float y, float r) {
@@ -74,15 +75,21 @@ public class Camera {
         canvas.drawCircle(x-dx, y-dy, r, paint);
     }
 
-    public void drawBitmap(Bitmap img, Rect src, Rect dst) {
-        box.set(dst.left - dx, dst.top - dy, dst.right - dx, dst.bottom - dy);
+    public void drawBitmap(Bitmap img, int left, int top, int scale) {
+        if (img == null) return;
+        drawCount++;
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+
+        srcRect.set(0,0, w, h);
+        dstRect.set(left-dx, top-dy, left-dx + w*scale, top-dy + h*scale);
 
         // skip if offscreen
-        if (box.right < 0 || box.left > width) return;
-        if (box.top < 0 || box.bottom > height) return;
+        //if (dstRect.right < 0 || dstRect.left > width) return;
+        //if (dstRect.top < 0 || dstRect.bottom > height) return;
 
-        drawCount++;
-        canvas.drawBitmap(img, src, box, null);
+        canvas.drawBitmap(img, srcRect, dstRect, null);
     }
 
     public void setARGB(int a, int r, int g, int b) {
@@ -101,14 +108,14 @@ public class Camera {
         int left = cx - hw;
         int h = src.height() * a.scale;
 
-        box.set(left - dx, dst.bottom - h - dy, left - dx + w, dst.bottom - dy);
+        dstRect.set(left - dx, dst.bottom - h - dy, left - dx + w, dst.bottom - dy);
 
         // skip if offscreen
-        if (box.right < 0 || box.left > width) return;
-        if (box.top < 0 || box.bottom > height) return;
+        if (dstRect.right < 0 || dstRect.left > width) return;
+        if (dstRect.top < 0 || dstRect.bottom > height) return;
 
         drawCount++;
-        canvas.drawBitmap(a.bitmap(), a.rect(), box, null);
+        canvas.drawBitmap(a.bitmap(), a.rect(), dstRect, null);
     }
 
     /** Draw an animation sprite over a circle.
@@ -123,13 +130,18 @@ public class Camera {
         int h = src.height() * a.scale;
         int b = (int)(py+radius);
 
-        box.set(left - dx, b - h - dy, left - dx + w, b - dy);
+        dstRect.set(left - dx, b - h - dy, left - dx + w, b - dy);
 
         // skip if offscreen
-        if (box.right < 0 || box.left > width) return;
-        if (box.top < 0 || box.bottom > height) return;
+        if (dstRect.right < 0 || dstRect.left > width) return;
+        if (dstRect.top < 0 || dstRect.bottom > height) return;
 
         drawCount++;
-        canvas.drawBitmap(a.bitmap(), src, box, null);
+        canvas.drawBitmap(a.bitmap(), src, dstRect, null);
+    }
+
+    /** Get the rectangle being displayed by the camera */
+    public Rect getCoverage() {
+        return null;
     }
 }

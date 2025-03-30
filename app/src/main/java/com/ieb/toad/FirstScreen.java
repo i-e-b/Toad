@@ -36,7 +36,7 @@ public class FirstScreen extends BaseView {
         mPaint.setFilterBitmap(false);
         mPaint.setDither(false);
         mPaint.setBlendMode(BlendMode.SRC_OVER);
-        this.setBackgroundColor(0xFFb9d9e5);
+        this.setBackgroundColor(level.getBackgroundColor());
     }
 
     /** Action on timer. Does physics and triggered frame draw
@@ -67,6 +67,15 @@ public class FirstScreen extends BaseView {
         // dimensions of screen last time we did a paint.
         int width = getWidth();
         int height = getHeight();
+
+        // check loaded level
+        if (!level.loadedOk){
+            mPaint.setARGB(255,200,0,0);
+            Os.setSize(mPaint, 50);
+            Os.boxText(canvas, "Level not loaded!", 10.0f, 80.0f, mPaint);
+            return;
+        }
+
         VirtualGamepad.setTouchSize(width, height);
 
         if (frameActive) {

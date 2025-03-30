@@ -9,10 +9,12 @@ public class TileSheet {
     public final Bitmap bitmap;
 
     public final Rect[] tiles;
+    public final int pixelSize;
     private final int width; // count of tiles wide
 
     public TileSheet(Bitmap src, int pxSize, int offset, int width, int height){
         bitmap = src;
+        pixelSize = pxSize;
 
         this.width = width;
         tiles = new Rect[width * height];

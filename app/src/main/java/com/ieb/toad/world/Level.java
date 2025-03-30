@@ -1,25 +1,20 @@
 package com.ieb.toad.world;
 
 import com.ieb.toad.Main;
-import com.ieb.toad.sprite.Coin;
-import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
-import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Simulator;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.loader.LayerChunk;
 import com.ieb.toad.world.loader.TiledLoader;
-import com.ieb.toad.world.platforms.ConveyorPlatform;
-import com.ieb.toad.world.platforms.LifterPlatform;
-import com.ieb.toad.world.platforms.OneWayPlatform;
-import com.ieb.toad.world.platforms.Platform;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -35,54 +30,44 @@ public class Level implements SimulationManager {
     private final Simulator simulator;
     private final PointThing sampleThing; // Used for hit detection
     private final SpriteSheetManager spriteSheetManager;
-    private final TiledLoader loader;
+    private final TiledLoader level;
+    public final boolean loadedOk;
 
     public Level(Main context) throws IOException {
         spriteSheetManager = new SpriteSheetManager(context);
         simulator = new Simulator(this);
         sampleThing = new PointThing();
-        loader = new TiledLoader(context);
+        level = new TiledLoader(context);
 
 
-        loader.loadLevel(0);
+        loadedOk = level.loadLevel(0);
 
 
         things = new ArrayList<>();
         constraints = new ArrayList<>();
 
-        things.add(new Toad(spriteSheetManager));
-        things.get(0).px = 100;
-        things.get(0).py = 600;
+        //things.add(new Coin(spriteSheetManager));
 
-        things.add(new Shy(spriteSheetManager));
-        things.get(1).px = 500;
-        things.get(1).py = 750;
-
-        things.add(new Coin(spriteSheetManager));
-        things.get(2).px = 905;
-        things.get(2).py = 950;
-
-        things.add(new Platform(0, 500, 2000, 16)); // top
-        things.add(new Platform(0, 500, 16, 800)); // left
-        things.add(new Platform(0, 1300, 2000, 16)); // bottom
-        things.add(new Platform(1984, 500, 16, 800)); // right
-
-        things.add(new OneWayPlatform(0, 800, 128, 16));
-        things.add(new OneWayPlatform(0, 1000, 128, 16));
-
-        things.add(new ConveyorPlatform(450, 800, 350, 16, -6.0));
-        things.add(new ConveyorPlatform(350, 1000, 350, 16, 10.0));
-
-        things.add(new LifterPlatform(890, 1000, 32, 300, 700.0));
-        things.add(new OneWayPlatform(850, 980, 112, 16));
+        things.addAll(level.things);
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
-        camera.centreOn(things.get(0).px, things.get(0).py);
-        
+        camera.centreOn(level.toad.px, level.toad.py);
+
+        // background
+
+        // main
+        Enumeration<LayerChunk> chunks = level.getMainChunks(camera.getCoverage()); // get layer image bits
+        while (chunks.hasMoreElements()) {
+            LayerChunk chunk = chunks.nextElement();
+            camera.drawBitmap(chunk.getBitmap(), chunk.left, chunk.top, TiledLoader.SCALE);
+        }
+
         for (Thing thing : things) {
             thing.draw(camera);
         }
+
+        // foreground
     }
 
 
@@ -97,9 +82,9 @@ public class Level implements SimulationManager {
         double nextTime = simulator.solve(time, things, constraints);
 
         // [TEMP] reset if out-of-bounds
-        if (things.get(0).py > 2000) {
-            things.get(0).px = 100;
-            things.get(0).py = 600;
+        if (level.toad.py > 2000) {
+            level.toad.px = 100;
+            level.toad.py = 600;
         }
 
         // return simulated time
@@ -142,5 +127,9 @@ public class Level implements SimulationManager {
             }
         }
         things.remove(t);
+    }
+
+    public int getBackgroundColor() {
+        return level.backgroundColor;
     }
 }
