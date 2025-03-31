@@ -21,6 +21,9 @@ public class Toad extends Thing {
     private long jumpTimeLeftMs;
     private double lastFramePx;
 
+    /** @noinspection FieldCanBeLocal*/
+    private final long JUMP_TIME_MS = 165;
+
     /** Load Toad graphics */
     public Toad(final SpriteSheetManager spriteSheetManager) {
         run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
@@ -55,7 +58,7 @@ public class Toad extends Thing {
         if (btnUp){
             if (anyConstraints()){ // assume it's a standing-constraint for now. TODO: be more specific
                 level.removeConstraint(this.constraints.get(0));
-                jumpTimeLeftMs = 300;
+                jumpTimeLeftMs = JUMP_TIME_MS;
             }
             if (jumpTimeLeftMs > 0 && !jumpUsed){
                 jumpTimeLeftMs -= ms;
@@ -112,7 +115,7 @@ public class Toad extends Thing {
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
             // restore jump?
-            if (this.canLandOnTop(other)) jumpTimeLeftMs = 300;
+            if (this.canLandOnTop(other)) jumpTimeLeftMs = JUMP_TIME_MS;
         }
     }
 }

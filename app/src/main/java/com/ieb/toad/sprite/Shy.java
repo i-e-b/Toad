@@ -34,9 +34,16 @@ public class Shy extends Thing {
 
     @Override
     public int think(SimulationManager level, int ms) {
-        // Switch direction if facing wall.
-        var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
-        if (Collision.hasWall(frontSense)) desireDirection = -desireDirection;
+        // Switch direction if facing wall or pit
+        var wallSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
+        if (Collision.hasWall(wallSense)) {
+            desireDirection = -desireDirection; // turn on wall
+        } else {
+            var pitSense = level.hitTest(px + ((radius * 2) * desireDirection), py+radius+5);
+            var groundSense = level.hitTest(px, py+radius+5);
+            if (Collision.hasWall(groundSense) && !Collision.hasWall(pitSense))
+                desireDirection = -desireDirection; // turn on pit, only if on ground
+        }
 
         if (desireDirection < 0){ // left
             if (vx > -SPEED) a0x = -ACCEL;

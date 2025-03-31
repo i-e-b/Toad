@@ -142,15 +142,20 @@ public class Simulator {
 
             boolean impacted = false;
             if (other.radius > 0 && self.radius > 0) {
+                boolean collides = ((self.type | other.type) & Collision.COLLECTABLE) != Collision.COLLECTABLE;
                 double time = impactTime(self, other);
 
                 if (time < 0) { // objects are overlapping
                     impacted = true;
-                    pushApart(self, other); // ensure we're not overlapping
-                    resolveCollision(self, other, 0); // handle bounce as if at surface
+                    if (collides){
+                        pushApart(self, other); // ensure we're not overlapping
+                        resolveCollision(self, other, 0); // handle bounce as if at surface
+                    }
                 } else if (time <= h) { // objects will impact within a simulator frame
                     impacted = true;
-                    resolveCollision(self, other, time); // resolve collision forward in time
+                    if (collides){
+                        resolveCollision(self, other, time); // resolve collision forward in time
+                    }
                 }
             }
 

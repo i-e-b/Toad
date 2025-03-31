@@ -41,15 +41,11 @@ public class Level implements SimulationManager {
         sampleThing = new PointThing();
         level = new TiledLoader(context);
 
-
+        // TODO: show loading message, do this out of constructor
         loadedOk = level.loadLevel(0);
-
 
         things = new ArrayList<>();
         constraints = new ArrayList<>();
-
-        //things.add(new Coin(spriteSheetManager));
-
         things.addAll(level.things);
     }
 

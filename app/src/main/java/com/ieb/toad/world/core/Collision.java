@@ -14,7 +14,7 @@ public abstract class Collision {
     /** An AI sensor */
     public static final int SENSOR = 4;
 
-    /** A collectable thing */
+    /** A collectable thing. These do not do collision effects (bouncing/pushing etc) */
     public static final int COLLECTABLE = 8;
     // ...
 
@@ -24,5 +24,9 @@ public abstract class Collision {
 
     public static boolean hasWall(int hit){
         return (hit & WALL) != 0;
+    }
+
+    public static boolean isEmpty(int hit) {
+        return hit == NULL;
     }
 }

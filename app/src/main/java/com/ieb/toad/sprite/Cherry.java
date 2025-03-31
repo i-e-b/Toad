@@ -10,13 +10,14 @@ import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Coin extends Thing {
+public class Cherry extends Thing {
     private final Animation anim;
     private boolean collected;
 
-    public Coin(SpriteSheetManager sprites) {
-        anim = new Animation(100, Animation.FOREVER, sprites.stuff, Flip.None,
-                new int[]{66,67,68,69,70,65,71});
+    public Cherry(SpriteSheetManager sprites) {
+        anim = new Animation(150, Animation.FOREVER, sprites.stuff, Flip.None,
+                new int[]{84,85,86,87,86,85});
+        //        new int[]{88,89,90,91,90,89}); <-- star
 
         type = Collision.COLLECTABLE;
         collected = false;

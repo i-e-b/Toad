@@ -5,6 +5,8 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.ieb.toad.Main;
+import com.ieb.toad.sprite.Cherry;
+import com.ieb.toad.sprite.Coin;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -142,7 +144,7 @@ public class TiledLoader {
                     break;
 
                 case "items":
-                    // TODO: add extra spawns
+                    processItemTileLayer(group, mainChunks); // same as spawns, just a bit easier to edit
                     break;
 
                 case "foreground":
@@ -200,10 +202,76 @@ public class TiledLoader {
                 idx++;
             }
         }
-
-
     }
 
+    private void processItemTileLayer(Node group, Dictionary<String, LayerChunk> chunks) {
+        Node dataNode = getFirstChild(group, "data");
+
+        if (dataNode == null) return;
+        NamedNodeMap dataAttrs = dataNode.getAttributes();
+        String encoding = getStrAttr(dataAttrs, "encoding");
+        if (!encoding.equals("csv")) throw new RuntimeException("Invalid level format. Expected 'csv', got '"+encoding+"'");
+
+        NodeList nodes = dataNode.getChildNodes();
+        int nodeCount = nodes.getLength();
+        for (int i = 0; i < nodeCount; i++) {
+            Node obj = nodes.item(i);
+            String name = obj.getNodeName();
+            NamedNodeMap attrs = obj.getAttributes();
+
+            if (!name.equals("chunk")) continue;
+
+            // location in tile space
+            int ix = (int) getDoubleAttr(attrs, "x");
+            int iy = (int) getDoubleAttr(attrs, "y");
+            int iw = (int) getDoubleAttr(attrs, "width");
+
+            // convert from tile index to world space
+            int tilePx = spriteMgr.tiles.pixelSize;
+            int hw = SCALE * tilePx / 2;
+            int dx = chunkWidth * SCALE * ix;
+            int dy = chunkHeight * SCALE * iy;
+
+            String[] csv = obj.getTextContent().split("[,\r\n]");
+            int x = 0, y = 0;
+            for (String t : csv) {
+                if (x >= iw){ x = 0; y++;}
+                if (t.isBlank()) continue;
+                int tile = Integer.parseInt(t) - 1; // 0=empty -> -1=empty
+
+                spawnFromTile(tile, hw, dx, x, tilePx, dy, y, ix, iy);
+                x++;
+            }
+        }
+    }
+
+    private static final int GRASS_START_TILE = 520;
+    private static final int GRASS_END_TILE = 527;
+    private static final int CHERRY_START_TILE = 598;
+    private static final int CHERRY_END_TILE = 605;
+    private static final int POW_START_TILE = 572;
+    private static final int POW_END_TILE = 579;
+    private static final int KEY_TILE = 442;
+    private static final int COIN_TILE = 443;
+    private static final int MUSHROOM_TILE = 469;
+    private void spawnFromTile(int tileId, int hw, int dx, int x, int tilePx, int dy, int y, int ix, int iy) {
+        int cx = hw + dx + (x * tilePx *SCALE);
+        int cy = hw + dy + (y * tilePx *SCALE);
+
+        if (tileId == COIN_TILE){
+            Thing coin = new Coin(spriteMgr);
+            coin.px = cx; coin.py = cy;
+            things.add(coin);
+        } else if (tileId>=CHERRY_START_TILE && tileId <=CHERRY_END_TILE){
+            Thing cherry = new Cherry(spriteMgr);
+            cherry.px = cx;cherry.py = cy;
+            things.add(cherry);
+        } else {
+            Log.w(TAG, "processItemTileLayer: unknown tile spawn '"+ tileId +"' in chunk at "+ ix +","+ iy);
+        }
+    }
+
+    /** @noinspection SameParameterValue*/
     private Node getFirstChild(Node group, String elementName) {
         if (group == null) return null;
         NodeList children = group.getChildNodes();
