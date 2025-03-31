@@ -25,6 +25,10 @@ public class Grass extends Thing {
         gravity = 0.0; // not affected by gravity
     }
 
+    public void advanceAnim(int count) {
+        anim.advance(150*count);
+    }
+
     @Override
     public void draw(@NotNull Camera camera) {
         camera.drawSprite(anim, px, py, 0);

@@ -8,6 +8,7 @@ import com.ieb.toad.Main;
 import com.ieb.toad.sprite.Cherry;
 import com.ieb.toad.sprite.Coin;
 import com.ieb.toad.sprite.Grass;
+import com.ieb.toad.sprite.Potion;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -56,6 +57,7 @@ public class TiledLoader {
     private final AssetManager assets;
     private final SpriteSheetManager spriteMgr;
 
+    // TODO: allow camera boxes to have different background colors
     public int backgroundColor; // argb32 background color for the level
     public int chunkWidth; // size of level chunks, in tile count
     public int chunkHeight; // size of level chunks, in tile count
@@ -256,6 +258,7 @@ public class TiledLoader {
     private static final int POW_END_TILE = 579;
     private static final int KEY_TILE = 442;
     private static final int COIN_TILE = 443;
+    private static final int POTION_TILE = 468;
     private static final int MUSHROOM_TILE = 469;
     private void spawnFromTile(int tileId, int hw, int dx, int x, int tilePx, int dy, int y, int ix, int iy) {
         int cx = hw + dx + (x * tilePx *SCALE);
@@ -263,17 +266,23 @@ public class TiledLoader {
         int by = dy + ((y+1) * tilePx *SCALE);
 
         if (tileId == COIN_TILE){
-            Thing coin = new Coin(spriteMgr);
+            Coin coin = new Coin(spriteMgr);
             coin.px = cx; coin.py = cy;
             bgThings.add(coin);
         } else if (tileId>=CHERRY_START_TILE && tileId <=CHERRY_END_TILE){
-            Thing cherry = new Cherry(spriteMgr);
+            Cherry cherry = new Cherry(spriteMgr);
             cherry.px = cx;cherry.py = cy;
+            cherry.advanceAnim(tileId - CHERRY_START_TILE);
             bgThings.add(cherry);
         } else if (tileId>=GRASS_START_TILE && tileId <=GRASS_END_TILE){
-            Thing grass = new Grass(spriteMgr);
+            Grass grass = new Grass(spriteMgr);
             grass.px = cx;grass.py = by;
+            grass.advanceAnim(tileId - GRASS_START_TILE);
             bgThings.add(grass);
+        } else if (tileId==POTION_TILE){
+            Thing potion = new Potion(spriteMgr);
+            potion.px = cx;potion.py = by;
+            bgThings.add(potion);
         } else {
             Log.w(TAG, "processItemTileLayer: unknown tile spawn '"+ tileId +"' in chunk at "+ ix +","+ iy);
         }

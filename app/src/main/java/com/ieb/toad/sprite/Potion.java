@@ -10,14 +10,16 @@ import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Cherry extends Thing {
-    private final Animation anim;
+public class Potion extends Thing {
+    private final Animation grassAnim;
+    private final Animation bottleAnim;
     private boolean collected;
 
-    public Cherry(SpriteSheetManager sprites) {
-        anim = new Animation(150, Animation.FOREVER, sprites.stuff, Flip.None,
-                new int[]{84,85,86,87,86,85});
-        //        new int[]{88,89,90,91,90,89}); <-- star
+    public Potion(SpriteSheetManager sprites) {
+        grassAnim = new Animation(150, Animation.FOREVER, sprites.tiles,
+                new int[]{520,521,522,523,524,525,526});
+        bottleAnim = new Animation(150, Animation.FOREVER, sprites.stuff, Flip.None,
+                new int[]{80,81,82,83});
 
         type = Collision.COLLECTABLE;
         collected = false;
@@ -26,20 +28,17 @@ public class Cherry extends Thing {
         gravity = 0.0; // not affected by gravity
     }
 
-    public void advanceAnim(int count) {
-        anim.advance(150*count);
-    }
-
     @Override
     public void draw(@NotNull Camera camera) {
-        camera.drawSprite(anim, px, py, 30);
+        camera.drawSprite(grassAnim, px, py, 0);
     }
 
     @Override
     public int think(SimulationManager level, int ms) {
         if (collected) return REMOVE;
 
-        anim.advance(ms);
+        grassAnim.advance(ms);
+        bottleAnim.advance(ms);
         return KEEP;
     }
 
@@ -60,6 +59,6 @@ public class Cherry extends Thing {
         if (!impacted) return;
         if (other.type != Collision.PLAYER) return;
 
-        collected = true;
+        //collected = true;
     }
 }
