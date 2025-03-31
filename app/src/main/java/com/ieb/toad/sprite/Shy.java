@@ -18,7 +18,7 @@ public class Shy extends Thing {
 
     private int desireDirection = -1; // negative = left, positive = right.
 
-    public final int SPEED = 1200, ACCEL = 5000;
+    public final int SPEED = 120, ACCEL = 500;
     private double dpx; // px value to restore after collision
 
     /** Load Toad graphics */
@@ -34,6 +34,8 @@ public class Shy extends Thing {
 
     @Override
     public int think(SimulationManager level, int ms) {
+        ax = ay = 0;
+
         // Switch direction if facing wall or pit
         var wallSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
         if (Collision.hasWall(wallSense)) {
@@ -45,11 +47,15 @@ public class Shy extends Thing {
                 desireDirection = -desireDirection; // turn on pit, only if on ground
         }
 
+        // go slow if we've being stood on
+        double speed = anyConstraints() ? SPEED / 2.0 : SPEED;
+
         if (desireDirection < 0){ // left
-            if (vx > -SPEED) a0x = -ACCEL;
+            if (vx > -speed) ax = -ACCEL;
         } else { // right
-            if (vx < SPEED) a0x = ACCEL;
+            if (vx < speed) ax = ACCEL;
         }
+
         return KEEP;
     }
 

@@ -13,9 +13,9 @@ public class Animation {
     /** sprite scale. Defaults to 4x */
     public int scale = 4;
 
-    private final SpriteSheet sheet; // reference to sprite sheet image
     private final int flip; // bitmap to use. See sprite.core.Flip
     private final Rect[] src; // rectangles relative to the sprite sheet texture.
+    private final Bitmap[] bitmap; // bitmaps in flip directions
     private final int[] time; // time that each frame should be shown for.
     private final int frameCount;
 
@@ -26,13 +26,12 @@ public class Animation {
     /** Generate frames on a row of the texture, with a single frame time
      * @param frameTime duration of each frame (milliseconds)
      * @param loops number of loops before animation ends. If `Animation.FOREVER`, the animation never ends
-     * @param spriteSheet source image and tiles for the animation
+     * @param sheet source image and tiles for the animation
      * @param flip image flip variant 0..3
      * @param tileIndexes indexes in tileSheet to use for this animation. Indexes can be repeated.
      * */
-    public Animation(int frameTime, int loops, SpriteSheet spriteSheet, int flip, int[] tileIndexes){
+    public Animation(int frameTime, int loops, SpriteSheet sheet, int flip, int[] tileIndexes){
         this.loops = loops;
-        sheet = spriteSheet;
         this.flip = flip;
         frameDur = 0;
         frameIdx = 0;
@@ -44,6 +43,31 @@ public class Animation {
             src[i] = sheet.tiles[offset];
             time[i] = frameTime;
         }
+        bitmap = new Bitmap[sheet.bitmap.length];
+        System.arraycopy(sheet.bitmap, 0, bitmap, 0, sheet.bitmap.length);
+    }
+
+    /** Generate frames on a row of the texture, with a single frame time
+     * @param frameTime duration of each frame (milliseconds)
+     * @param loops number of loops before animation ends. If `Animation.FOREVER`, the animation never ends
+     * @param sheet source image and tiles for the animation
+     * @param tileIndexes indexes in tileSheet to use for this animation. Indexes can be repeated.
+     * */
+    public Animation(int frameTime, int loops, TileSheet sheet, int[] tileIndexes){
+        this.loops = loops;
+        this.flip = 0;
+        frameDur = 0;
+        frameIdx = 0;
+        frameCount = tileIndexes.length;
+        src = new Rect[frameCount];
+        time = new int[frameCount];
+        for (int i = 0; i < frameCount; i++) {
+            int offset = tileIndexes[i];
+            src[i] = sheet.tiles[offset];
+            time[i] = frameTime;
+        }
+        bitmap = new Bitmap[1];
+        bitmap[0] = sheet.bitmap;
     }
 
     public Rect rect() {
@@ -72,6 +96,6 @@ public class Animation {
     }
 
     public Bitmap bitmap() {
-        return sheet.bitmap[flip];
+        return bitmap[flip];
     }
 }

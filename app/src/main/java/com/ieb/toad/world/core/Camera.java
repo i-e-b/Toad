@@ -74,8 +74,8 @@ public class Camera {
         dstRect.set(left-dx, top-dy, left-dx + w*scale, top-dy + h*scale);
 
         // skip if offscreen
-        //if (dstRect.right < 0 || dstRect.left > width) return;
-        //if (dstRect.top < 0 || dstRect.bottom > height) return;
+        if (dstRect.right < 0 || dstRect.left > width) return;
+        if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         canvas.drawBitmap(img, srcRect, dstRect, null);
     }
@@ -100,7 +100,7 @@ public class Camera {
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
-        if (dstRect.top < 0 || dstRect.bottom > height) return;
+        if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
         canvas.drawBitmap(a.bitmap(), a.rect(), dstRect, null);
@@ -122,7 +122,7 @@ public class Camera {
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
-        if (dstRect.top < 0 || dstRect.bottom > height) return;
+        if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
         canvas.drawBitmap(a.bitmap(), src, dstRect, null);

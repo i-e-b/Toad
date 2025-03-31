@@ -7,6 +7,7 @@ import android.util.Log;
 import com.ieb.toad.Main;
 import com.ieb.toad.sprite.Cherry;
 import com.ieb.toad.sprite.Coin;
+import com.ieb.toad.sprite.Grass;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -59,7 +60,8 @@ public class TiledLoader {
     public int chunkWidth; // size of level chunks, in tile count
     public int chunkHeight; // size of level chunks, in tile count
 
-    public final List<Thing> things; // TODO: better structure for larger levels
+    public final List<Thing> fgThings; // used for platforms, creeps and player
+    public final List<Thing> bgThings; // used for collectables and grass
     public Toad toad;
 
     private final Dictionary<String, LayerChunk> backgroundChunks, mainChunks, foregroundChunks;
@@ -67,7 +69,8 @@ public class TiledLoader {
     public TiledLoader(final Main context) throws IOException {
         assets = context.getAssets();
         spriteMgr = new SpriteSheetManager(context);
-        things = new ArrayList<>(128);
+        fgThings = new ArrayList<>(128);
+        bgThings = new ArrayList<>(128);
 
         backgroundChunks = new Hashtable<>(64);
         mainChunks = new Hashtable<>(64);
@@ -257,15 +260,20 @@ public class TiledLoader {
     private void spawnFromTile(int tileId, int hw, int dx, int x, int tilePx, int dy, int y, int ix, int iy) {
         int cx = hw + dx + (x * tilePx *SCALE);
         int cy = hw + dy + (y * tilePx *SCALE);
+        int by = dy + ((y+1) * tilePx *SCALE);
 
         if (tileId == COIN_TILE){
             Thing coin = new Coin(spriteMgr);
             coin.px = cx; coin.py = cy;
-            things.add(coin);
+            bgThings.add(coin);
         } else if (tileId>=CHERRY_START_TILE && tileId <=CHERRY_END_TILE){
             Thing cherry = new Cherry(spriteMgr);
             cherry.px = cx;cherry.py = cy;
-            things.add(cherry);
+            bgThings.add(cherry);
+        } else if (tileId>=GRASS_START_TILE && tileId <=GRASS_END_TILE){
+            Thing grass = new Grass(spriteMgr);
+            grass.px = cx;grass.py = by;
+            bgThings.add(grass);
         } else {
             Log.w(TAG, "processItemTileLayer: unknown tile spawn '"+ tileId +"' in chunk at "+ ix +","+ iy);
         }
@@ -329,18 +337,18 @@ public class TiledLoader {
                     toad = new Toad(spriteMgr);
                     toad.px = x;
                     toad.py = y - toad.radius;
-                    things.add(toad);
+                    fgThings.add(toad);
                     break;
 
                 case "shyguy":
                     Thing shy = new Shy(spriteMgr);
-                    shy.px = 500;
-                    shy.py = 750;
-                    things.add(shy);
+                    shy.px = x;
+                    shy.py = y - shy.radius;
+                    fgThings.add(shy);
                     break;
 
                 default:
-                    Log.w(TAG, "loadLevel: unknown spawn type: "+type);
+                    Log.w(TAG, "loadLevel: unknown spawn type: '"+type+"' in objectId="+objId);
                     break;
             }
         }
@@ -369,20 +377,20 @@ public class TiledLoader {
 
             switch (type){
                 case "solid":
-                    things.add(new Platform(x, y, w, h));
+                    fgThings.add(new Platform(x, y, w, h));
                     break;
 
                 case "oneway":
-                    things.add(new OneWayPlatform(x, y, w, h));
+                    fgThings.add(new OneWayPlatform(x, y, w, h));
                     break;
 
                 case "spike":
                     Log.w(TAG, "processWalls: spike platforms not implemented yet");
-                    things.add(new Platform(x, y, w, h));
+                    fgThings.add(new Platform(x, y, w, h));
                     break;
                 case "death":
                     Log.w(TAG, "processWalls: death platforms not implemented yet");
-                    things.add(new Platform(x, y, w, h));
+                    fgThings.add(new Platform(x, y, w, h));
                     break;
 
                 default:

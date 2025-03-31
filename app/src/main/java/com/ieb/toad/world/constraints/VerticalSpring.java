@@ -36,9 +36,19 @@ public class VerticalSpring extends Constraint {
 
         // Keep py at exact distance. Accelerate 'top' toward centre of 'bottom'
         top.py = bottom.py - (top.radius + bottom.radius);
-        top.vy = bottom.vy;
+        top.vy = 0;//bottom.vy;
 
         //top.vx = bottom.vx;
+
+        // true spring:
+        /*double totMass = top.mass + bottom.mass;
+        if (totMass <= 0.0) totMass = 0.5;
+        double accel = clamp(dx*dx*dx*dx*dx, -700, 700) / totMass;
+
+        top.ax = bottom.mass * accel;
+        bottom.ax += top.mass * -accel;*/
+
+        // one-way spring:
         top.ax = clamp(dx*dx*dx*dx*dx, -700, 700);
 
         return OK;

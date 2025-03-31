@@ -31,12 +31,10 @@ public class Level implements SimulationManager {
     private final List<Constraint> constraints; // TODO: better structure for larger levels
     private final Simulator simulator;
     private final PointThing sampleThing; // Used for hit detection
-    private final SpriteSheetManager spriteSheetManager;
     private final TiledLoader level;
     public final boolean loadedOk;
 
     public Level(Main context) throws IOException {
-        spriteSheetManager = new SpriteSheetManager(context);
         simulator = new Simulator(this);
         sampleThing = new PointThing();
         level = new TiledLoader(context);
@@ -46,7 +44,8 @@ public class Level implements SimulationManager {
 
         things = new ArrayList<>();
         constraints = new ArrayList<>();
-        things.addAll(level.things);
+        things.addAll(level.bgThings);
+        things.addAll(level.fgThings);
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {

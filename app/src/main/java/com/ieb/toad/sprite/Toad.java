@@ -4,6 +4,7 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.constraints.FixedLength;
 import com.ieb.toad.world.constraints.VerticalSpring;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
@@ -110,8 +111,9 @@ public class Toad extends Thing {
         if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
             // quick and dirty: add a constraint if none already
             if (!anyConstraints() && this.canLandOnTop(other)){
-                vx = other.vx; // match speed for easy landing
+                //vx = other.vx; // match speed for easy landing
                 level.addConstraint(new VerticalSpring(this, other, 16));
+                //level.addConstraint(new FixedLength(this, other, 0));
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
             // restore jump?
