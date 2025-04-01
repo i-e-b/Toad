@@ -16,10 +16,19 @@ public class Toad extends Thing {
 
     private final Animation run_left;
     private final Animation run_right;
+    private final Animation fall_left;
+    private final Animation fall_right;
+    private final Animation stand_left;
+    private final Animation stand_right;
+    private final Animation crouch_centre;
+    private final Animation climb;
+    private final Animation pull_left;
+    private final Animation pull_right;
 
     private int desireDirection = 1; // negative = left, positive = right.
+    private Thing climbing = null; // vine/ladder
     private long jumpTimeLeftMs;
-    private double lastFramePx;
+    private double lastFramePx, lastFramePy, animMs;
 
     /** @noinspection FieldCanBeLocal*/
     private final long JUMP_TIME_MS = 165;
@@ -28,9 +37,19 @@ public class Toad extends Thing {
     public Toad(final SpriteSheetManager spriteSheetManager) {
         run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
         run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9,10,11,10});
+        fall_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{16});
+        fall_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{16});
+        stand_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9});
+        stand_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9});
+        crouch_centre = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{17});
+
+        climb = new Animation(64, Animation.FLIP_REPEAT, spriteSheetManager.toad, Flip.Horz, new int[]{15});
+
+        pull_left = new Animation(200, Animation.ONCE, spriteSheetManager.toad, Flip.None, new int[]{19,20,12});
+        pull_right = new Animation(200, Animation.ONCE, spriteSheetManager.toad, Flip.Horz, new int[]{19,20,12});
 
         type = Collision.PLAYER;
-        radius = 30;
+        radius = 29;
         gravity = 1.0; // fully affected by gravity
     }
 
@@ -39,6 +58,7 @@ public class Toad extends Thing {
     @Override
     public int think(SimulationManager level, int ms) {
         ax = ay = 0;
+        animMs += ms;
         // apply control
         mapControls();
         applyControlsToPhysics(level, ms);
@@ -74,11 +94,18 @@ public class Toad extends Thing {
 
     /** Map current VirtualGamepad state to level controls */
     private void mapControls() {
+        btnUp = VirtualGamepad.isUp();
         btnDown = VirtualGamepad.isDown();
         btnRight = VirtualGamepad.isRight();
         btnJump = VirtualGamepad.isJump();
         btnLeft = VirtualGamepad.isLeft();
+
+        boolean prevAct = btnAction;
         btnAction = VirtualGamepad.isAction();
+        if (btnAction && !prevAct){
+            pull_left.reset();
+            pull_right.reset();
+        }
     }
 
     public void addPlayerSpeed(double dx, int dy) {
@@ -86,17 +113,33 @@ public class Toad extends Thing {
         vx += dx;
     }
 
-    private boolean btnAction, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
+    private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
 
     @Override
     public void draw(@NotNull Camera camera) {
         double dx = Math.abs(px - lastFramePx);
+        double dy = Math.abs(py - lastFramePy);
         lastFramePx = px;
+        lastFramePy = py;
 
-        Animation a = desireDirection > 0 ? run_right : run_left;
-        a.advance(dx); // animate based on movement
+        Animation a = pickAnimation(dx, dy, animMs);
 
         camera.drawSprite(a, px, py, radius);
+        animMs = 0;
+    }
+
+    private Animation pickAnimation(double dx, double dy, double animMs) {
+        if (jumpTimeLeftMs >= JUMP_TIME_MS - 50){
+            if (btnAction) return desireDirection > 0 ? pull_right.advance(animMs) : pull_left.advance(animMs);
+            if (btnDown) return crouch_centre.advance(animMs);
+            if (btnUp) return climb.advance(dy);
+            if (Math.abs(vx) < 1) return desireDirection > 0 ? stand_right : stand_left;
+
+            Animation a = desireDirection > 0 ? run_right : run_left;
+            return a.advance(dx); // animate based on movement
+        }
+
+        return desireDirection > 0 ? fall_right : fall_left;
     }
 
     /** Handle collisions with things.

@@ -7,18 +7,24 @@ import android.graphics.Rect;
  * source rect for the texture,
  * and frame time in ms. */
 public class Animation {
+    /** cycle animation forever */
     public static final int FOREVER = -1;
+    /** cycle forever, flipping horizontal on each cycle */
+    public static final int FLIP_REPEAT = -2;
+    /** animate once then stop */
     public static final int ONCE = 1;
 
     /** sprite scale. Defaults to 4x */
     public int scale = 4;
 
-    private final int flip; // bitmap to use. See sprite.core.Flip
+    private int flip; // bitmap to use. See sprite.core.Flip
+
     private final Rect[] src; // rectangles relative to the sprite sheet texture.
     private final Bitmap[] bitmap; // bitmaps in flip directions
     private final int[] time; // time that each frame should be shown for.
     private final int frameCount;
 
+    private final int originalLoops;
     private int loops;
     private double frameDur;
     private int frameIdx;
@@ -31,6 +37,7 @@ public class Animation {
      * @param tileIndexes indexes in tileSheet to use for this animation. Indexes can be repeated.
      * */
     public Animation(int frameTime, int loops, SpriteSheet sheet, int flip, int[] tileIndexes){
+        originalLoops = loops;
         this.loops = loops;
         this.flip = flip;
         frameDur = 0;
@@ -54,6 +61,7 @@ public class Animation {
      * @param tileIndexes indexes in tileSheet to use for this animation. Indexes can be repeated.
      * */
     public Animation(int frameTime, int loops, TileSheet sheet, int[] tileIndexes){
+        originalLoops = loops;
         this.loops = loops;
         this.flip = 0;
         frameDur = 0;
@@ -78,24 +86,41 @@ public class Animation {
         return loops < 1;
     }
 
-    public void advance(double ms) {
+    /** reset loop count for animation */
+    public void reset() {
+        if (originalLoops <= 0) return;
+        loops = originalLoops;
+        frameIdx = 0;
+        frameDur = 0;
+    }
+
+    public Animation advance(double ms) {
         frameDur += ms;
         while (frameDur > time[frameIdx]) {
             frameDur -= time[frameIdx];
             frameIdx++;
-            if (frameIdx >= frameCount) {
-                if (loops != 0) {
-                    loops--;
-                    if (loops < -1) loops = -1;
-                    frameIdx = 0;
-                } else {
-                    frameIdx = frameCount - 1;
-                }
+
+            if (frameIdx < frameCount) continue;
+
+            // cycle ended
+            if (loops > 1) {
+                loops--;
+                frameIdx = 0;
+            } else if (loops == FOREVER){
+                frameIdx = 0;
+            } else if (loops == FLIP_REPEAT){
+                flip = flip == Flip.Horz ? Flip.None : Flip.Horz;
+                frameIdx = 0;
+            } else {
+                loops = 0;
+                frameIdx = frameCount - 1;
             }
         }
+        return this;
     }
 
     public Bitmap bitmap() {
         return bitmap[flip];
     }
+
 }
