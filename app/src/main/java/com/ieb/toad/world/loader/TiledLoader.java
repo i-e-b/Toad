@@ -15,6 +15,8 @@ import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.OneWayPlatform;
 import com.ieb.toad.world.platforms.Platform;
+import com.ieb.toad.world.portals.DoorBox;
+import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNullByDefault;
 import org.w3c.dom.Document;
@@ -64,6 +66,7 @@ public class TiledLoader {
 
     public final List<Thing> fgThings; // used for platforms, creeps and player
     public final List<Thing> bgThings; // used for collectables and grass
+    public final List<DoorThing> doorThings; // used for doors and portals
     public Toad toad;
 
     private final Dictionary<String, LayerChunk> backgroundChunks, mainChunks, foregroundChunks;
@@ -73,6 +76,7 @@ public class TiledLoader {
         spriteMgr = new SpriteSheetManager(context);
         fgThings = new ArrayList<>(128);
         bgThings = new ArrayList<>(128);
+        doorThings = new ArrayList<>(32);
 
         backgroundChunks = new Hashtable<>(64);
         mainChunks = new Hashtable<>(64);
@@ -244,7 +248,7 @@ public class TiledLoader {
                 if (t.isBlank()) continue;
                 int tile = Integer.parseInt(t) - 1; // 0=empty -> -1=empty
 
-                spawnFromTile(tile, hw, dx, x, tilePx, dy, y, ix, iy);
+                if (tile >= 0) spawnFromTile(tile, hw, dx, x, tilePx, dy, y, ix, iy);
                 x++;
             }
         }
@@ -391,6 +395,11 @@ public class TiledLoader {
 
                 case "oneway":
                     fgThings.add(new OneWayPlatform(x, y, w, h));
+                    break;
+
+                case "door":
+                    String target = getStrAttr(attrs, "name");
+                    doorThings.add(new DoorBox(x,y,w,h, target, objId));
                     break;
 
                 case "spike":

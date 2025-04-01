@@ -18,7 +18,7 @@ public class Coin extends Thing {
         anim = new Animation(100, Animation.FOREVER, sprites.stuff, Flip.None,
                 new int[]{66,67,68,69,70,65,71});
 
-        type = Collision.COLLECTABLE;
+        type = Collision.PASS_THROUGH;
         collected = false;
         radius = -1;
         mass = 0.8;

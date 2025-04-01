@@ -14,8 +14,12 @@ public abstract class Collision {
     /** An AI sensor */
     public static final int SENSOR = 4;
 
-    /** A collectable thing. These do not do collision effects (bouncing/pushing etc) */
-    public static final int COLLECTABLE = 8;
+    /** Do NOT do collision effects (bouncing/pushing etc) */
+    public static final int PASS_THROUGH = 8;
+
+    /** A door, jar-top, portal, etc. Checks player input and changes position */
+    public static final int DOOR = 16;
+
     // ...
 
     /** player hit box */

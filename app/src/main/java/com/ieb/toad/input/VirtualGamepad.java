@@ -24,7 +24,11 @@ public class VirtualGamepad {
     }
     /** True if we are getting a 'up' signal somewhere */
     public static boolean isUp(){
-        return DPadVert < -0.5 || LeftStickVert < -0.5 || ButtonA > 0.5;
+        return DPadVert < -0.5 || LeftStickVert < -0.5;
+    }
+    /** True if we are getting a 'up' signal somewhere */
+    public static boolean isJump(){
+        return ButtonA > 0.5;
     }
     /** True if we are getting a 'down' signal somewhere */
     public static boolean isDown(){
@@ -320,46 +324,52 @@ public class VirtualGamepad {
     private static void mapTouchToPad() {
         if (touchHeight < 3 || touchWidth < 3) return; // screen is not active yet
         /*
-            Screen is split in 3 by width, then by top / bottom:
+            Screen is split 3x3:
 
+          |      |   up   |       |
+          |------+--------+-------|
           | jump | action | jump  |
           |------+--------+-------|
           | left | down   | right |
 
           Pressing left + right means jump. If holding right, tapping left starts a jump.
-          Action maps to ButtonX
+          Action maps to ButtonX, jump to ButtonA
 
           First we work out an internal logical state, then we map it back on to the virtual controls.
          */
 
         // virtual button states
-        boolean up = false, left = false, right = false, down = false, action = false;
+        boolean jump = false, up = false, left = false, right = false, down = false, action = false;
 
         // Scan all touch points
         for (int i = 0; i < touchDown.length; i++) {
             if (!touchDown[i]) continue;
             double fx = touchX[i] / (touchWidth + 1);
             double fy = touchY[i] / (touchHeight + 1);
-            //event.getPointerCoords(i, ptr);
-            //ptr.pressure
 
             if (fx <= 0.33) { // left side
-                if (fy < 0.5) { // top-left
-                    up = true;
-                } else {
+                if (fy < 0.33) { // top-left
+                    // not mapped
+                } else if (fy >= 0.66) { //  bottom-left
                     left = true;
+                } else {
+                    jump = true;
                 }
             } else if (fx >= 0.66) { // right side
-                if (fy < 0.5) { // top-right
-                    up = true;
-                } else {
+                if (fy < 0.33) { // top-right
+                    // not mapped
+                } else if (fy >= 0.66) { //  bottom-right
                     right = true;
+                } else {
+                    jump = true;
                 }
             } else { // centre
-                if (fy < 0.5) {
-                    action = true;
-                } else {
+                if (fy < 0.33) { // top
+                    up = true;
+                } else if (fy >= 0.66) { //  bottom
                     down = true;
+                } else {
+                    action = true; // middle
                 }
             }
         }
@@ -372,11 +382,11 @@ public class VirtualGamepad {
 
         if (left && (leftIsUp || isRight())){
             left = false;
-            up = true;
+            jump = true;
             leftIsUp = true;
         } else if (right && (rightIsUp || isLeft())) {
             right = false;
-            up = true;
+            jump = true;
             rightIsUp = true;
         }
 
@@ -384,10 +394,12 @@ public class VirtualGamepad {
         DPadVert = 0.0f;
         DPadHorz = 0.0f;
         ButtonX = 0.0f;
+        ButtonA = 0.0f;
 
         // Map state onto virtual controls
-        if (up) DPadVert = -1.0f;
+        if (jump) ButtonA = 1.0f;
         if (down) DPadVert = 1.0f;
+        if (up) DPadVert = -1.0f;
         if (left) DPadHorz = -1.0f;
         if (right) DPadHorz = 1.0f;
         if (action) ButtonX = 1.0f;

@@ -11,6 +11,7 @@ import com.ieb.toad.world.core.Simulator;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.loader.LayerChunk;
 import com.ieb.toad.world.loader.TiledLoader;
+import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +47,7 @@ public class Level implements SimulationManager {
         constraints = new ArrayList<>();
         things.addAll(level.bgThings);
         things.addAll(level.fgThings);
+        things.addAll(level.doorThings);
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
@@ -58,7 +60,8 @@ public class Level implements SimulationManager {
         // main
         drawLayer(camera, level.getMainChunks(coverage));
 
-        for (Thing thing : things) {
+        for (int i = 0; i < things.size(); i++) {
+            Thing thing = things.get(i);
             thing.draw(camera);
         }
 
@@ -133,6 +136,33 @@ public class Level implements SimulationManager {
             }
         }
         things.remove(t);
+    }
+
+    @Override
+    public void moveNextDoor(String target, int srcObjId) {
+        DoorThing lowest = null; // door with lowest ID and the same target
+        DoorThing next = null; // lowest ID greater than src, with same target
+
+        for (DoorThing door : level.doorThings) {
+            if (!door.target.equals(target)) continue;
+            if (door.objId == srcObjId) continue;
+
+            if (lowest == null || lowest.objId > door.objId) lowest = door;
+            if (door.objId > srcObjId){
+                if (next == null || next.objId > door.objId) next = door;
+            }
+        }
+
+        // chose next, or go back to first. If no target, do nothing.
+        if (next == null) next = lowest;
+        if (next == null) return;
+
+        // move toad to new location
+        next.hold(); // stop doors triggering until control is released
+        level.toad.vx = 0.0;
+        level.toad.vy = 0.0;
+        level.toad.px = next.px;
+        level.toad.py = next.py;
     }
 
     public int getBackgroundColor() {

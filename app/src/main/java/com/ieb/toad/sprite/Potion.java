@@ -21,7 +21,7 @@ public class Potion extends Thing {
         bottleAnim = new Animation(150, Animation.FOREVER, sprites.stuff, Flip.None,
                 new int[]{80,81,82,83});
 
-        type = Collision.COLLECTABLE;
+        type = Collision.PASS_THROUGH;
         collected = false;
         radius = -1;
         mass = 0.8;

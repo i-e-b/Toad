@@ -1,7 +1,6 @@
 package com.ieb.toad.sprite;
 
 import com.ieb.toad.sprite.core.Animation;
-import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
@@ -18,7 +17,7 @@ public class Grass extends Thing {
         anim = new Animation(150, Animation.FOREVER, sprites.tiles,
                 new int[]{520,521,522,523,524,525,526});
 
-        type = Collision.COLLECTABLE;
+        type = Collision.PASS_THROUGH;
         collected = false;
         radius = -1;
         mass = 0.8;

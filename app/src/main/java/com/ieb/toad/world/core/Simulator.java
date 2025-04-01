@@ -142,7 +142,7 @@ public class Simulator {
 
             boolean impacted = false;
             if (other.radius > 0 && self.radius > 0) {
-                boolean collides = ((self.type | other.type) & Collision.COLLECTABLE) != Collision.COLLECTABLE;
+                boolean collides = ((self.type | other.type) & Collision.PASS_THROUGH) != Collision.PASS_THROUGH;
                 double time = impactTime(self, other);
 
                 if (time < 0) { // objects are overlapping

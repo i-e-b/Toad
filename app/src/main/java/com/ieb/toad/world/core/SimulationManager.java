@@ -13,4 +13,7 @@ public interface SimulationManager {
 
     /** Remove a thing from the simulation. This will also break any linked constraints */
     void removeThing(Thing t);
+
+    /** Move player to next door with name 'target', starting from first after srcObjId */
+    void moveNextDoor(String target, int srcObjId);
 }

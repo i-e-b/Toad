@@ -28,9 +28,6 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public int think(SimulationManager level, int ms) {return KEEP;}
-
-    @Override
     public void draw(@NotNull Camera camera) {
         //camera.setARGB(128, 100,120, 200);
         //camera.drawRect(hitBox);

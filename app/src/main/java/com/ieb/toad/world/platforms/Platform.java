@@ -25,9 +25,6 @@ public class Platform extends Thing {
     }
 
     @Override
-    public int think(SimulationManager level, int ms) {return KEEP;}
-
-    @Override
     public void draw(@NotNull Camera camera) {
         //camera.setARGB(128, 0,128, 0);
         //camera.drawRect(hitBox);

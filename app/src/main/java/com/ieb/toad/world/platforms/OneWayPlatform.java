@@ -26,9 +26,6 @@ public class OneWayPlatform extends Thing {
     }
 
     @Override
-    public int think(SimulationManager level, int ms) {return KEEP;}
-
-    @Override
     public void draw(@NotNull Camera camera) {
         //camera.setARGB(128, 0,0, 170);
         //camera.drawRect(hitBox);

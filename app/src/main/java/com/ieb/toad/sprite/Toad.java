@@ -4,7 +4,6 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
-import com.ieb.toad.world.constraints.FixedLength;
 import com.ieb.toad.world.constraints.VerticalSpring;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
@@ -56,7 +55,7 @@ public class Toad extends Thing {
             desireDirection = -1;
         }
 
-        if (btnUp){
+        if (btnJump){
             if (anyConstraints()){ // assume it's a standing-constraint for now. TODO: be more specific
                 level.removeConstraint(this.constraints.get(0));
                 jumpTimeLeftMs = JUMP_TIME_MS;
@@ -77,7 +76,7 @@ public class Toad extends Thing {
     private void mapControls() {
         btnDown = VirtualGamepad.isDown();
         btnRight = VirtualGamepad.isRight();
-        btnUp = VirtualGamepad.isUp();
+        btnJump = VirtualGamepad.isJump();
         btnLeft = VirtualGamepad.isLeft();
         btnAction = VirtualGamepad.isAction();
     }
@@ -87,7 +86,7 @@ public class Toad extends Thing {
         vx += dx;
     }
 
-    private boolean btnAction, btnUp, btnDown, btnRight, btnLeft, jumpUsed;
+    private boolean btnAction, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
 
     @Override
     public void draw(@NotNull Camera camera) {

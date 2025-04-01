@@ -2,7 +2,6 @@ package com.ieb.toad.world;
 
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
-import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,4 @@ public class PointThing extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {}
-
-    @Override
-    public int think(SimulationManager level, int ms) {return KEEP;}
 }

@@ -29,12 +29,7 @@ public class ConveyorPlatform extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera) {
-        //camera.setARGB(128, 120,100, 100);
-        //camera.drawRect(hitBox);
     }
-
-    @Override
-    public int think(SimulationManager level, int ms) {return KEEP;}
 
     @Override
     public void preImpactTest(Thing other) {

@@ -19,7 +19,7 @@ public class Cherry extends Thing {
                 new int[]{84,85,86,87,86,85});
         //        new int[]{88,89,90,91,90,89}); <-- star
 
-        type = Collision.COLLECTABLE;
+        type = Collision.PASS_THROUGH;
         collected = false;
         radius = -1;
         mass = 0.8;

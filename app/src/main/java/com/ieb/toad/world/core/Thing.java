@@ -1,7 +1,5 @@
 package com.ieb.toad.world.core;
 
-import com.ieb.toad.world.constraints.FixedLength;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -74,7 +72,7 @@ public abstract class Thing {
 
     /** Perform any AI functions. This is called once per 10 physics frames.
      * Should return KEEP or REMOVE */
-    public abstract int think(SimulationManager level, int ms);
+    public int think(SimulationManager level, int ms) {return KEEP;}
 
     /**
      * Do any updates before an impact is tested and resolved.
