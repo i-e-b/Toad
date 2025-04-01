@@ -6,6 +6,7 @@ import android.graphics.Rect;
 /** Image with a set of regularly sized and spaced square tiles */
 public class TileSheet {
 
+    public static final int ANIMATION_THRESHOLD = 520;
     public final Bitmap bitmap;
 
     public final Rect[] tiles;
@@ -37,7 +38,7 @@ public class TileSheet {
     /** Get a tile based on index. If in an animated range, this may change based on animationFrame */
     public Rect getTile(int tileIdx, int animationFrame) {
         // Non-animated tiles
-        if (tileIdx < 520) return tiles[tileIdx];
+        if (tileIdx < ANIMATION_THRESHOLD) return tiles[tileIdx];
 
         if (tileIdx <= 527) return animRange(tileIdx, 520, animationFrame, 8);
         if (tileIdx <= 531) return animRange(tileIdx, 528, animationFrame, 4);

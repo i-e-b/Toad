@@ -41,13 +41,14 @@ public class DoorBox extends DoorThing {
         if (!triggered) return KEEP;
 
         // switch location
-        level.moveNextDoor(target, objId);
         triggered = false;
+        level.moveNextDoor(target, objId);
         return KEEP;
     }
 
     @Override
-    public void hold(){
+    public void hold() {
+        triggered = false;
         onHold = true;
     }
 

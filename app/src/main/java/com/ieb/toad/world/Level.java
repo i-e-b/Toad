@@ -168,4 +168,21 @@ public class Level implements SimulationManager {
     public int getBackgroundColor() {
         return level.backgroundColor;
     }
+
+    public void backgroundUpdates(Camera camera) {
+        Rect coverage = camera.getCoverage();
+
+        // Update layer animations if required
+        refreshIfDirty(level.getBackgroundChunks(coverage));
+        refreshIfDirty(level.getMainChunks(coverage));
+        refreshIfDirty(level.getForegroundChunks(coverage));
+    }
+
+    private void refreshIfDirty(Enumeration<LayerChunk> chunks) {
+        if (chunks == null) return;
+        while (chunks.hasMoreElements()) {
+            LayerChunk chunk = chunks.nextElement();
+            chunk.refreshIfDirty();
+        }
+    }
 }

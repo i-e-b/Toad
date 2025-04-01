@@ -43,7 +43,7 @@ public class FirstScreen extends BaseView {
      * @param time system time in milliseconds
      */
     @Override
-    protected void OnTimerTick(long time){
+    protected void OnSimulationTimerTick(long time){
         if (frameActive) return;
 
         // Do frame logic, call invalidate
@@ -60,6 +60,12 @@ public class FirstScreen extends BaseView {
 
         frameActive = false;
         invalidate();
+    }
+
+    /** Override to perform background actions */
+    protected void OnBackgroundTimerTick(){
+        if (!level.loadedOk) return;
+        level.backgroundUpdates(camera);
     }
 
     @Override
