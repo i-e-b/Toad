@@ -3,7 +3,6 @@ package com.ieb.toad.world;
 import android.graphics.Rect;
 
 import com.ieb.toad.Main;
-import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
@@ -55,10 +54,10 @@ public class Level implements SimulationManager {
         Rect coverage = camera.getCoverage();
 
         // background
-        drawLayer(camera, level.getBackgroundChunks(coverage));
+        drawLayer(camera, level.getBackgroundChunks(coverage), frameMs);
 
         // main
-        drawLayer(camera, level.getMainChunks(coverage));
+        drawLayer(camera, level.getMainChunks(coverage), frameMs);
 
         for (int i = 0; i < things.size(); i++) {
             Thing thing = things.get(i);
@@ -66,15 +65,16 @@ public class Level implements SimulationManager {
         }
 
         // foreground
-        drawLayer(camera, level.getForegroundChunks(coverage));
+        drawLayer(camera, level.getForegroundChunks(coverage), frameMs);
     }
 
-    private void drawLayer(Camera camera, Enumeration<LayerChunk> chunks) {
+    private void drawLayer(Camera camera, Enumeration<LayerChunk> chunks, int frameMs) {
         // TODO: need to handle animated tiles somehow
         if (chunks == null) return;
         while (chunks.hasMoreElements()) {
             LayerChunk chunk = chunks.nextElement();
             camera.drawBitmap(chunk.getBitmap(), chunk.left, chunk.top, TiledLoader.SCALE);
+            chunk.advanceTime(frameMs);
         }
     }
 

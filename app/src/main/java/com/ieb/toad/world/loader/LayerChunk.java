@@ -2,6 +2,7 @@ package com.ieb.toad.world.loader;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -17,6 +18,8 @@ public class LayerChunk {
     public final String key;
 
     private Bitmap cache;
+    private int animationTime, animationFrame;
+    private boolean dirty;
 
     /**
      * Create a new layer chunk
@@ -34,21 +37,26 @@ public class LayerChunk {
         left = x;
         top = y;
         key = x+":"+y;
+        dirty = true;
     }
 
     /** Return a bitmap for this layer chunk.
      * This will be at a single pixel scale.
      */
     public Bitmap getBitmap() {
-        if (cache != null) return cache;
+        if (cache != null && !dirty) return cache;
 
-        Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
         int tilePx = sprites.tiles.pixelSize;
-        int pixelWidth = width * tilePx;
-        int pixelHeight = height * tilePx;
 
-        cache = Bitmap.createBitmap(pixelWidth, pixelHeight, bitmapConfig);
+        if (cache == null){
+            int pixelWidth = width * tilePx;
+            int pixelHeight = height * tilePx;
+            Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
+
+            cache = Bitmap.createBitmap(pixelWidth, pixelHeight, bitmapConfig);
+        }
         Canvas canvas = new Canvas(cache);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         Rect dst = new Rect();
 
         for (int iy = 0; iy < height; iy++){
@@ -59,7 +67,7 @@ public class LayerChunk {
                 if (tileIdx < 0) continue;
 
                 int px = ix * tilePx;
-                Rect src = sprites.tiles.tiles[tileIdx];
+                Rect src = sprites.tiles.getTile(tileIdx, animationFrame);
                 dst.set(px,py,px+tilePx, py+tilePx);
                 canvas.drawBitmap(sprites.tiles.bitmap, src, dst, null);
             }
@@ -71,5 +79,15 @@ public class LayerChunk {
     public void set(int idx, int tile) {
         if (idx >= tiles.length) return;
         tiles[idx] = tile;
+    }
+
+    /** step time forward for animations */
+    public void advanceTime(int frameMs) {
+        animationTime += frameMs;
+        if (animationTime > 200){
+            animationFrame++;
+            animationTime -= 200;
+            dirty = true;
+        }
     }
 }
