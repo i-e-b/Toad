@@ -5,31 +5,30 @@ import com.ieb.toad.world.core.Thing;
 
 public class StandingOnGround extends Constraint {
     private final Thing top;
-    private final Thing bottom;
+    private final Thing ground;
     private final double diffHeight;
 
     /** Try to keep one thing on top of another.
      * Used for player standing on a moving object */
-    public StandingOnGround(Thing top, Thing bottom){
+    public StandingOnGround(Thing top, Thing ground){
         this.top = top;
-        this.bottom = bottom;
+        this.ground = ground;
 
         diffHeight = top.radius + 2;
 
         top.linkConstraint(this);
-        bottom.linkConstraint(this);
     }
 
     @Override
     public int apply() {
         // Make sure the ground is under us
-        bottom.preImpactTest(top);
+        ground.preImpactTest(top);
 
-        double adx = Math.abs(bottom.px - top.px);
-        double dy = bottom.py - top.py;
+        double adx = Math.abs(ground.px - top.px);
+        double dy = ground.py - top.py;
 
         // clean up
-        bottom.postImpactTest();
+        ground.postImpactTest();
 
         if (dy > diffHeight) return BROKEN; // off surface from the top
 
@@ -40,6 +39,5 @@ public class StandingOnGround extends Constraint {
     @Override
     public void unlink() {
         top.unlinkConstraint(this);
-        bottom.unlinkConstraint(this);
     }
 }

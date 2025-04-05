@@ -4,6 +4,7 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.constraints.OnLadder;
 import com.ieb.toad.world.constraints.StandingOnCreep;
 import com.ieb.toad.world.constraints.StandingOnGround;
 import com.ieb.toad.world.core.Camera;
@@ -11,6 +12,7 @@ import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.platforms.LadderPlatform;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +34,9 @@ public class Toad extends Thing {
     private double lastFramePx, lastFramePy, animMs;
     private boolean grounded; // true when we are standing on something and can jump
     private boolean climbing; // true when we are climbing a ladder or vine
+    private boolean canClimb; // true when could start climbing
+
+    // Note, if grounded && climbing, show grounded animation
 
     /** @noinspection FieldCanBeLocal*/
     private final long JUMP_TIME_MS = 165;
@@ -77,6 +82,20 @@ public class Toad extends Thing {
         if (btnLeft) {
             addPlayerSpeed(-50, 0);
             desireDirection = -1;
+        }
+
+        if (canClimb){
+            if (btnDown){
+                vy = 250;
+            } else if (btnUp){
+                grounded = false;
+                vy = -200;
+            }
+            climbing = !grounded;
+            gravity = climbing ? 0.0 : 1.0; // don't fall while climbing
+        } else {
+            climbing = false;
+            gravity = 1.0;
         }
 
         if (btnJump){
@@ -132,10 +151,12 @@ public class Toad extends Thing {
     }
 
     private Animation pickAnimation(double dx, double dy, double animMs) {
+        if (climbing){
+            return climb.advance(dy);
+        }
         if (grounded){
             if (btnAction) return desireDirection > 0 ? pull_right.advance(animMs) : pull_left.advance(animMs);
             if (btnDown) return crouch_centre.advance(animMs);
-            if (btnUp) return climb.advance(dy);
             if (Math.abs(vx) < 1) return desireDirection > 0 ? stand_right : stand_left;
 
             Animation a = desireDirection > 0 ? run_right : run_left;
@@ -153,15 +174,26 @@ public class Toad extends Thing {
     public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
         if (!impacted) return;
 
-        if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
+        if (hasFlag(other.type, Collision.CREEP)){
+            // we hit a creep. Might want to stand on it
             if (!grounded && this.canLandOnTop(other)){
                 level.addConstraint(new StandingOnCreep(this, other));
             }
-        } else if (other.type == Collision.WALL) { // we might be standing on a floor
-            if (!grounded && this.canLandOnTop(other)) {
+        } else if (hasFlag(other.type, Collision.WALL)) {
+            // we might be standing on a floor on over a ladder/vine
+            Class<? extends Thing> wallType = other.getClass();
+
+            if (wallType == LadderPlatform.class) {
+                if (!canClimb) level.addConstraint(new OnLadder(this, other));
+            }
+            else if (!grounded && this.canLandOnTop(other)) {
                 level.addConstraint(new StandingOnGround(this, other));
             }
         }
+    }
+
+    private static boolean hasFlag(int type, int flag) {
+        return (type & flag) == flag;
     }
 
     /** [Optional Override]
@@ -182,16 +214,18 @@ public class Toad extends Thing {
 
     private void updateConstraintState(){
         // Reset first
-        boolean onGround = false;
+        grounded = false;
+        canClimb = false;
 
         // Update based on current constraints
         for (Constraint c : linkedConstraints()) {
             Class<? extends Constraint> cType = c.getClass();
             if (cType == StandingOnCreep.class || cType == StandingOnGround.class){
-                onGround = true;
+                grounded = true;
+            }
+            else if (cType == OnLadder.class){
+                canClimb = true;
             }
         }
-
-        grounded = onGround;
     }
 }
