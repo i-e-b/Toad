@@ -114,6 +114,7 @@ public class Animation {
             } else {
                 loops = 0;
                 frameIdx = frameCount - 1;
+                break;
             }
         }
         return this;

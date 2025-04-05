@@ -28,10 +28,10 @@ public class Toad extends Thing {
     private final Animation pull_right;
 
     private int desireDirection = 1; // negative = left, positive = right.
-    private Thing climbing = null; // vine/ladder
     private long jumpTimeLeftMs;
     private double lastFramePx, lastFramePy, animMs;
     private boolean grounded; // true when we are standing on something and can jump
+    private boolean climbing; // true when we are climbing a ladder or vine
 
     /** @noinspection FieldCanBeLocal*/
     private final long JUMP_TIME_MS = 165;
@@ -65,11 +65,11 @@ public class Toad extends Thing {
         animMs += ms;
         // apply control
         mapControls();
-        applyControlsToPhysics(level, ms);
+        applyControlsToPhysics(ms);
         return KEEP;
     }
 
-    private void applyControlsToPhysics(SimulationManager level, int ms) {
+    private void applyControlsToPhysics(int ms) {
         if (btnRight) {
             addPlayerSpeed(50, 0);
             desireDirection = 1;
@@ -80,19 +80,18 @@ public class Toad extends Thing {
         }
 
         if (btnJump){
-            if (grounded) {
-                jumpUsed = false;
+            if (grounded && !jumpUsed) {
+                jumpUsed = true;
                 jumpTimeLeftMs = JUMP_TIME_MS;
             }
 
-            if (jumpTimeLeftMs > 0 && !jumpUsed){
+            if (jumpTimeLeftMs > 0){
                 jumpTimeLeftMs -= ms;
                 vy = -900;
-            } else {
-                jumpUsed = true;
             }
         } else {
-            jumpUsed = true;
+            jumpTimeLeftMs = 0;
+            jumpUsed = false;
         }
     }
 
@@ -156,11 +155,11 @@ public class Toad extends Thing {
 
         if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
             if (!grounded && this.canLandOnTop(other)){
-                level.addConstraint(new StandingOnCreep(this, other, 16));
+                level.addConstraint(new StandingOnCreep(this, other));
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
             if (!grounded && this.canLandOnTop(other)) {
-                level.addConstraint(new StandingOnGround(this, other, 8));
+                level.addConstraint(new StandingOnGround(this, other));
             }
         }
     }
