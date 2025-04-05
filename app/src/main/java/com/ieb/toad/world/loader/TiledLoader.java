@@ -67,6 +67,7 @@ public class TiledLoader {
     public final List<Thing> fgThings; // used for platforms, creeps and player
     public final List<Thing> bgThings; // used for collectables and grass
     public final List<DoorThing> doorThings; // used for doors and portals
+    public final List<CameraZone> camZones; // camera pinning and similar effects
     public Toad toad;
 
     private final Dictionary<String, LayerChunk> backgroundChunks, mainChunks, foregroundChunks;
@@ -77,6 +78,7 @@ public class TiledLoader {
         fgThings = new ArrayList<>(128);
         bgThings = new ArrayList<>(128);
         doorThings = new ArrayList<>(32);
+        camZones = new ArrayList<>(16);
 
         backgroundChunks = new Hashtable<>(64);
         mainChunks = new Hashtable<>(64);
@@ -322,6 +324,7 @@ public class TiledLoader {
                     break;
 
                 case "camera_zones":
+                    processCamZones(group.getChildNodes());
                     break;
 
                 default:
@@ -363,6 +366,56 @@ public class TiledLoader {
                 default:
                     Log.w(TAG, "loadLevel: unknown spawn type: '"+type+"' in objectId="+objId);
                     break;
+            }
+        }
+    }
+
+
+    private void processCamZones(NodeList group) {
+        int count = group.getLength();
+        for (int i = 0; i < count; i++) {
+            Node obj = group.item(i);
+            String name = obj.getNodeName();
+            if (name == null || !name.equals("object")) continue;
+            NamedNodeMap attrs = obj.getAttributes();
+
+            /*
+  <object id="23" x="-256" y="-48" width="768" height="304"/>
+  <object id="43" x="768" y="-80" width="752" height="400">
+   <properties>
+    <property name="color" type="color" value="#ff000000"/>
+   </properties>
+  </object>*/
+            int objId = getIntAttr(attrs, "id");
+            int x = SCALE * (int)getDoubleAttr(attrs, "x");
+            int y = SCALE * (int)getDoubleAttr(attrs, "y");
+            int w = SCALE * (int)getDoubleAttr(attrs, "width");
+            int h = SCALE * (int)getDoubleAttr(attrs, "height");
+
+            CameraZone cz = new CameraZone(x,y,w,h);
+            camZones.add(cz);
+
+            // might have a background color:
+            if (obj.hasChildNodes()){
+                NodeList props = obj.getChildNodes().item(0).getChildNodes();
+                int propCount = props.getLength();
+                for (int j = 0; j < propCount; j++) {
+                    Node prop = props.item(j);
+                    String propName = prop.getNodeName();
+                    if (propName == null || !propName.equals("property")) continue;
+
+                    NamedNodeMap propAttrs = prop.getAttributes();
+                    String key = getStrAttr(propAttrs, "name");
+                    switch (key){
+                        case "color":
+                            cz.color = getHexAttr(propAttrs, "value");
+                            break;
+
+                        default:
+                            Log.w(TAG, "processCamZones: unknown property '"+key+"' in objId="+objId);
+                            break;
+                    }
+                }
             }
         }
     }

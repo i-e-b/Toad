@@ -50,7 +50,7 @@ public class Level implements SimulationManager {
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
-        camera.centreOn(level.toad.px, level.toad.py);
+        camera.centreOn(level.toad.px, level.toad.py, level.camZones);
         Rect coverage = camera.getCoverage();
 
         // background

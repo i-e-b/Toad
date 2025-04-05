@@ -46,6 +46,7 @@
         "level0.tmx"
     ],
     "project": "toad.tiled-project",
+    "property.type": "color",
     "recentFiles": [
         "level0.tmx",
         "level tiles.tsx",

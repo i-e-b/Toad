@@ -6,13 +6,16 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.ieb.toad.sprite.core.Animation;
+import com.ieb.toad.world.loader.CameraZone;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /** Helper to draw on a canvas with an offset */
 public class Camera {
     private Canvas canvas;
-    private int dx,dy;
+    private int left, top;
     private int cx,cy;
     private Rect dstRect, srcRect;
     private int width, height;
@@ -30,8 +33,8 @@ public class Camera {
         this.canvas = canvas;
         width = canvas.getWidth();
         height = canvas.getHeight();
-        dx = 0;
-        dy = 0;
+        left = 0;
+        top = 0;
         dstRect = new Rect();
         srcRect = new Rect();
     }
@@ -45,15 +48,46 @@ public class Camera {
     }
 
     /** Set the camera offset */
-    public void centreOn(double x, double y) {
+    public void centreOn(double x, double y, List<CameraZone> camZones) {
+        CameraZone zone = null;
         cx = (int)x;
         cy = (int)y;
-        dx = cx - (width / 2);
-        dy = cy - (height / 2);
+
+        for (int i = 0; i < camZones.size(); i++) {
+            CameraZone cz = camZones.get(i);
+            if (cz.rect.contains(cx,cy)) {
+                zone = cz;
+                break;
+            }
+        }
+
+        left = cx - (width / 2);
+        top = cy - (height / 2);
+
+        if (zone == null) return; // No zone. just centre the cam
+
+        // Force the view inside the zone
+        if (top < zone.rect.top){
+            top = zone.rect.top;
+        }
+        int bottom = top + height;
+        if (bottom > zone.rect.bottom){
+            int dy = bottom - zone.rect.bottom;
+            top -= dy;
+        }
+
+        int right = left + width;
+        if (right > zone.rect.right){
+            int dx = right - zone.rect.right;
+            left -= dx;
+        }
+        if (left < zone.rect.left){
+            left = zone.rect.left;
+        }
     }
 
     public void drawRect(Rect rect) {
-        dstRect.set(rect.left - dx, rect.top - dy, rect.right - dx, rect.bottom - dy);
+        dstRect.set(rect.left - left, rect.top - top, rect.right - left, rect.bottom - top);
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
@@ -71,7 +105,7 @@ public class Camera {
         int h = img.getHeight();
 
         srcRect.set(0,0, w, h);
-        dstRect.set(left-dx, top-dy, left-dx + w*scale, top-dy + h*scale);
+        dstRect.set(left- this.left, top- this.top, left- this.left + w*scale, top- this.top + h*scale);
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
@@ -96,7 +130,7 @@ public class Camera {
         int left = cx - hw;
         int h = src.height() * a.scale;
 
-        dstRect.set(left - dx, dst.bottom - h - dy, left - dx + w, dst.bottom - dy);
+        dstRect.set(left - this.left, dst.bottom - h - top, left - this.left + w, dst.bottom - top);
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
@@ -118,7 +152,7 @@ public class Camera {
         int h = src.height() * a.scale;
         int b = (int)(py+radius);
 
-        dstRect.set(left - dx, b - h - dy, left - dx + w, b - dy);
+        dstRect.set(left - this.left, b - h - top, left - this.left + w, b - top);
 
         // skip if offscreen
         if (dstRect.right < 0 || dstRect.left > width) return;
