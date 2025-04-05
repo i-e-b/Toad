@@ -3,7 +3,13 @@ package com.ieb.toad.world.core;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
@@ -65,16 +71,18 @@ public abstract class Thing {
      * This is for reference; constraints are applied from the Simulator
      * using the level's complete constraint list.
      */
-    protected List<Constraint> constraints;
+    protected Set<Constraint> constraints;
 
-    /** Render this thing */
-    public abstract void draw(@NotNull Camera camera);
+    /** [Optional Override]
+     * Render this thing */
+    public void draw(@NotNull Camera camera){}
 
-    /** Perform any AI functions. This is called once per 10 physics frames.
+    /** [Optional Override]
+     * Perform any AI functions. This is called once per 10 physics frames.
      * Should return KEEP or REMOVE */
     public int think(SimulationManager level, int ms) {return KEEP;}
 
-    /**
+    /** [Optional Override]
      * Do any updates before an impact is tested and resolved.
      * This allows updates to position to make a virtual impact point for complex shapes.
      * @param other a nearby object
@@ -82,13 +90,13 @@ public abstract class Thing {
     public void preImpactTest(Thing other) {
     }
 
-    /**
+    /** [Optional Override]
      * You should reset any virtual changes made in `preImpactTest` here.
      */
     public void postImpactTest() {
     }
 
-    /**
+    /** [Optional Override]
      * Do any updates after an impact is detected
      * This allows updates based on virtual impact point for complex shapes.
      * This is called even if no impact took place.
@@ -99,16 +107,24 @@ public abstract class Thing {
     public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
     }
 
+    /** [Optional Override]
+     * Perform any actions or checks when a constrain is first added
+     */
+    protected void constrainAdded(Constraint c) {}
 
-    protected double clamp(double v, double min, double max) {
+    /** [Optional Override]
+     * Perform any actions or checks when a constrain is first removed
+     */
+    protected void constrainRemoved(Constraint c) {}
+
+    protected final double clamp(double v, double min, double max) {
         return Math.min(Math.max(v, min), max);
     }
 
 
     /** Returns true only if this thing COULD land on the other */
-    public boolean canLandOnTop(Thing other){
+    public final boolean canLandOnTop(Thing other){
         return !((this.py + this.radius - 1) > (other.py - other.radius + 1)); // must be above
-        //return !(this.vy - other.vy < 0); // true if going down relative to other
     }
 
     /** bottom most edge */
@@ -121,25 +137,28 @@ public abstract class Thing {
     public double left(){return px - radius;}
 
     /** Link a constraint to this Thing, for use with tracking */
-    public void linkConstraint(Constraint c) {
-        if (constraints == null) constraints = new ArrayList<>(4);
-        constraints.add(c);
+    public final void linkConstraint(Constraint c) {
+        if (constraints == null) constraints = new HashSet<>();
+        if (constraints.add(c)) constrainAdded(c);
     }
 
     /** Remove a link to a constraint to this Thing, for use with tracking */
-    public void unlinkConstraint(Constraint c) {
+    public final void unlinkConstraint(Constraint c) {
         if (constraints == null) return;
-        constraints.remove(c);
+        if (constraints.remove(c)) constrainRemoved(c);
     }
 
     /** Returns true if there are any constraints linked to this thing */
-    public boolean anyConstraints(){
+    public final boolean anyConstraints(){
         if (constraints == null) return false;
         return !constraints.isEmpty();
     }
 
-    /** Returns list of linked constraints. May be null */
-    public List<Constraint> linkedConstraints() {
+    /** Returns list of linked constraints. May be empty, but won't be null.
+     * DO NOT modify this collection */
+    public final Iterable<Constraint> linkedConstraints() {
+        if (constraints == null) return emptyConstraints;
         return constraints;
     }
+    private static final Collection<Constraint> emptyConstraints = new LinkedList<>();
 }

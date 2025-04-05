@@ -2,12 +2,8 @@ package com.ieb.toad.world.platforms;
 
 import android.graphics.Rect;
 
-import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
-import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
-
-import org.jetbrains.annotations.NotNull;
 
 public class LifterPlatform extends Thing {
 
@@ -25,12 +21,6 @@ public class LifterPlatform extends Thing {
         elasticity = 0.1;
         drag = 1.0; // no movement
         gravity = 0.0; // float in space
-    }
-
-    @Override
-    public void draw(@NotNull Camera camera) {
-        //camera.setARGB(128, 100,120, 200);
-        //camera.drawRect(hitBox);
     }
 
     @Override

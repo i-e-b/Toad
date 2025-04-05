@@ -2,12 +2,8 @@ package com.ieb.toad.world.platforms;
 
 import android.graphics.Rect;
 
-import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
-import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
-
-import org.jetbrains.annotations.NotNull;
 
 /** Platform that is only solid from the top */
 public class OneWayPlatform extends Thing {
@@ -23,12 +19,6 @@ public class OneWayPlatform extends Thing {
         elasticity = 0.2;
         drag = 1.0; // no movement
         gravity = 0.0; // float in space
-    }
-
-    @Override
-    public void draw(@NotNull Camera camera) {
-        //camera.setARGB(128, 0,0, 170);
-        //camera.drawRect(hitBox);
     }
 
     @Override

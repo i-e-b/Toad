@@ -74,7 +74,7 @@ public class Simulator {
                 obj.py += (obj.vy * h) + (0.5 * obj.a0y * h2);
 
                 // apply acceleration and constraints
-                simulationStep(obj, objects, oi);
+                applyForcesAndCollisions(obj, objects, oi);
 
                 // Advance velocity
                 obj.vx += (0.5 * (obj.a0x + obj.ax) * h);
@@ -124,7 +124,7 @@ public class Simulator {
      * @param objects array of all objects
      * @param idx     index of the current object. This must be called in order.
      */
-    private void simulationStep(Thing self, List<Thing> objects, int idx) {
+    private void applyForcesAndCollisions(Thing self, List<Thing> objects, int idx) {
         // Apply drag
         double drc = Math.max(0.0, 1.0 - self.drag);
         self.vx *= drc;

@@ -13,6 +13,7 @@ import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.platforms.LadderPlatform;
 import com.ieb.toad.world.platforms.OneWayPlatform;
 import com.ieb.toad.world.platforms.Platform;
 import com.ieb.toad.world.portals.DoorBox;
@@ -370,7 +371,6 @@ public class TiledLoader {
         }
     }
 
-
     private void processCamZones(NodeList group) {
         int count = group.getLength();
         for (int i = 0; i < count; i++) {
@@ -453,6 +453,10 @@ public class TiledLoader {
                 case "door":
                     String target = getStrAttr(attrs, "name");
                     doorThings.add(new DoorBox(x,y,w,h, target, objId));
+                    break;
+
+                case "ladder":
+                    fgThings.add(new LadderPlatform(x, y, w, h));
                     break;
 
                 case "spike":

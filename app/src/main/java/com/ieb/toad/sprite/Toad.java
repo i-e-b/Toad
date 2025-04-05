@@ -4,9 +4,11 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
-import com.ieb.toad.world.constraints.VerticalSpring;
+import com.ieb.toad.world.constraints.StandingOnCreep;
+import com.ieb.toad.world.constraints.StandingOnGround;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
@@ -29,6 +31,7 @@ public class Toad extends Thing {
     private Thing climbing = null; // vine/ladder
     private long jumpTimeLeftMs;
     private double lastFramePx, lastFramePy, animMs;
+    private boolean grounded; // true when we are standing on something and can jump
 
     /** @noinspection FieldCanBeLocal*/
     private final long JUMP_TIME_MS = 165;
@@ -51,6 +54,7 @@ public class Toad extends Thing {
         type = Collision.PLAYER;
         radius = 29;
         gravity = 1.0; // fully affected by gravity
+        grounded = false;
     }
 
 
@@ -76,10 +80,11 @@ public class Toad extends Thing {
         }
 
         if (btnJump){
-            if (anyConstraints()){ // assume it's a standing-constraint for now. TODO: be more specific
-                level.removeConstraint(this.constraints.get(0));
+            if (grounded) {
+                jumpUsed = false;
                 jumpTimeLeftMs = JUMP_TIME_MS;
             }
+
             if (jumpTimeLeftMs > 0 && !jumpUsed){
                 jumpTimeLeftMs -= ms;
                 vy = -900;
@@ -87,8 +92,7 @@ public class Toad extends Thing {
                 jumpUsed = true;
             }
         } else {
-            if (jumpTimeLeftMs > 0) jumpTimeLeftMs -= 30; // Coyote time. TODO: base on ground constraint?
-            jumpUsed = false;
+            jumpUsed = true;
         }
     }
 
@@ -129,7 +133,7 @@ public class Toad extends Thing {
     }
 
     private Animation pickAnimation(double dx, double dy, double animMs) {
-        if (jumpTimeLeftMs >= JUMP_TIME_MS - 50){
+        if (grounded){
             if (btnAction) return desireDirection > 0 ? pull_right.advance(animMs) : pull_left.advance(animMs);
             if (btnDown) return crouch_centre.advance(animMs);
             if (btnUp) return climb.advance(dy);
@@ -151,15 +155,44 @@ public class Toad extends Thing {
         if (!impacted) return;
 
         if (other.type == Collision.CREEP){ // we hit a creep. Might want to stand on it
-            // quick and dirty: add a constraint if none already
-            if (!anyConstraints() && this.canLandOnTop(other)){
-                //vx = other.vx; // match speed for easy landing
-                level.addConstraint(new VerticalSpring(this, other, 16));
-                //level.addConstraint(new FixedLength(this, other, 0));
+            if (!grounded && this.canLandOnTop(other)){
+                level.addConstraint(new StandingOnCreep(this, other, 16));
             }
         } else if (other.type == Collision.WALL) { // we might be standing on a floor
-            // restore jump?
-            if (this.canLandOnTop(other)) jumpTimeLeftMs = JUMP_TIME_MS;
+            if (!grounded && this.canLandOnTop(other)) {
+                level.addConstraint(new StandingOnGround(this, other, 8));
+            }
         }
+    }
+
+    /** [Optional Override]
+     * Perform any actions or checks when a constrain is first added
+     */
+    @Override
+    protected void constrainAdded(Constraint c) {
+        updateConstraintState();
+    }
+
+    /** [Optional Override]
+     * Perform any actions or checks when a constrain is first removed
+     */
+    @Override
+    protected void constrainRemoved(Constraint c) {
+        updateConstraintState();
+    }
+
+    private void updateConstraintState(){
+        // Reset first
+        boolean onGround = false;
+
+        // Update based on current constraints
+        for (Constraint c : linkedConstraints()) {
+            Class<? extends Constraint> cType = c.getClass();
+            if (cType == StandingOnCreep.class || cType == StandingOnGround.class){
+                onGround = true;
+            }
+        }
+
+        grounded = onGround;
     }
 }
