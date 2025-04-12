@@ -21,7 +21,8 @@ public class OnLadder extends Constraint {
         // Make sure the ground is under us
         ladder.preImpactTest(player);
 
-        double adx = Math.abs(ladder.px - player.px);
+        double dx = ladder.px - player.px;
+        double adx = Math.abs(dx);
         double ady = Math.abs(ladder.py - player.py);
 
         // clean up
@@ -30,7 +31,8 @@ public class OnLadder extends Constraint {
         if (ady > player.radius) return BROKEN;
         if (adx > player.radius) return BROKEN;
 
-        // TODO: if player is climbing, spring toward centre
+        // if player is climbing, spring toward centre
+        if (player.climbing) player.ax = Math.min(Math.max(dx * dx * dx * dx * dx, -700), 700);
 
         return OK;
     }

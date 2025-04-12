@@ -115,6 +115,9 @@ public class VirtualGamepad {
 
                 case MotionEvent.TOOL_TYPE_ERASER: // nothing
                     break;
+
+                default:
+                    Log.i(TAG, "motionEvent: unknown type = "+type);
             }
         }
 
@@ -326,7 +329,7 @@ public class VirtualGamepad {
         /*
             Screen is split 3x3:
 
-          |      |   up   |       |
+          |  up  |   up   |  up   |
           |------+--------+-------|
           | jump | action | jump  |
           |------+--------+-------|
@@ -349,7 +352,7 @@ public class VirtualGamepad {
 
             if (fx <= 0.33) { // left side
                 if (fy < 0.33) { // top-left
-                    // not mapped
+                    up = true;
                 } else if (fy >= 0.66) { //  bottom-left
                     left = true;
                 } else {
@@ -357,7 +360,7 @@ public class VirtualGamepad {
                 }
             } else if (fx >= 0.66) { // right side
                 if (fy < 0.33) { // top-right
-                    // not mapped
+                    up = true;
                 } else if (fy >= 0.66) { //  bottom-right
                     right = true;
                 } else {

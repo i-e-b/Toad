@@ -33,7 +33,7 @@ public class Toad extends Thing {
     private long jumpTimeLeftMs;
     private double lastFramePx, lastFramePy, animMs;
     private boolean grounded; // true when we are standing on something and can jump
-    private boolean climbing; // true when we are climbing a ladder or vine
+    public boolean climbing; // true when we are climbing a ladder or vine
     private boolean canClimb; // true when could start climbing
 
     // Note, if grounded && climbing, show grounded animation
@@ -78,20 +78,24 @@ public class Toad extends Thing {
         if (btnRight) {
             addPlayerSpeed(50, 0);
             desireDirection = 1;
-        }
-        if (btnLeft) {
+        } else if (btnLeft) {
             addPlayerSpeed(-50, 0);
             desireDirection = -1;
+        } else {
+            reducePlayerSpeed();
         }
 
         if (canClimb){
             if (btnDown){
+                climbing = true;
                 vy = 250;
             } else if (btnUp){
                 grounded = false;
+                climbing = true;
                 vy = -200;
+            } else if (climbing) {
+                vy = 0;
             }
-            climbing = !grounded;
             gravity = climbing ? 0.0 : 1.0; // don't fall while climbing
         } else {
             climbing = false;
@@ -133,6 +137,9 @@ public class Toad extends Thing {
     public void addPlayerSpeed(double dx, int dy) {
         vy += dy;
         vx += dx;
+    }
+    public void reducePlayerSpeed(){
+        vx /= 1.2;
     }
 
     private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
