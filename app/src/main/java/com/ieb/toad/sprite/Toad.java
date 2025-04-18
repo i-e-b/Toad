@@ -31,6 +31,7 @@ public class Toad extends Thing {
 
     private int desireDirection = 1; // negative = left, positive = right.
     private long jumpTimeLeftMs;
+    private long coyoteTimeLeftMs;
     private double lastFramePx, lastFramePy, animMs;
     private boolean grounded; // true when we are standing on something and can jump
     public boolean climbing; // true when we are climbing a ladder or vine
@@ -38,8 +39,8 @@ public class Toad extends Thing {
 
     // Note, if grounded && climbing, show grounded animation
 
-    /** @noinspection FieldCanBeLocal*/
-    private final long JUMP_TIME_MS = 165;
+    public final long JUMP_TIME_MS = 165;
+    public final long COYOTE_TIME_MS = 250;
 
     /** Load Toad graphics */
     public Toad(final SpriteSheetManager spriteSheetManager) {
@@ -102,10 +103,16 @@ public class Toad extends Thing {
             gravity = 1.0;
         }
 
+        if (!grounded && coyoteTimeLeftMs > 0){
+            coyoteTimeLeftMs -= ms;
+        }
+        if (grounded) coyoteTimeLeftMs = COYOTE_TIME_MS;
+
         if (btnJump){
-            if (grounded && !jumpUsed) {
+            if ((grounded || coyoteTimeLeftMs > 0) && !jumpUsed) {
                 jumpUsed = true;
                 jumpTimeLeftMs = JUMP_TIME_MS;
+                coyoteTimeLeftMs = 0;
             }
 
             if (jumpTimeLeftMs > 0){

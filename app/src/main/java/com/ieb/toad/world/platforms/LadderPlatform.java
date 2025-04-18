@@ -32,8 +32,6 @@ public class LadderPlatform extends Thing {
         // Find the closest point to the circle within the rectangle
         px = hitBox.left + halfWidth;
         py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
-        vx = other.px - px;
-        vy = other.py - py;
     }
 
     @Override

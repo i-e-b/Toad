@@ -32,12 +32,13 @@ public class OneWayPlatform extends Thing {
         }
 
         // Find the closest point to the circle within the rectangle
-        px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
-        py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
+        px = clamp(other.px, hitBox.left+1, hitBox.right-1);
+        py = clamp(other.py, hitBox.top+1, hitBox.bottom-1);
         radius = 1.0; // will be reset after impact resolved
 
-        vx = 0;
-        vy = 0;
+        mass = other.mass;
+        vx = other.vx;
+        vy = -other.vy;
     }
 
     @Override

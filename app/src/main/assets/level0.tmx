@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#b9d9e5" nextlayerid="8" nextobjectid="83">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#b9d9e5" nextlayerid="9" nextobjectid="89">
  <tileset firstgid="1" source="../../../../tiled/level tiles.tsx"/>
  <layer id="5" name="background" width="30" height="20">
   <data encoding="csv">
@@ -565,6 +565,24 @@
 0,128,24,0,0,0,0,0,0,0,0,0,0,22,129,0,
 0,96,97,101,101,101,101,101,101,101,101,101,101,98,99,0
 </chunk>
+   <chunk x="144" y="0" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,27,28,28,28,28,28,28,29,0,0,0,0,
+0,0,0,0,53,54,54,54,54,54,54,55,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
    <chunk x="32" y="16" width="16" height="16">
 515,515,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 515,515,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -989,6 +1007,14 @@
    <point/>
   </object>
  </objectgroup>
+ <objectgroup color="#00ff00" id="8" name="checkpoints">
+  <object id="83" x="-64" y="24" width="64" height="40"/>
+  <object id="84" x="-32" y="164" width="28" height="60"/>
+  <object id="85" x="176" y="112" width="32" height="48"/>
+  <object id="86" x="320" y="144" width="32" height="48"/>
+  <object id="87" x="868" y="152" width="56" height="40"/>
+  <object id="88" x="1408" y="4" width="80" height="60"/>
+ </objectgroup>
  <objectgroup color="#ea3de7" id="7" name="camera_zones">
   <object id="23" x="-256" y="-80" width="768" height="336"/>
   <object id="43" x="768" y="-80" width="752" height="400">
@@ -996,6 +1022,6 @@
     <property name="color" type="color" value="#ff000000"/>
    </properties>
   </object>
-  <object id="63" x="1808" y="16" width="224" height="240"/>
+  <object id="63" x="1732" y="-76" width="376" height="332"/>
  </objectgroup>
 </map>

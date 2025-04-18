@@ -34,9 +34,10 @@ public class ConveyorPlatform extends Thing {
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = 1.0;
 
+        mass = other.mass;
         vy = other.py - py;
         if (other.py > hitBox.top) { // normal impact from below
-            vx = other.px - px;
+            vx = other.vx;
         } else { // moving impact from above
             px -= speed;
             vx = speed;

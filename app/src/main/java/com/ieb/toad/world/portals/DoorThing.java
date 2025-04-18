@@ -18,6 +18,7 @@ public abstract class DoorThing extends Thing {
     }
 
     /** Indicates that player has just arrived at the door.
-     * The door should wait for trigger control to stop before moving again. */
-    public abstract void hold();
+     * The door should place the player as appropriate,
+     * and wait for trigger control to stop before triggering again. */
+    public abstract void moveAndHold(Thing t);
 }

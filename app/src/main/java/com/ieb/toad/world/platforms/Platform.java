@@ -28,10 +28,18 @@ public class Platform extends Thing {
         radius = 1.0;
 
         // Find the closest point to the circle within the rectangle
-        px = clamp(other.px, this.hitBox.left+1, this.hitBox.right-1);
-        py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
-        vx = other.px - px;
-        vy = other.py - py;
+        px = clamp(other.px, hitBox.left+1, hitBox.right-1);
+        py = clamp(other.py, hitBox.top+1, hitBox.bottom-1);
+
+        // Match incoming object (equivalent to 100% rigid body)
+        mass = other.mass;
+        if (other.py < hitBox.top || other.py > hitBox.bottom){
+            vx = other.vx;
+            vy = -other.vy; // reflect across horz
+        } else {
+            vx = -other.vx;  // reflect across vert
+            vy = other.vy;
+        }
     }
 
     @Override

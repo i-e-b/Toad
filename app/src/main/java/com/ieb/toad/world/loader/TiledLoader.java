@@ -12,12 +12,15 @@ import com.ieb.toad.sprite.Potion;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.core.Direction;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.LadderPlatform;
 import com.ieb.toad.world.platforms.OneWayPlatform;
 import com.ieb.toad.world.platforms.Platform;
+import com.ieb.toad.world.portals.DirectionPortal;
 import com.ieb.toad.world.portals.DoorBox;
 import com.ieb.toad.world.portals.DoorThing;
+import com.ieb.toad.world.portals.PotBox;
 
 import org.jetbrains.annotations.NotNullByDefault;
 import org.w3c.dom.Document;
@@ -441,6 +444,7 @@ public class TiledLoader {
                 continue;
             }
 
+            String target = getStrAttr(attrs, "name");
             switch (type){
                 case "solid":
                     fgThings.add(new Platform(x, y, w, h));
@@ -451,8 +455,15 @@ public class TiledLoader {
                     break;
 
                 case "door":
-                    String target = getStrAttr(attrs, "name");
                     doorThings.add(new DoorBox(x,y,w,h, target, objId));
+                    break;
+
+                case "pot":
+                    doorThings.add(new PotBox(x,y,w,h, target, objId));
+                    break;
+
+                case "portal_up":
+                    doorThings.add(new DirectionPortal(x,y,w,h, target, Direction.UP, objId));
                     break;
 
                 case "ladder":

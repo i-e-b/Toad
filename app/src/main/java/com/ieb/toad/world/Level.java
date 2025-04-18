@@ -158,11 +158,7 @@ public class Level implements SimulationManager {
         if (next == null) return;
 
         // move toad to new location
-        next.hold(); // stop doors triggering until control is released
-        level.toad.vx = 0.0;
-        level.toad.vy = 0.0;
-        level.toad.px = next.px;
-        level.toad.py = next.py;
+        next.moveAndHold(level.toad); // stop doors triggering until control is released
     }
 
     public int getBackgroundColor() {
