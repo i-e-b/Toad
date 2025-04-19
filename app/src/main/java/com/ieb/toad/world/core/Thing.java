@@ -1,5 +1,7 @@
 package com.ieb.toad.world.core;
 
+import android.graphics.Rect;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -161,4 +163,9 @@ public abstract class Thing {
         return constraints;
     }
     private static final Collection<Constraint> emptyConstraints = new LinkedList<>();
+
+    /** get bounds of impact circle */
+    public Rect boundBox(){
+        return new Rect((int) (px-radius), (int) (py-radius), (int) (px+radius), (int) (py+radius));
+    }
 }

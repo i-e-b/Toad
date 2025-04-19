@@ -79,6 +79,7 @@ public class Animation {
     }
 
     public Rect rect() {
+        if (frameIdx > src.length) return src[0];
         return src[frameIdx];
     }
 

@@ -33,6 +33,7 @@ public class Level implements SimulationManager {
     private final PointThing sampleThing; // Used for hit detection
     private final TiledLoader level;
     public final boolean loadedOk;
+    private Rect lastCheckpoint;
 
     public Level(Main context) throws IOException {
         simulator = new Simulator(this);
@@ -47,6 +48,7 @@ public class Level implements SimulationManager {
         things.addAll(level.bgThings);
         things.addAll(level.fgThings);
         things.addAll(level.doorThings);
+        lastCheckpoint = level.toad.boundBox();
     }
 
     public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
@@ -78,7 +80,6 @@ public class Level implements SimulationManager {
         }
     }
 
-
     /**
      * Run the level for up to `ms` milliseconds.
      * Returns number of milliseconds run.
@@ -86,14 +87,16 @@ public class Level implements SimulationManager {
     public long stepMillis(long ms) {
         if (!loadedOk) return ms;
 
+        // TODO: skip physics if doing a transition animation
         // apply physics
         double time = (double) ms;
         double nextTime = simulator.solve(time, things, constraints);
 
-        // [TEMP] reset if out-of-bounds
-        if (level.toad.py > 2000) {
-            level.toad.px = 100;
-            level.toad.py = 600;
+        // Check for checkpoint
+        int tx = (int)level.toad.px;
+        int ty = (int)level.toad.py;
+        for (Rect checkpoint : level.checkpoints) {
+            if (checkpoint.contains(tx,ty)) lastCheckpoint = checkpoint;
         }
 
         // return simulated time
@@ -159,6 +162,15 @@ public class Level implements SimulationManager {
 
         // move toad to new location
         next.moveAndHold(level.toad); // stop doors triggering until control is released
+    }
+
+    @Override
+    public void damagePlayer() {
+        // TODO: animate damage
+
+        // Reset to last checkpoint
+        level.toad.px = lastCheckpoint.centerX();
+        level.toad.py = lastCheckpoint.bottom - level.toad.radius;
     }
 
     public int getBackgroundColor() {

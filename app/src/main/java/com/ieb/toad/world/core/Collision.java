@@ -33,4 +33,8 @@ public abstract class Collision {
     public static boolean isEmpty(int hit) {
         return hit == NULL;
     }
+
+    public static boolean hasPlayer(int hit) {
+        return (hit & PLAYER) != 0;
+    }
 }

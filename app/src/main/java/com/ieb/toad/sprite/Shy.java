@@ -37,8 +37,13 @@ public class Shy extends Thing {
         ax = ay = 0;
 
         // Switch direction if facing wall or pit
-        var wallSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
-        if (Collision.hasWall(wallSense)) {
+        var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
+
+        if (Collision.hasPlayer(frontSense)){
+            level.damagePlayer();
+        }
+
+        if (Collision.hasWall(frontSense)) {
             desireDirection = -desireDirection; // turn on wall
         } else {
             var pitSense = level.hitTest(px + ((radius * 2) * desireDirection), py+radius+5);

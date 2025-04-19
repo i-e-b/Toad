@@ -5,12 +5,12 @@ import android.graphics.Rect;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.Thing;
 
-public class Platform extends Thing {
+public class SolidPlatform extends Thing {
 
     /** Hit box relative to the world */
     public Rect hitBox;
 
-    public Platform(int left, int top, int width, int height) {
+    public SolidPlatform(int left, int top, int width, int height) {
         hitBox = new Rect(left, top, left+width, top+height);
         type = Collision.WALL;
         mass = 10;
@@ -33,13 +33,13 @@ public class Platform extends Thing {
 
         // Match incoming object (equivalent to 100% rigid body)
         mass = other.mass;
-        if (other.py < hitBox.top || other.py > hitBox.bottom){
-            vx = other.vx;
-            vy = -other.vy; // reflect across horz
-        } else {
-            vx = -other.vx;  // reflect across vert
-            vy = other.vy;
-        }
+
+        double ot = other.py - other.radius;
+        double ob = other.py + other.radius;
+        double ol = other.px - other.radius;
+        double or = other.px + other.radius;
+        vx = (ot > hitBox.bottom || ob < hitBox.top) ? other.vx : -other.vx;
+        vy = (ol > hitBox.right || or < hitBox.left) ? other.vy : -other.vy;
     }
 
     @Override

@@ -14,9 +14,10 @@ import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Direction;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.platforms.DeathPlane;
 import com.ieb.toad.world.platforms.LadderPlatform;
 import com.ieb.toad.world.platforms.OneWayPlatform;
-import com.ieb.toad.world.platforms.Platform;
+import com.ieb.toad.world.platforms.SolidPlatform;
 import com.ieb.toad.world.portals.DirectionPortal;
 import com.ieb.toad.world.portals.DoorBox;
 import com.ieb.toad.world.portals.DoorThing;
@@ -72,6 +73,7 @@ public class TiledLoader {
     public final List<Thing> bgThings; // used for collectables and grass
     public final List<DoorThing> doorThings; // used for doors and portals
     public final List<CameraZone> camZones; // camera pinning and similar effects
+    public final List<Rect> checkpoints; // checkpoint zones
     public Toad toad;
 
     private final Dictionary<String, LayerChunk> backgroundChunks, mainChunks, foregroundChunks;
@@ -83,6 +85,7 @@ public class TiledLoader {
         bgThings = new ArrayList<>(128);
         doorThings = new ArrayList<>(32);
         camZones = new ArrayList<>(16);
+        checkpoints = new ArrayList<>(32);
 
         backgroundChunks = new Hashtable<>(64);
         mainChunks = new Hashtable<>(64);
@@ -331,6 +334,10 @@ public class TiledLoader {
                     processCamZones(group.getChildNodes());
                     break;
 
+                case "checkpoints":
+                    processCheckpoints(group.getChildNodes());
+                    break;
+
                 default:
                     Log.w(TAG, "loadLevel: unexpected object layer: "+name);
                     break;
@@ -371,6 +378,26 @@ public class TiledLoader {
                     Log.w(TAG, "loadLevel: unknown spawn type: '"+type+"' in objectId="+objId);
                     break;
             }
+        }
+    }
+
+    private void processCheckpoints(NodeList group) {
+        int count = group.getLength();
+        for (int i = 0; i < count; i++) {
+            Node obj = group.item(i);
+            String name = obj.getNodeName();
+            if (name == null || !name.equals("object")) continue;
+            NamedNodeMap attrs = obj.getAttributes();
+
+            /*
+  <object id="85" x="176" y="112" width="32" height="48"/>
+  */
+            int x = SCALE * (int)getDoubleAttr(attrs, "x");
+            int y = SCALE * (int)getDoubleAttr(attrs, "y");
+            int w = SCALE * (int)getDoubleAttr(attrs, "width");
+            int h = SCALE * (int)getDoubleAttr(attrs, "height");
+
+            checkpoints.add(new Rect(x,y,x+w,y+h));
         }
     }
 
@@ -447,7 +474,7 @@ public class TiledLoader {
             String target = getStrAttr(attrs, "name");
             switch (type){
                 case "solid":
-                    fgThings.add(new Platform(x, y, w, h));
+                    fgThings.add(new SolidPlatform(x, y, w, h));
                     break;
 
                 case "oneway":
@@ -455,7 +482,11 @@ public class TiledLoader {
                     break;
 
                 case "door":
-                    doorThings.add(new DoorBox(x,y,w,h, target, objId));
+                    doorThings.add(new DoorBox(x,y,w,h, target, false, objId));
+                    break;
+
+                case "locked_door":
+                    doorThings.add(new DoorBox(x,y,w,h, target, true, objId));
                     break;
 
                 case "pot":
@@ -472,11 +503,12 @@ public class TiledLoader {
 
                 case "spike":
                     Log.w(TAG, "processWalls: spike platforms not implemented yet");
-                    fgThings.add(new Platform(x, y, w, h));
+                    fgThings.add(new SolidPlatform(x, y, w, h));
                     break;
+
                 case "death":
                     Log.w(TAG, "processWalls: death platforms not implemented yet");
-                    fgThings.add(new Platform(x, y, w, h));
+                    fgThings.add(new DeathPlane(x, y, w, h));
                     break;
 
                 default:

@@ -16,4 +16,7 @@ public interface SimulationManager {
 
     /** Move player to next door with name 'target', starting from first after srcObjId */
     void moveNextDoor(String target, int srcObjId);
+
+    /** Player is damaged. Reset to last checkpoint. */
+    void damagePlayer();
 }

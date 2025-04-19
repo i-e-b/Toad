@@ -14,11 +14,13 @@ import com.ieb.toad.world.core.Thing;
  */
 public class DoorBox extends DoorThing {
     private final Rect hitBox;
+    private boolean locked;
 
     private boolean triggered, onHold;
 
-    public DoorBox(int left, int top, int width, int height, String target, int objId) {
+    public DoorBox(int left, int top, int width, int height, String target, boolean locked, int objId) {
         super(target, objId);
+        this.locked = locked;
         hitBox = new Rect(left, top, left+width, top+height);
 
         type = Collision.DOOR + Collision.PASS_THROUGH;
