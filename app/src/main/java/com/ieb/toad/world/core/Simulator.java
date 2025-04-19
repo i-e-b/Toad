@@ -69,6 +69,9 @@ public class Simulator {
             for (int oi = 0; oi < objects.size(); oi++) {
                 Thing obj = objects.get(oi);
 
+                // apply proportional gravity
+                double g = 2.0 * gravity * obj.gravity;
+
                 // Advance position
                 obj.px += (obj.vx * h) + (0.5 * obj.a0x * h2);
                 obj.py += (obj.vy * h) + (0.5 * obj.a0y * h2);
@@ -78,7 +81,7 @@ public class Simulator {
 
                 // Advance velocity
                 obj.vx += (0.5 * (obj.a0x + obj.ax) * h);
-                obj.vy += (0.5 * (obj.a0y + obj.ay) * h);
+                obj.vy += (0.5 * (obj.a0y + obj.ay + g) * h);
 
                 // Step values forward
                 obj.a0x = obj.ax;
@@ -129,9 +132,6 @@ public class Simulator {
         double drc = Math.max(0.0, 1.0 - self.drag);
         self.vx *= drc;
         self.vy *= drc;
-
-        // apply gravity
-        self.ay = gravity * self.gravity;
 
         // Check against other objects for collisions
         for (int i = idx+1; i < objects.size(); i++) {

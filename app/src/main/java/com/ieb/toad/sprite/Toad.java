@@ -4,6 +4,7 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.constraints.CarryingObject;
 import com.ieb.toad.world.constraints.OnLadder;
 import com.ieb.toad.world.constraints.StandingOnCreep;
 import com.ieb.toad.world.constraints.StandingOnGround;
@@ -69,12 +70,32 @@ public class Toad extends Thing {
     public int think(SimulationManager level, int ms) {
         ax = ay = 0;
         animMs += ms;
+
         // apply control
         mapControls();
         applyControlsToPhysics(ms);
+        applyControlsToWorld(level, ms);
+
         return KEEP;
     }
 
+    /** Pick up, throw, etc */
+    private void applyControlsToWorld(SimulationManager level, int ms) {
+        if (btnAction){
+            StandingOnCreep over = (StandingOnCreep)getConstraint(StandingOnCreep.class);
+            if (over != null) { // Pick up the creep
+                level.removeConstraint(over);
+                level.addConstraint(new CarryingObject(over.bottom, this, radius * 3));
+            }
+
+            CarryingObject under = (CarryingObject)getConstraint(CarryingObject.class);
+            if (under != null){
+                // TODO: break constraint, throw object
+            }
+       }
+    }
+
+    /** Update move/jump/etc based on controls */
     private void applyControlsToPhysics(int ms) {
         if (btnRight) {
             addPlayerSpeed(50, 0);
@@ -152,7 +173,7 @@ public class Toad extends Thing {
     private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
 
     @Override
-    public void draw(@NotNull Camera camera) {
+    public void draw(@NotNull Camera camera, int frameMs) {
         double dx = Math.abs(px - lastFramePx);
         double dy = Math.abs(py - lastFramePy);
         lastFramePx = px;

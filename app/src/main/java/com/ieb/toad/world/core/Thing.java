@@ -4,13 +4,9 @@ import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /** Represents a physical object in a level.
@@ -77,7 +73,7 @@ public abstract class Thing {
 
     /** [Optional Override]
      * Render this thing */
-    public void draw(@NotNull Camera camera){}
+    public void draw(@NotNull Camera camera, int frameMs){}
 
     /** [Optional Override]
      * Perform any AI functions. This is called once per 10 physics frames.
@@ -154,6 +150,26 @@ public abstract class Thing {
     public final boolean anyConstraints(){
         if (constraints == null) return false;
         return !constraints.isEmpty();
+    }
+
+    /** Returns true if there are any constraints linked to this thing */
+    public final boolean hasConstraint(Class<? extends Constraint> type){
+        if (constraints == null) return false;
+        for (Constraint c : constraints) {
+            Class<? extends Constraint> cType = c.getClass();
+            if (cType == type) return true;
+        }
+        return false;
+    }
+
+    /** Returns true if there are any constraints linked to this thing */
+    public final Constraint getConstraint(Class<? extends Constraint> type){
+        if (constraints == null) return null;
+        for (Constraint c : constraints) {
+            Class<? extends Constraint> cType = c.getClass();
+            if (cType == type) return c;
+        }
+        return null;
     }
 
     /** Returns list of linked constraints. May be empty, but won't be null.

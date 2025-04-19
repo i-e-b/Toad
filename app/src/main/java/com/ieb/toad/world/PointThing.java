@@ -21,5 +21,5 @@ public class PointThing extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Camera camera) {}
+    public void draw(@NotNull Camera camera, int frameMs) {}
 }

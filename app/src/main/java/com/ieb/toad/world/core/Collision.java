@@ -26,15 +26,11 @@ public abstract class Collision {
     public static final int PLAYER = 1024;
 
 
-    public static boolean hasWall(int hit){
-        return (hit & WALL) != 0;
-    }
+    public static boolean hasWall(int hit){return (hit & WALL) != 0;}
 
-    public static boolean isEmpty(int hit) {
-        return hit == NULL;
-    }
+    public static boolean isEmpty(int hit) {return hit == NULL;}
 
-    public static boolean hasPlayer(int hit) {
-        return (hit & PLAYER) != 0;
-    }
+    public static boolean hasPlayer(int hit) {return (hit & PLAYER) != 0;}
+
+    public static boolean hasCreep(int hit) {return (hit & CREEP) != 0;}
 }

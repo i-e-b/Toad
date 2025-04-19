@@ -3,6 +3,8 @@ package com.ieb.toad.sprite;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.constraints.CarryingObject;
+import com.ieb.toad.world.constraints.StandingOnCreep;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
@@ -13,8 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class Shy extends Thing {
     private final Animation left;
     private final Animation right;
+    private final Animation flipLeft;
+    private final Animation flipRight;
 
     private double lastFramePx;
+    private boolean carried;
 
     private int desireDirection = -1; // negative = left, positive = right.
 
@@ -23,9 +28,12 @@ public class Shy extends Thing {
 
     /** Load Toad graphics */
     public Shy(final SpriteSheetManager sprites) {
-        left = new Animation(16, Animation.FOREVER, sprites.dude, Flip.None, new int[]{0,1});
-        right = new Animation(16, Animation.FOREVER, sprites.dude, Flip.Horz, new int[]{0,1});
+        left = new Animation(160, Animation.FOREVER, sprites.dude, Flip.None, new int[]{0,1});
+        right = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz, new int[]{0,1});
+        flipLeft = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Vert, new int[]{0,1});
+        flipRight = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz + Flip.Vert, new int[]{0,1});
 
+        carried = false;
         type = Collision.CREEP;
         radius = 30;
         mass = 0.8;
@@ -36,8 +44,30 @@ public class Shy extends Thing {
     public int think(SimulationManager level, int ms) {
         ax = ay = 0;
 
+        CarryingObject carry = (CarryingObject)getConstraint(CarryingObject.class);
+        if (carry != null){
+            type = Collision.CREEP | Collision.PASS_THROUGH;
+            gravity = 0.0;
+            carried = true;
+            carryThink(carry);
+        } else {
+            type = Collision.CREEP;
+            carried = false;
+            walkingThink(level);
+        }
+
+        return KEEP;
+    }
+
+    private void carryThink(CarryingObject carry) {
+        double dx = carry.holder.vx;
+        if (dx > 0) desireDirection = 1;
+        if (dx < 0) desireDirection = -1;
+    }
+
+    private void walkingThink(SimulationManager level) {
         // Switch direction if facing wall or pit
-        var frontSense = level.hitTest(px + ((radius + 2) * desireDirection), py);
+        var frontSense = level.hitTest(px + ((radius + 4) * desireDirection), py);
 
         if (Collision.hasPlayer(frontSense)){
             level.damagePlayer();
@@ -53,24 +83,28 @@ public class Shy extends Thing {
         }
 
         // go slow if we've being stood on
-        double speed = anyConstraints() ? SPEED / 2.0 : SPEED;
+        double speed = hasConstraint(StandingOnCreep.class) ? SPEED / 2.0 : SPEED;
 
         if (desireDirection < 0){ // left
             if (vx > -speed) ax = -ACCEL;
         } else { // right
             if (vx < speed) ax = ACCEL;
         }
-
-        return KEEP;
     }
 
     @Override
-    public void draw(@NotNull Camera camera) {
+    public void draw(@NotNull Camera camera, int frameMs) {
         double dx = Math.abs(px - lastFramePx);
         lastFramePx = px;
 
-        Animation anim = desireDirection > 0 ? right : left;
-        anim.advance(dx); // animate based on movement
+        Animation anim;
+        if (carried){
+            anim = desireDirection > 0 ? flipRight : flipLeft;
+            anim.advance(frameMs); // animate based on time
+        } else {
+            anim = desireDirection > 0 ? right : left;
+            anim.advance(dx*10); // animate based on movement
+        }
 
         camera.drawSprite(anim, px, py, radius);
     }

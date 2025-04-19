@@ -15,6 +15,7 @@ public abstract class Constraint {
      * @return one of Constraint.OK, Constraint.BROKEN. If Broken is returned, the constraint is unlinked and removed. */
     public abstract int apply();
 
-    /** This constraint is being lost. Remove any references to  */
+    /** SHOULD ONLY BE CALLED BY 'Level'. Use 'Level.removeConstraint'.
+     * This constraint is being lost. Remove any references.  */
     public abstract void unlink();
 }

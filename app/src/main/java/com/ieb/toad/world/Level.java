@@ -63,7 +63,7 @@ public class Level implements SimulationManager {
 
         for (int i = 0; i < things.size(); i++) {
             Thing thing = things.get(i);
-            thing.draw(camera);
+            thing.draw(camera, frameMs);
         }
 
         // foreground
@@ -166,11 +166,16 @@ public class Level implements SimulationManager {
 
     @Override
     public void damagePlayer() {
-        // TODO: animate damage
+        // TODO: animate damage (pop animation?)
 
         // Reset to last checkpoint
         level.toad.px = lastCheckpoint.centerX();
         level.toad.py = lastCheckpoint.bottom - level.toad.radius;
+    }
+
+    @Override
+    public void killCreep(Thing creep){
+        things.remove(creep);
     }
 
     public int getBackgroundColor() {

@@ -6,8 +6,8 @@ import com.ieb.toad.world.core.Thing;
 /** Try to keep one thing on top of another.
  * Used for player standing on a moving object */
 public class StandingOnCreep extends Constraint {
-    private final Thing top;
-    private final Thing bottom;
+    public final Thing top;
+    public final Thing bottom;
     private final double diffHeight;
     private final double diffWidth;
 

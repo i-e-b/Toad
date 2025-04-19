@@ -38,8 +38,8 @@ public class DeathPlane extends Thing {
     @Override
     public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
         if (!impacted) return;
-        if (other.type != Collision.PLAYER) return;
 
-        level.damagePlayer();
+        if (Collision.hasPlayer(other.type)) level.damagePlayer();
+        if (Collision.hasCreep(other.type)) level.killCreep(other);
     }
 }

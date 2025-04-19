@@ -26,7 +26,7 @@ public class Coin extends Thing {
     }
 
     @Override
-    public void draw(@NotNull Camera camera) {
+    public void draw(@NotNull Camera camera, int frameMs) {
         camera.drawSprite(anim, px, py, 30);
     }
 
