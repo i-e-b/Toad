@@ -41,5 +41,6 @@ public class DeathPlane extends Thing {
 
         if (Collision.hasPlayer(other.type)) level.damagePlayer();
         if (Collision.hasCreep(other.type)) level.killCreep(other);
+        if (Collision.hasBullet(other.type)) level.removeThing(other);
     }
 }

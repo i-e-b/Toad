@@ -84,7 +84,7 @@ public class Animation {
     }
 
     public boolean isEnded(){
-        return loops < 1;
+        return loops == 0;
     }
 
     /** reset loop count for animation */
@@ -96,6 +96,7 @@ public class Animation {
     }
 
     public Animation advance(double ms) {
+        if (isEnded()) return this;
         frameDur += ms;
         while (frameDur > time[frameIdx]) {
             frameDur -= time[frameIdx];

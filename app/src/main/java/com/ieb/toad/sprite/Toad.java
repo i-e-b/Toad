@@ -29,6 +29,8 @@ public class Toad extends Thing {
     private final Animation climb;
     private final Animation pull_left;
     private final Animation pull_right;
+    private final Animation carry_left;
+    private final Animation carry_right;
 
     private int desireDirection = 1; // negative = left, positive = right.
     private long jumpTimeLeftMs;
@@ -37,6 +39,7 @@ public class Toad extends Thing {
     private boolean grounded; // true when we are standing on something and can jump
     public boolean climbing; // true when we are climbing a ladder or vine
     private boolean canClimb; // true when could start climbing
+    private boolean carrying; // true when carrying something
 
     // Note, if grounded && climbing, show grounded animation
 
@@ -47,6 +50,8 @@ public class Toad extends Thing {
     public Toad(final SpriteSheetManager spriteSheetManager) {
         run_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9,10,11,10});
         run_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{9,10,11,10});
+        carry_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{12,13,14,13});
+        carry_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{12,13,14,13});
         fall_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{16});
         fall_right = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.Horz, new int[]{16});
         stand_left = new Animation(64, Animation.FOREVER, spriteSheetManager.toad, Flip.None, new int[]{9});
@@ -81,18 +86,31 @@ public class Toad extends Thing {
 
     /** Pick up, throw, etc */
     private void applyControlsToWorld(SimulationManager level, int ms) {
-        if (btnAction){
-            StandingOnCreep over = (StandingOnCreep)getConstraint(StandingOnCreep.class);
-            if (over != null) { // Pick up the creep
-                level.removeConstraint(over);
-                level.addConstraint(new CarryingObject(over.bottom, this, radius * 3));
-            }
+        handleActionButton(level);
+    }
 
-            CarryingObject under = (CarryingObject)getConstraint(CarryingObject.class);
-            if (under != null){
-                // TODO: break constraint, throw object
+    private void handleActionButton(SimulationManager level) {
+        if (btnAction && !actionLock){
+            CarryingObject carry = (CarryingObject)getConstraint(CarryingObject.class);
+            if (carry != null){
+                // Break constraint, throw object
+                actionLock = true;
+                level.removeConstraint(carry);
+                carry.carried.px += radius * desireDirection;
+                carry.carried.vx = (desireDirection * 250) + (vx * 2.0);
+                carry.carried.vy = Math.abs(vx) * -2.0;
+                carrying = false;
+            } else {
+                StandingOnCreep over = (StandingOnCreep)getConstraint(StandingOnCreep.class);
+                if (over != null) { // Pick up the creep
+                    pull_right.reset(); pull_left.reset();
+                    actionLock = true;
+                    carrying = true;
+                    level.removeConstraint(over);
+                    level.addConstraint(new CarryingObject(over.bottom, this, radius * 3));
+                }
             }
-       }
+        }
     }
 
     /** Update move/jump/etc based on controls */
@@ -160,6 +178,7 @@ public class Toad extends Thing {
             pull_left.reset();
             pull_right.reset();
         }
+        if (!btnAction) actionLock = false;
     }
 
     public void addPlayerSpeed(double dx, int dy) {
@@ -170,7 +189,8 @@ public class Toad extends Thing {
         vx /= 1.2;
     }
 
-    private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft, jumpUsed;
+    private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft,
+            jumpUsed, actionLock;
 
     @Override
     public void draw(@NotNull Camera camera, int frameMs) {
@@ -189,8 +209,15 @@ public class Toad extends Thing {
         if (climbing){
             return climb.advance(dy);
         }
-        if (grounded){
-            if (btnAction) return desireDirection > 0 ? pull_right.advance(animMs) : pull_left.advance(animMs);
+        if (carrying){
+            pull_right.advance(animMs);
+            pull_left.advance(animMs);
+            Animation p = desireDirection > 0 ? pull_right : pull_left;
+            if (!p.isEnded()) return p;
+            Animation a = desireDirection > 0 ? carry_right : carry_left;
+            return a.advance(dx); // animate based on movement
+        }
+        if (grounded) {
             if (btnDown) return crouch_centre.advance(animMs);
             if (Math.abs(vx) < 1) return desireDirection > 0 ? stand_right : stand_left;
 
@@ -251,15 +278,17 @@ public class Toad extends Thing {
         // Reset first
         grounded = false;
         canClimb = false;
+        carrying = false;
 
         // Update based on current constraints
         for (Constraint c : linkedConstraints()) {
             Class<? extends Constraint> cType = c.getClass();
             if (cType == StandingOnCreep.class || cType == StandingOnGround.class){
                 grounded = true;
-            }
-            else if (cType == OnLadder.class){
+            } else if (cType == OnLadder.class){
                 canClimb = true;
+            } else if (cType == CarryingObject.class) {
+                carrying = true;
             }
         }
     }

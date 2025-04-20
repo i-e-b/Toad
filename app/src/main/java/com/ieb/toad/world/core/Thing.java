@@ -4,10 +4,10 @@ import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
@@ -69,7 +69,7 @@ public abstract class Thing {
      * This is for reference; constraints are applied from the Simulator
      * using the level's complete constraint list.
      */
-    protected Set<Constraint> constraints;
+    protected HashSet<Constraint> constraints;
 
     /** [Optional Override]
      * Render this thing */
@@ -179,6 +179,15 @@ public abstract class Thing {
         return constraints;
     }
     private static final Collection<Constraint> emptyConstraints = new LinkedList<>();
+
+    /** Return a single constraint or null. This can be used to iterate through
+     * constraints while removing them */
+    public final Iterable<Constraint> copyAndClearConstraints(){
+        if (constraints == null) return emptyConstraints;
+        Constraint[] copy = constraints.toArray(new Constraint[0]);
+        constraints.clear();
+        return Arrays.asList(copy);
+    }
 
     /** get bounds of impact circle */
     public Rect boundBox(){

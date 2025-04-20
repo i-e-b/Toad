@@ -17,9 +17,10 @@ public class Shy extends Thing {
     private final Animation right;
     private final Animation flipLeft;
     private final Animation flipRight;
+    private final double normalRadius;
 
-    private double lastFramePx;
-    private boolean carried;
+    private double lastFramePx, throwTimer;
+    private boolean carried, thrown;
 
     private int desireDirection = -1; // negative = left, positive = right.
 
@@ -33,9 +34,9 @@ public class Shy extends Thing {
         flipLeft = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Vert, new int[]{0,1});
         flipRight = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz + Flip.Vert, new int[]{0,1});
 
-        carried = false;
+        carried = thrown = false;
         type = Collision.CREEP;
-        radius = 30;
+        normalRadius = radius = 30;
         mass = 0.8;
         gravity = 1.0; // fully affected by gravity
     }
@@ -43,16 +44,22 @@ public class Shy extends Thing {
     @Override
     public int think(SimulationManager level, int ms) {
         ax = ay = 0;
+        if (throwTimer > 0.0) throwTimer -= ms;
 
         CarryingObject carry = (CarryingObject)getConstraint(CarryingObject.class);
-        if (carry != null){
+        if (carry != null) { // being carried
             type = Collision.CREEP | Collision.PASS_THROUGH;
             gravity = 0.0;
             carried = true;
             carryThink(carry);
-        } else {
-            type = Collision.CREEP;
+        } else if (carried || thrown) { // thrown
+            if (carried) throwTimer = 1.0;
+            gravity = 1.0;
             carried = false;
+            thrown = true; // TODO: flip if on ground for a long time
+            type = Collision.CREEP;
+        } else { // walking around
+            type = Collision.CREEP;
             walkingThink(level);
         }
 
@@ -98,7 +105,7 @@ public class Shy extends Thing {
         lastFramePx = px;
 
         Animation anim;
-        if (carried){
+        if (carried || thrown){
             anim = desireDirection > 0 ? flipRight : flipLeft;
             anim.advance(frameMs); // animate based on time
         } else {
@@ -113,6 +120,11 @@ public class Shy extends Thing {
     public void preImpactTest(Thing other) {
         dpx = 0;
         if (other.type != Collision.PLAYER) return; // normal collision for anything but a player
+
+        if (throwTimer > 0) {
+            radius = -1.0;
+            return;
+        }
         if (!other.canLandOnTop(this)) return;
 
         // Player is above us. adjust px to make it easy to stand on top
@@ -123,6 +135,7 @@ public class Shy extends Thing {
 
     @Override
     public void postImpactTest() {
+        radius = normalRadius;
         px += dpx;
     }
 }
