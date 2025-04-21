@@ -239,12 +239,12 @@ public class Toad extends Thing {
     public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
         if (!impacted) return;
 
-        if (hasFlag(other.type, Collision.CREEP)){
+        if (Collision.hasCreep(other.type)){
             // we hit a creep. Might want to stand on it
             if (!grounded && this.canLandOnTop(other)){
                 level.addConstraint(new StandingOnCreep(this, other));
             }
-        } else if (hasFlag(other.type, Collision.WALL)) {
+        } else if (Collision.hasWall(other.type)) {
             // we might be standing on a floor on over a ladder/vine
             Class<? extends Thing> wallType = other.getClass();
 
@@ -259,10 +259,6 @@ public class Toad extends Thing {
                 level.addConstraint(new StandingOnGround(this, other));
             }
         }
-    }
-
-    private static boolean hasFlag(int type, int flag) {
-        return (type & flag) == flag;
     }
 
     /** [Optional Override]

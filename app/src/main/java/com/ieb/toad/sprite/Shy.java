@@ -4,11 +4,14 @@ import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.constraints.CarryingObject;
+import com.ieb.toad.world.constraints.OnLadder;
 import com.ieb.toad.world.constraints.StandingOnCreep;
+import com.ieb.toad.world.constraints.StandingOnGround;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
+import com.ieb.toad.world.platforms.LadderPlatform;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,13 +22,14 @@ public class Shy extends Thing {
     private final Animation flipRight;
     private final double normalRadius;
 
-    private double lastFramePx, throwTimer;
+    private double lastFramePx, throwTimer, recoverTimer;
     private boolean carried, thrown;
 
     private int desireDirection = -1; // negative = left, positive = right.
 
     public final int SPEED = 120, ACCEL = 500;
     private double dpx; // px value to restore after collision
+    private boolean grounded; // recently on the ground
 
     /** Load Toad graphics */
     public Shy(final SpriteSheetManager sprites) {
@@ -54,11 +58,23 @@ public class Shy extends Thing {
             carried = true;
             carryThink(carry);
         } else if (carried || thrown) { // thrown
-            if (carried) throwTimer = 1.0;
+            if (carried) {
+                recoverTimer = 5000.0; // time after stationary that creep flips back over
+                throwTimer = 16.0; // time until collision is restored
+            }
             gravity = 1.0;
             elasticity = 0.9;
             carried = false;
-            thrown = true; // TODO: flip if on ground for a long time
+            thrown = true;
+
+            // flip if on ground for a long time
+            if (grounded && recoverTimer > 0.0){
+                recoverTimer -= ms;
+            }
+            if (recoverTimer < 1.0){
+                thrown = false;
+            }
+
             type = Collision.CREEP;
         } else { // walking around
             elasticity = 0.5;
@@ -66,6 +82,7 @@ public class Shy extends Thing {
             walkingThink(level);
         }
 
+        grounded = false; // will be reset if still on ground
         return KEEP;
     }
 
@@ -141,5 +158,17 @@ public class Shy extends Thing {
     public void postImpactTest() {
         radius = normalRadius;
         px += dpx;
+    }
+    /** Handle collisions with things.
+     * @param other thing we might have touched.
+     * @param impacted true if there was an impact
+     */
+    @Override
+    public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
+        if (!impacted) return;
+
+        if (Collision.hasWall(other.type) && this.canLandOnTop(other)) {
+            grounded = true;
+        }
     }
 }
