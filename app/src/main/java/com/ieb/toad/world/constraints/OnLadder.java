@@ -23,12 +23,14 @@ public class OnLadder extends Constraint {
 
         double dx = ladder.px - player.px;
         double adx = Math.abs(dx);
-        double ady = Math.abs(ladder.py - player.py);
+        double dy = ladder.py - player.py;
+        double ady = Math.abs(dy);
 
         // clean up
         ladder.postImpactTest();
 
-        if (ady > player.radius) return BROKEN;
+        if (ady > (player.radius + 1.0)) return BROKEN; // over the top
+        if (ady < -player.radius) return BROKEN; // off bottom
         if (adx > player.radius) return BROKEN;
 
         // if player is climbing, spring toward centre

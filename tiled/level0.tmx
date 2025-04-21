@@ -1040,7 +1040,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,339,339,339,339,339,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 515,515,515,515,515,515,515,515,515,515,515,515,515,515,515,515,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </chunk>
@@ -1210,14 +1210,13 @@
   <object id="96" type="solid" x="2544" y="176" width="288" height="48"/>
   <object id="97" type="solid" x="2832" y="-52" width="48" height="276"/>
   <object id="98" name="boss_room" type="door" x="2384" y="160" width="16" height="32"/>
-  <object id="100" type="ladder" x="2480" y="116" width="16" height="76"/>
+  <object id="100" type="ladder" x="2480" y="112" width="16" height="80"/>
   <object id="101" type="solid" x="2320" y="-64" width="560" height="12"/>
-  <object id="102" type="oneway" x="2480" y="112" width="16" height="4"/>
   <object id="103" type="solid" x="1440" y="256" width="80" height="16"/>
   <object id="104" type="ladder" x="1440" y="68" width="16" height="188"/>
  </objectgroup>
  <objectgroup color="#5500ff" id="4" name="spawns">
-  <object id="9" name="player" x="-184.5" y="223">
+  <object id="9" name="player" x="-184" y="224">
    <point/>
   </object>
   <object id="22" name="shyguy" x="104" y="192">

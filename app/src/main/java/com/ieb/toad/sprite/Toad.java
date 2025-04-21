@@ -67,6 +67,7 @@ public class Toad extends Thing {
 
         type = Collision.PLAYER;
         radius = 29;
+        elasticity = 0.25;
         gravity = 1.0; // fully affected by gravity
         grounded = false;
     }
@@ -109,7 +110,7 @@ public class Toad extends Thing {
                     actionLock = true;
                     carrying = true;
                     level.removeConstraint(over);
-                    level.addConstraint(new CarryingObject(over.bottom, this, radius * 2.8));
+                    level.addConstraint(new CarryingObject(over.bottom, this, radius * 2.8, 400));
                 }
             }
         }
@@ -248,7 +249,11 @@ public class Toad extends Thing {
             Class<? extends Thing> wallType = other.getClass();
 
             if (wallType == LadderPlatform.class) {
-                if (!canClimb) level.addConstraint(new OnLadder(this, other));
+                if (!canClimb) {
+                    level.addConstraint(new OnLadder(this, other));
+                    canClimb = true;
+                    grounded = this.canLandOnTop(other);
+                }
             }
             else if (!grounded && this.canLandOnTop(other)) {
                 level.addConstraint(new StandingOnGround(this, other));

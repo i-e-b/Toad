@@ -37,6 +37,7 @@ public class OneWayPlatform extends Thing {
         radius = 1.0; // will be reset after impact resolved
 
         mass = other.mass;
+        elasticity = other.elasticity;
         vx = other.vx;
         vy = -other.vy;
     }

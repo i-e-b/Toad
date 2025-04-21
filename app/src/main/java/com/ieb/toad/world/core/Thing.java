@@ -122,7 +122,7 @@ public abstract class Thing {
 
     /** Returns true only if this thing COULD land on the other */
     public final boolean canLandOnTop(Thing other){
-        return !((this.py + this.radius - 1) > (other.py - other.radius + 1)); // must be above
+        return !((this.py + this.radius - this.vy - 1) > (other.py - other.radius + other.vy + 1)); // must be above
     }
 
     /** bottom most edge */

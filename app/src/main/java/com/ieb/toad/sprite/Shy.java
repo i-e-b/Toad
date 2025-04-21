@@ -38,6 +38,7 @@ public class Shy extends Thing {
         type = Collision.CREEP;
         normalRadius = radius = 30;
         mass = 0.8;
+        elasticity = 0.5;
         gravity = 1.0; // fully affected by gravity
     }
 
@@ -55,10 +56,12 @@ public class Shy extends Thing {
         } else if (carried || thrown) { // thrown
             if (carried) throwTimer = 1.0;
             gravity = 1.0;
+            elasticity = 0.9;
             carried = false;
             thrown = true; // TODO: flip if on ground for a long time
             type = Collision.CREEP;
         } else { // walking around
+            elasticity = 0.5;
             type = Collision.CREEP;
             walkingThink(level);
         }
@@ -119,12 +122,13 @@ public class Shy extends Thing {
     @Override
     public void preImpactTest(Thing other) {
         dpx = 0;
-        if (other.type != Collision.PLAYER) return; // normal collision for anything but a player
+        if (!Collision.hasPlayer(other.type)) return; // normal collision for anything but a player
 
         if (throwTimer > 0) {
             radius = -1.0;
             return;
         }
+        if (thrown) return; // normal impact when flipped
         if (!other.canLandOnTop(this)) return;
 
         // Player is above us. adjust px to make it easy to stand on top

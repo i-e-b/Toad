@@ -33,6 +33,7 @@ public class SolidPlatform extends Thing {
 
         // Match incoming object (equivalent to 100% rigid body)
         mass = other.mass;
+        elasticity = other.elasticity;
 
         double ot = other.py - other.radius;
         double ob = other.py + other.radius;
