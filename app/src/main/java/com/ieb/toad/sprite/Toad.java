@@ -1,5 +1,7 @@
 package com.ieb.toad.sprite;
 
+import android.graphics.Rect;
+
 import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
@@ -107,7 +109,7 @@ public class Toad extends Thing {
                     actionLock = true;
                     carrying = true;
                     level.removeConstraint(over);
-                    level.addConstraint(new CarryingObject(over.bottom, this, radius * 3));
+                    level.addConstraint(new CarryingObject(over.bottom, this, radius * 2.8));
                 }
             }
         }
@@ -291,5 +293,25 @@ public class Toad extends Thing {
                 carrying = true;
             }
         }
+    }
+
+    public void resetToCheckpoint(SimulationManager level, Rect lastCheckpoint) {
+        // Reset to last checkpoint
+        px = lastCheckpoint.centerX();
+        py = lastCheckpoint.bottom - radius - 3.0;
+
+        if (constraints != null){
+            Constraint[] c = constraints.toArray(new Constraint[0]);
+            for (Constraint constraint : c) {
+                level.removeConstraint(constraint);
+            }
+        }
+
+        grounded = false;
+        canClimb = false;
+        carrying = false;
+        type = Collision.PLAYER;
+        radius = 29;
+        gravity = 1.0; // fully affected by gravity
     }
 }

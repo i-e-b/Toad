@@ -168,15 +168,8 @@ public class Level implements SimulationManager {
     public void damagePlayer() {
         // TODO: animate damage (pop animation?)
 
-        // Break all constraints
-        Iterable<Constraint> cons = level.toad.copyAndClearConstraints();
-        for (Constraint con : cons) {
-            removeConstraint(con);
-        }
-
-        // Reset to last checkpoint
-        level.toad.px = lastCheckpoint.centerX();
-        level.toad.py = lastCheckpoint.bottom - level.toad.radius;
+        // Break all constraints and go back to last checkpoint
+        level.toad.resetToCheckpoint(this, lastCheckpoint);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class Simulator {
     /**
      * Fixed-step Leapfrog solver
      *
-     * @param dt time elapsed since last call
+     * @param dt time elapsed since last call in ms
      * @return Returns time advanced
      */
     public final double solve(double dt, List<Thing> objects, List<Constraint> constraints) {
@@ -59,6 +59,7 @@ public class Simulator {
         int iterations = (int) ((speed * dt) / N); // number of iterations we will run
         double adv = ((double) iterations * N) / speed; // the amount of simulation time this covers
         int thinkAdv = (int) (((double) 10 * N) / speed); // the amount of simulation time per 'think' cycle in ms
+        double iterationTime = dt / iterations; // ms per solver iteration
 
         // Limit 'hidden' runs to prevent big jumps if frame timer stalls
         if (iterations < 1) iterations = 0;
@@ -100,7 +101,7 @@ public class Simulator {
             // Apply all constraints
             for (int ci = 0; ci < constraints.size(); ci++){
                 Constraint c = constraints.get(ci);
-                if (c.apply() == Constraint.BROKEN) brokenConstraints.add(c);
+                if (c.apply(iterationTime) == Constraint.BROKEN) brokenConstraints.add(c);
             }
 
             for (Constraint bc : brokenConstraints) level.removeConstraint(bc);

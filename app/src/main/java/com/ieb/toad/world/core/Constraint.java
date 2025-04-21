@@ -13,7 +13,7 @@ public abstract class Constraint {
      * This is allowed to make direct changes to linked objects.
      *
      * @return one of Constraint.OK, Constraint.BROKEN. If Broken is returned, the constraint is unlinked and removed. */
-    public abstract int apply();
+    public abstract int apply(double timeMs);
 
     /** SHOULD ONLY BE CALLED BY 'Level'. Use 'Level.removeConstraint'.
      * This constraint is being lost. Remove any references.  */

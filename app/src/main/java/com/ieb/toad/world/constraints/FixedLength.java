@@ -21,7 +21,7 @@ public class FixedLength extends Constraint {
     }
 
     @Override
-    public int apply() {
+    public int apply(double timeMs) {
         double dx = a.px - b.px;
         double dy = a.py - b.py;
         double d2 = (dx * dx) + (dy * dy);

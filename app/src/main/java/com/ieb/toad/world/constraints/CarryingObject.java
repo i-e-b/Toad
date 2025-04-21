@@ -8,23 +8,29 @@ import com.ieb.toad.world.core.Thing;
 public class CarryingObject extends Constraint {
     public final Thing carried;
     public final Thing holder;
-    private final double height;
+    private final double targetHeight;
+    private double nowHeight;
 
     /** Try to keep one thing on top of another.
      * Used for player standing on a moving object */
     public CarryingObject(Thing carried, Thing holder, double height){
         this.carried = carried;
         this.holder = holder;
-        this.height = height;
+        this.targetHeight = height;
+        nowHeight = 0.0;
 
         carried.linkConstraint(this);
         holder.linkConstraint(this);
     }
 
     @Override
-    public int apply() {
+    public int apply(double timeMs) {
+        if (nowHeight < targetHeight){
+            nowHeight += targetHeight * (timeMs / 300);
+        } else nowHeight = targetHeight;
+
         carried.px = holder.px;
-        carried.py = holder.py - height;
+        carried.py = holder.py - nowHeight;
 
         return OK;
     }

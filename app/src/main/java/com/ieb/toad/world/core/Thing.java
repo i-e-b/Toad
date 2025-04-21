@@ -180,15 +180,6 @@ public abstract class Thing {
     }
     private static final Collection<Constraint> emptyConstraints = new LinkedList<>();
 
-    /** Return a single constraint or null. This can be used to iterate through
-     * constraints while removing them */
-    public final Iterable<Constraint> copyAndClearConstraints(){
-        if (constraints == null) return emptyConstraints;
-        Constraint[] copy = constraints.toArray(new Constraint[0]);
-        constraints.clear();
-        return Arrays.asList(copy);
-    }
-
     /** get bounds of impact circle */
     public Rect boundBox(){
         return new Rect((int) (px-radius), (int) (py-radius), (int) (px+radius), (int) (py+radius));

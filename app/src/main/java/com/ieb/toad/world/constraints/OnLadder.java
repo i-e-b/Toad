@@ -17,7 +17,7 @@ public class OnLadder extends Constraint {
     }
 
     @Override
-    public int apply() {
+    public int apply(double timeMs) {
         // Make sure the ground is under us
         ladder.preImpactTest(player);
 
