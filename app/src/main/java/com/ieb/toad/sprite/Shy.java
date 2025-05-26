@@ -1,5 +1,7 @@
 package com.ieb.toad.sprite;
 
+import android.util.Log;
+
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
@@ -63,6 +65,7 @@ public class Shy extends Thing {
                 throwTimer = 16.0; // time until collision is restored
             }
             gravity = 1.0;
+            drag = grounded ? 0.05 : 0.0;
             elasticity = 0.9;
             carried = false;
             thrown = true;
@@ -77,6 +80,7 @@ public class Shy extends Thing {
 
             type = Collision.CREEP;
         } else { // walking around
+            drag = DEFAULT_DRAG;
             elasticity = 0.5;
             type = Collision.CREEP;
             walkingThink(level);
@@ -100,7 +104,7 @@ public class Shy extends Thing {
             level.damagePlayer();
         }
 
-        if (Collision.hasWall(frontSense)) {
+        if (Collision.hasWall(frontSense) || Collision.hasCreep(frontSense)) {
             desireDirection = -desireDirection; // turn on wall
         } else {
             var pitSense = level.hitTest(px + ((radius * 2) * desireDirection), py+radius+5);
@@ -149,6 +153,7 @@ public class Shy extends Thing {
         if (!other.canLandOnTop(this)) return;
 
         // Player is above us. adjust px to make it easy to stand on top
+        Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
         dpx = px;
         px = clamp(other.px, px-radius, px+radius);
         dpx -= px;
@@ -159,6 +164,7 @@ public class Shy extends Thing {
         radius = normalRadius;
         px += dpx;
     }
+
     /** Handle collisions with things.
      * @param other thing we might have touched.
      * @param impacted true if there was an impact

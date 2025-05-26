@@ -4,7 +4,6 @@ import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,18 +21,30 @@ public abstract class Thing {
     /** Type of this thing. Should be one of `world.Collision` */
     public int type;
 
-    /** Gravity ratio: 0.0 to 1.0; At zero, object floats, at 1.0 object falls normally. */
-    public double gravity = 1.0;
+    /** Default value for gravity fraction */
+    public static final double DEFAULT_GRAVITY = 1.0;
 
-    /** Drag coefficient. 0.0 = no drag, 1.0 = total stop */
-    public double drag = 0.01;
+    /** Gravity ratio: 0.0 to 1.0; At zero, object floats, at 1.0 object falls normally. */
+    public double gravity = DEFAULT_GRAVITY;
+
+    /** Default value for drag */
+    public static final double DEFAULT_DRAG = 0.01;
+
+    /** Drag coefficient. 0.0 = no drag, 1.0 = total stop. Drag is very strong, and should normally be under 0.1 */
+    public double drag = DEFAULT_DRAG;
+
+    /** Default value for elasticity */
+    public static final double DEFAULT_ELASTICITY = 0.9;
 
     /** Energy returned in a bounce: 0.0 to 1.0; At zero, objects stop immediately, at 1.0 objects bounce forever.
      * 0.1 is good for players/enemies; 0.25 is good for thrown stuff. */
-    public double elasticity = 0.9;
+    public double elasticity = DEFAULT_ELASTICITY;
+
+    /** Default value for terminal velocity */
+    public static final double DEFAULT_TERMINAL_VELOCITY = 3000.0;
 
     /** Maximum allowed velocity. If requested or simulated velocity goes above this, we will restrict it. */
-    public double terminalVelocity = 3000.0;
+    public double terminalVelocity = DEFAULT_TERMINAL_VELOCITY;
 
     /** Radius of hit circle. If radius is negative, there is no inter-object collision */
     public double radius;
@@ -122,7 +133,9 @@ public abstract class Thing {
 
     /** Returns true only if this thing COULD land on the other */
     public final boolean canLandOnTop(Thing other){
-        return !((this.py + this.radius - this.vy - 1) > (other.py - other.radius + other.vy + 1)); // must be above
+        double bottomOfThis = py + radius - (Simulator.h * vy) - 1;
+        double topOfOther = other.py - other.radius + (Simulator.h * other.vy) + 1;
+        return bottomOfThis <= topOfOther;
     }
 
     /** bottom most edge */
