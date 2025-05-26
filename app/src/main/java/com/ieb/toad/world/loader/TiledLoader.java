@@ -10,6 +10,7 @@ import com.ieb.toad.sprite.Coin;
 import com.ieb.toad.sprite.Grass;
 import com.ieb.toad.sprite.Potion;
 import com.ieb.toad.sprite.Shy;
+import com.ieb.toad.sprite.Snifit;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Direction;
@@ -372,6 +373,13 @@ public class TiledLoader {
                     shy.px = x;
                     shy.py = y - shy.radius;
                     fgThings.add(shy);
+                    break;
+
+                case "snifit":
+                    Thing snifit = new Snifit(spriteMgr);
+                    snifit.px = x;
+                    snifit.py = y - snifit.radius;
+                    fgThings.add(snifit);
                     break;
 
                 default:

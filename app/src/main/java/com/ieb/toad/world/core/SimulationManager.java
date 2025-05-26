@@ -22,4 +22,10 @@ public interface SimulationManager {
 
     /** Creep has been killed */
     void killCreep(Thing creep);
+
+    /** Add a thing to the simulation */
+    void addThing(Thing thing);
+
+    /** Return true if the given thing is in the camera view */
+    boolean isOnScreen(Thing thing);
 }

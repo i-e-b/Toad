@@ -6,14 +6,11 @@ import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.constraints.CarryingObject;
-import com.ieb.toad.world.constraints.OnLadder;
 import com.ieb.toad.world.constraints.StandingOnCreep;
-import com.ieb.toad.world.constraints.StandingOnGround;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
-import com.ieb.toad.world.platforms.LadderPlatform;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +30,6 @@ public class Shy extends Thing {
     private double dpx; // px value to restore after collision
     private boolean grounded; // recently on the ground
 
-    /** Load Toad graphics */
     public Shy(final SpriteSheetManager sprites) {
         left = new Animation(160, Animation.FOREVER, sprites.dude, Flip.None, new int[]{0,1});
         right = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz, new int[]{0,1});

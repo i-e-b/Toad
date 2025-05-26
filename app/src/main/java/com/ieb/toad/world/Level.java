@@ -34,6 +34,7 @@ public class Level implements SimulationManager {
     private final TiledLoader level;
     public final boolean loadedOk;
     private Rect lastCheckpoint;
+    private Camera lastCamera;
 
     public Level(Main context) throws IOException {
         simulator = new Simulator(this);
@@ -51,7 +52,8 @@ public class Level implements SimulationManager {
         lastCheckpoint = level.toad.boundBox();
     }
 
-    public void Draw(@NotNull Camera camera, int width, int height, int frameMs) {
+    public void Draw(@NotNull Camera camera, int frameMs) {
+        lastCamera = camera;
         camera.centreOn(level.toad.px, level.toad.py, level.camZones);
         Rect coverage = camera.getCoverage();
 
@@ -175,6 +177,27 @@ public class Level implements SimulationManager {
     @Override
     public void killCreep(Thing creep){
         things.remove(creep);
+    }
+
+    @Override
+    public void addThing(Thing thing) {
+        things.add(thing);
+    }
+
+    @Override
+    public boolean isOnScreen(Thing thing) {
+        if (lastCamera == null) return true;
+
+        Rect coverage = lastCamera.getCoverage();
+        int left = (int) (thing.px-thing.radius);
+        int top = (int) (thing.py-thing.radius);
+        int right = (int) (thing.px+thing.radius);
+        int bottom = (int) (thing.py+thing.radius);
+
+        if (top > coverage.bottom) return false;
+        if (bottom < coverage.top) return false;
+        if (right < coverage.left) return false;
+        return left <= coverage.right;
     }
 
     public int getBackgroundColor() {
