@@ -1250,7 +1250,7 @@
   <object id="88" x="1408" y="4" width="80" height="60"/>
   <object id="99" x="2368" y="160" width="112" height="32"/>
  </objectgroup>
- <objectgroup color="#ea3de7" id="7" name="camera_zones">
+ <objectgroup color="#ea3de7" id="7" name="camera_zones" visible="0" locked="1">
   <object id="23" x="-256" y="-80" width="768" height="336"/>
   <object id="43" x="768" y="-80" width="752" height="400">
    <properties>

@@ -12,7 +12,7 @@
             "scaleInDock": 1
         },
         "level tiles.tsx": {
-            "scaleInDock": 1,
+            "scaleInDock": 1.6219,
             "scaleInEditor": 1.43
         },
         "level0.js": {
@@ -27,11 +27,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2.5221,
-            "selectedLayer": 0,
+            "scale": 1.0243,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": -128.6626224178264,
-                "y": 155.42603386067165
+                "x": 140.09567509518698,
+                "y": 74.1970125939666
             }
         }
     },
@@ -43,13 +43,14 @@
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
-        "level0.tmx"
+        "level0.tmx",
+        "level tiles.tsx"
     ],
     "project": "toad.tiled-project",
     "property.type": "color",
     "recentFiles": [
-        "level0.tmx",
         "level tiles.tsx",
+        "level0.tmx",
         "level0.js"
     ],
     "tileset.lastUsedFormat": "tsx",
