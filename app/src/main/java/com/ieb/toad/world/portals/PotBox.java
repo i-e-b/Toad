@@ -53,8 +53,8 @@ public class PotBox extends DoorThing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (Collision.hasWall(other.type)) return; // don't collide with other walls
+    public boolean preImpactTest(Thing other) {
+        if (Collision.hasWall(other.type)) return SKIP_IMPACT; // don't collide with other walls
 
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = 1.0;
@@ -72,6 +72,7 @@ public class PotBox extends DoorThing {
             vx = -other.vx;  // reflect across vert
             vy = other.vy;
         }
+        return DO_IMPACT;
     }
 
     @Override

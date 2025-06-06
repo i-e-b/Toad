@@ -24,8 +24,8 @@ public class LifterPlatform extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (other.type == Collision.WALL) return; // don't collide with other walls
+    public boolean preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return SKIP_IMPACT; // don't collide with other walls
 
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = this.hitBox.width() * 4; // big radius to make falling off less likely
@@ -38,6 +38,8 @@ public class LifterPlatform extends Thing {
 
         // set velocity up to bump the player
         vy = -speed;
+
+        return DO_IMPACT;
     }
 
     @Override

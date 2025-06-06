@@ -52,17 +52,18 @@ public class DoorBox extends DoorThing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         if (onHold) { // Don't trigger until 'up' is released
             onHold = VirtualGamepad.isUp();
-            return;
+            return SKIP_IMPACT;
         }
 
-        if (other.type != Collision.PLAYER) return;
+        if (other.type != Collision.PLAYER) return SKIP_IMPACT;
 
-        if (other.px < hitBox.left || other.px > hitBox.right) return;
-        if (other.py < hitBox.top || other.py > hitBox.bottom) return;
+        if (other.px < hitBox.left || other.px > hitBox.right) return SKIP_IMPACT;
+        if (other.py < hitBox.top || other.py > hitBox.bottom) return SKIP_IMPACT;
 
         if (VirtualGamepad.isUp()) triggered = true; // handled in `think()`
+        return DO_IMPACT;
     }
 }

@@ -21,13 +21,15 @@ public class DeathPlane extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (other.type != Collision.PLAYER) return; // only collide with player
+    public boolean preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return SKIP_IMPACT; // don't collide with walls
 
         radius = 1.0;
         // Find the closest point to the circle within the rectangle
         px = clamp(other.px, hitBox.left+1, hitBox.right-1);
         py = clamp(other.py, hitBox.top+1, hitBox.bottom-1);
+
+        return DO_IMPACT;
     }
 
     @Override

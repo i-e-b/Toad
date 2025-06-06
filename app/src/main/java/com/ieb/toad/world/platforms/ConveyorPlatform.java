@@ -24,8 +24,8 @@ public class ConveyorPlatform extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (other.type == Collision.WALL) return; // don't collide with other walls
+    public boolean preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return SKIP_IMPACT; // don't collide with other walls
 
         // Find the closest point to the circle within the rectangle
         px = clamp(other.px, this.hitBox.left + 1, this.hitBox.right - 1);
@@ -42,6 +42,7 @@ public class ConveyorPlatform extends Thing {
             px -= speed;
             vx = speed;
         }
+        return DO_IMPACT;
     }
 
     @Override

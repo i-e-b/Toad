@@ -18,6 +18,12 @@ public abstract class Thing {
     /** Returned by `think`. This thing should remain in the simulation */
     public static final int KEEP = 0;
 
+    /** Returned by `preImpactTest` if this thing would like to interact with another */
+    public static final boolean DO_IMPACT = true;
+
+    /** Returned by `preImpactTest` if this thing should not interact with the other */
+    public static final boolean SKIP_IMPACT = false;
+
     /** Type of this thing. Should be one of `world.Collision` */
     public int type;
 
@@ -95,9 +101,9 @@ public abstract class Thing {
      * Do any updates before an impact is tested and resolved.
      * This allows updates to position to make a virtual impact point for complex shapes.
      * @param other a nearby object
+     * @return true if impact should be run, false if this and other should ignore each other
      */
-    public void preImpactTest(Thing other) {
-    }
+    public boolean preImpactTest(Thing other) {return DO_IMPACT;}
 
     /** [Optional Override]
      * You should reset any virtual changes made in `preImpactTest` here.

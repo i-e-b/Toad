@@ -21,8 +21,8 @@ public class SolidPlatform extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (other.type == Collision.WALL) return; // don't collide with other walls
+    public boolean preImpactTest(Thing other) {
+        if (other.type == Collision.WALL) return SKIP_IMPACT; // don't collide with other walls
 
         // Set radius to make this interactive. Will be reset after impact resolved
         radius = 1.0;
@@ -41,6 +41,8 @@ public class SolidPlatform extends Thing {
         double or = other.px + other.radius;
         vx = (ot > hitBox.bottom || ob < hitBox.top) ? other.vx : -other.vx;
         vy = (ol > hitBox.right || or < hitBox.left) ? other.vy : -other.vy;
+
+        return DO_IMPACT;
     }
 
     @Override

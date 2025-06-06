@@ -19,7 +19,7 @@ public class Grass extends Thing {
 
         type = Collision.PASS_THROUGH;
         collected = false;
-        radius = -1;
+        radius = 16.0;
         mass = 0.8;
         gravity = 0.0; // not affected by gravity
     }
@@ -42,15 +42,9 @@ public class Grass extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         // Only interact with player
-        if (other.type != Collision.PLAYER) return;
-        radius = 16.0;
-    }
-
-    @Override
-    public void postImpactTest() {
-        radius = -1.0;
+        return Collision.hasPlayer(other.type);
     }
 
     @Override

@@ -138,11 +138,11 @@ public class Simulator {
         for (int i = idx+1; i < objects.size(); i++) {
             Thing other = objects.get(i);
 
-            other.preImpactTest(self); // allow virtual impact point to be created
-            self.preImpactTest(other);
+            // allow virtual impact point to be created, or objects to veto impact testing
+            boolean test = other.preImpactTest(self) && self.preImpactTest(other);
 
             boolean impacted = false;
-            if (other.radius > 0 && self.radius > 0) {
+            if (test && other.radius > 0 && self.radius > 0) {
                 boolean collides = ((self.type | other.type) & Collision.PASS_THROUGH) != Collision.PASS_THROUGH;
                 double time = impactTime(self, other);
 

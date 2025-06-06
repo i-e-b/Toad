@@ -137,22 +137,23 @@ public class Shy extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         dpx = 0;
-        if (!Collision.hasPlayer(other.type)) return; // normal collision for anything but a player
+        if (!Collision.hasPlayer(other.type)) return DO_IMPACT; // normal collision for anything but a player
 
         if (throwTimer > 0) {
-            radius = -1.0;
-            return;
+            return SKIP_IMPACT;
         }
-        if (thrown) return; // normal impact when flipped
-        if (!other.canLandOnTop(this)) return;
+        if (thrown) return DO_IMPACT; // normal impact when flipped
+        if (other.canLandOnTop(this)) {
+            // Player is above us. adjust px to make it easy to stand on top
+            Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
+            dpx = px;
+            px = clamp(other.px, px - radius, px + radius);
+            dpx -= px;
+        }
 
-        // Player is above us. adjust px to make it easy to stand on top
-        Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
-        dpx = px;
-        px = clamp(other.px, px-radius, px+radius);
-        dpx -= px;
+        return DO_IMPACT;
     }
 
     @Override

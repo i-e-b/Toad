@@ -48,11 +48,11 @@ public class DirectionPortal extends DoorThing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         // Only trigger if other is player inside our hit box
-        if (other.type != Collision.PLAYER) return;
-        if (other.px < hitBox.left || other.px > hitBox.right) return;
-        if (other.py < hitBox.top || other.py > hitBox.bottom) return;
+        if (other.type != Collision.PLAYER) return SKIP_IMPACT;
+        if (other.px < hitBox.left || other.px > hitBox.right) return SKIP_IMPACT;
+        if (other.py < hitBox.top || other.py > hitBox.bottom) return SKIP_IMPACT;
 
         // Check if player direction matches our triggers
         int dirs = 0;
@@ -66,8 +66,10 @@ public class DirectionPortal extends DoorThing {
         // Fire trigger if appropriate
         if (onHold) { // Don't trigger until trigger condition stops
             onHold = meetsTrigger;
-            return;
+        } else {
+            triggered = meetsTrigger;
         }
-        triggered = meetsTrigger;
+
+        return DO_IMPACT;
     }
 }

@@ -22,13 +22,13 @@ public class OneWayPlatform extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         if (other.type != Collision.SENSOR){
             // If the other thing is below the top surface, have no impact
-            if (other.py > hitBox.top) return;
+            if (other.py > hitBox.top) return SKIP_IMPACT;
 
             // If the other is travelling up, don't interact yet
-            if (other.vy < 0 ) return;
+            if (other.vy < 0 ) return SKIP_IMPACT;
         }
 
         // Find the closest point to the circle within the rectangle
@@ -40,6 +40,8 @@ public class OneWayPlatform extends Thing {
         elasticity = other.elasticity;
         vx = other.vx;
         vy = -other.vy;
+
+        return DO_IMPACT;
     }
 
     @Override

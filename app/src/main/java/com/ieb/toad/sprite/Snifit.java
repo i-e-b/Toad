@@ -19,6 +19,7 @@ public class Snifit extends Thing {
     private final Animation right;
     private final Animation flipLeft;
     private final Animation flipRight;
+    private final SpriteSheetManager sprites;
     private final double normalRadius;
 
     private double lastFramePx, throwTimer, recoverTimer, fireTimer;
@@ -35,6 +36,7 @@ public class Snifit extends Thing {
         right = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz, new int[]{2,3});
         flipLeft = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Vert, new int[]{2,3});
         flipRight = new Animation(160, Animation.FOREVER, sprites.dude, Flip.Horz + Flip.Vert, new int[]{2,3});
+        this.sprites = sprites;
 
         fireTimer = FIRE_RATE;
         carried = thrown = false;
@@ -127,10 +129,7 @@ public class Snifit extends Thing {
     }
 
     private void fireBullet(SimulationManager level) {
-        /*if (level.isOnScreen(this)){
-
-        }*/
-        Bullet b = new Bullet(desireDirection, px + (desireDirection*radius/2), py);
+        Bullet b = new Bullet(sprites, desireDirection, px + (desireDirection*radius/2), py);
         level.addThing(b);
     }
 
@@ -152,22 +151,23 @@ public class Snifit extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
+    public boolean preImpactTest(Thing other) {
         dpx = 0;
-        if (!Collision.hasPlayer(other.type)) return; // normal collision for anything but a player
+        if (!Collision.hasPlayer(other.type)) return DO_IMPACT; // normal collision for anything but a player
 
         if (throwTimer > 0) {
-            radius = -1.0;
-            return;
+            return SKIP_IMPACT;
         }
-        if (thrown) return; // normal impact when flipped
-        if (!other.canLandOnTop(this)) return;
+        if (thrown) return DO_IMPACT; // normal impact when flipped
+        if (other.canLandOnTop(this)) {
+            // Player is above us. adjust px to make it easy to stand on top
+            Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
+            dpx = px;
+            px = clamp(other.px, px - radius, px + radius);
+            dpx -= px;
+        }
 
-        // Player is above us. adjust px to make it easy to stand on top
-        Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
-        dpx = px;
-        px = clamp(other.px, px-radius, px+radius);
-        dpx -= px;
+        return DO_IMPACT;
     }
 
     @Override

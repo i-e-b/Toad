@@ -24,9 +24,8 @@ public class LadderPlatform extends Thing {
     }
 
     @Override
-    public void preImpactTest(Thing other) {
-        if (other.type != Collision.PLAYER) return; // only collide with player
-
+    public boolean preImpactTest(Thing other) {
+        if (other.type != Collision.PLAYER) return SKIP_IMPACT; // only collide with player
 
         if (other.py < hitBox.top) {
             // If the other thing is above the top surface, act like a platform
@@ -51,6 +50,7 @@ public class LadderPlatform extends Thing {
             px = hitBox.left + halfWidth;
             py = clamp(other.py, this.hitBox.top+1, this.hitBox.bottom-1);
         }
+        return DO_IMPACT;
     }
 
     @Override
