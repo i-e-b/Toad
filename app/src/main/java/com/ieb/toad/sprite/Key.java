@@ -43,6 +43,12 @@ public class Key extends ThrowableStuff {
     }
 
     @Override
+    public int think(SimulationManager level, int ms) {
+        if (used) return REMOVE;
+        return KEEP;
+    }
+
+    @Override
     public void draw(@NotNull Camera camera, int frameMs) {
         camera.drawSprite(anim, px, py, radius);
     }

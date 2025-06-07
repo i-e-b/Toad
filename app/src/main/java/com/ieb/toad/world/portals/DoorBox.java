@@ -16,7 +16,7 @@ public class DoorBox extends DoorThing {
     private final Rect hitBox;
     private boolean locked;
 
-    private boolean triggered, onHold;
+    private boolean triggered;
 
     public DoorBox(int left, int top, int width, int height, String target, boolean locked, int objId) {
         super(target, objId);
@@ -24,11 +24,14 @@ public class DoorBox extends DoorThing {
         hitBox = new Rect(left, top, left+width, top+height);
 
         type = Collision.DOOR + Collision.PASS_THROUGH;
-        radius = 10;
+        radius = width / 2.0;
         px = hitBox.centerX();
         py = hitBox.centerY();
         triggered = false;
-        onHold = false;
+    }
+
+    public void trigger(){
+        triggered = true;
     }
 
     public int think(SimulationManager level, int ms) {
@@ -41,8 +44,7 @@ public class DoorBox extends DoorThing {
     }
 
     @Override
-    public void moveAndHold(Thing t) {
-        onHold = true;
+    public void movePlayerToDoor(Thing t) {
         triggered = false;
 
         t.px = hitBox.centerX();
@@ -53,18 +55,7 @@ public class DoorBox extends DoorThing {
 
     @Override
     public boolean preImpactTest(Thing other) {
-        if (onHold) { // Don't trigger until 'up' is released
-            onHold = VirtualGamepad.isUp();
-            return SKIP_IMPACT;
-        }
-
         if (other.type != Collision.PLAYER) return SKIP_IMPACT;
-
-        if (other.px < hitBox.left || other.px > hitBox.right) return SKIP_IMPACT;
-        if (other.py < hitBox.top || other.py > hitBox.bottom) return SKIP_IMPACT;
-
-        // TODO: move to Toad?
-        if (VirtualGamepad.isUp()) triggered = true; // handled in `think()`
         return DO_IMPACT;
     }
 }

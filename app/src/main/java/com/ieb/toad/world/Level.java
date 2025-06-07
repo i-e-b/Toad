@@ -164,7 +164,7 @@ public class Level implements SimulationManager {
         if (next == null) return;
 
         // move toad to new location
-        next.moveAndHold(level.toad); // stop doors triggering until control is released
+        next.movePlayerToDoor(level.toad); // stop doors triggering until control is released
     }
 
     @Override

@@ -32,6 +32,8 @@ public abstract class Collision {
 
     public static boolean hasWall(int hit){return (hit & WALL) != 0;}
 
+    public static boolean hasDoor(int hit){return (hit & DOOR) != 0;}
+
     public static boolean isEmpty(int hit) {return hit == NULL;}
 
     public static boolean hasPlayer(int hit) {return (hit & PLAYER) != 0;}

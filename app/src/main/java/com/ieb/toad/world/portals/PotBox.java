@@ -42,7 +42,7 @@ public class PotBox extends DoorThing {
     }
 
     @Override
-    public void moveAndHold(Thing t) {
+    public void movePlayerToDoor(Thing t) {
         onHold = true;
         triggered = false;
 

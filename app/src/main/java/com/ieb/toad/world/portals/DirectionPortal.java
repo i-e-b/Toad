@@ -37,7 +37,7 @@ public class DirectionPortal extends DoorThing {
     }
 
     @Override
-    public void moveAndHold(Thing t) {
+    public void movePlayerToDoor(Thing t) {
         triggered = false;
         onHold = true;
 

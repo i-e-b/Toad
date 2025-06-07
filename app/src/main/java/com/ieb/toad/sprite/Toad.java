@@ -9,6 +9,7 @@ import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.sprite.kinds.Creep;
 import com.ieb.toad.world.constraints.CarryingObject;
 import com.ieb.toad.world.constraints.OnLadder;
+import com.ieb.toad.world.constraints.StandingAtDoor;
 import com.ieb.toad.world.constraints.StandingOnCreep;
 import com.ieb.toad.world.constraints.StandingOnGround;
 import com.ieb.toad.world.core.Camera;
@@ -18,7 +19,6 @@ import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.LadderPlatform;
 import com.ieb.toad.world.portals.DoorBox;
-import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +45,7 @@ public class Toad extends Thing {
     public boolean climbing; // true when we are climbing a ladder or vine
     private boolean canClimb; // true when could start climbing
     private boolean carrying; // true when carrying something
+    private boolean atDoor; // standing by a door (not portal or pot)
 
     // Note, if grounded && climbing, show grounded animation
 
@@ -95,9 +96,16 @@ public class Toad extends Thing {
         handleActionButton(level);
 
 
-        // TODO: move to Toad?
-        if (VirtualGamepad.isUp()) {
+        // Check for door transition
+        if (atDoor && btnUp && !upLock) {
             // if we have a door linked, maybe travel
+            StandingAtDoor door = (StandingAtDoor)getConstraint(StandingAtDoor.class);
+            if (door != null){
+                upLock = true; // no more door until 'up' is released
+                // TODO: check for key
+                door.travel();
+                level.removeConstraint(door);
+            }
         }
     }
 
@@ -199,6 +207,7 @@ public class Toad extends Thing {
             pull_right.reset();
         }
         if (!btnAction) actionLock = false;
+        if (!btnUp) upLock = false;
     }
 
     public void addPlayerSpeed(double dx, int dy) {
@@ -210,7 +219,7 @@ public class Toad extends Thing {
     }
 
     private boolean btnAction, btnUp, btnJump, btnDown, btnRight, btnLeft,
-            jumpUsed, actionLock;
+            jumpUsed, actionLock, upLock;
 
     @Override
     public void draw(@NotNull Camera camera, int frameMs) {
@@ -272,11 +281,13 @@ public class Toad extends Thing {
                     grounded = this.canLandOnTop(other);
                 }
             }
-            else if (wallType == DoorBox.class){
-                // TODO: add a StandingAtDoor constraint
-            }
             else if (!grounded && this.canLandOnTop(other)) {
                 level.addConstraint(new StandingOnGround(this, other));
+            }
+        } else if (Collision.hasDoor(other.type)) {
+            Class<? extends Thing> doorType = other.getClass();
+            if (!atDoor && doorType == DoorBox.class){
+                level.addConstraint(new StandingAtDoor(this, (DoorBox)other));
             }
         }
     }
@@ -302,6 +313,7 @@ public class Toad extends Thing {
         grounded = false;
         canClimb = false;
         carrying = false;
+        atDoor = false;
 
         // Update based on current constraints
         for (Constraint c : linkedConstraints()) {
@@ -312,6 +324,8 @@ public class Toad extends Thing {
                 canClimb = true;
             } else if (cType == CarryingObject.class) {
                 carrying = true;
+            } else if (cType == StandingAtDoor.class){
+                atDoor = true;
             }
         }
     }
