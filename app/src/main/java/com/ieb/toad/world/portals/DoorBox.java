@@ -2,10 +2,15 @@ package com.ieb.toad.world.portals;
 
 import android.graphics.Rect;
 
-import com.ieb.toad.input.VirtualGamepad;
+import com.ieb.toad.sprite.Key;
+import com.ieb.toad.sprite.core.Animation;
+import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Doors are non-colliding objects.
@@ -13,16 +18,21 @@ import com.ieb.toad.world.core.Thing;
  * swap between doors with the same target name, by ID.
  */
 public class DoorBox extends DoorThing {
+    private final Animation anim;
     private final Rect hitBox;
-    private boolean locked;
 
+    private boolean locked;
     private boolean triggered;
 
-    public DoorBox(int left, int top, int width, int height, String target, boolean locked, int objId) {
+    public DoorBox(SpriteSheetManager sprites, int left, int top, int width, int height, String target, boolean locked, int objId) {
         super(target, objId);
+
+        anim = new Animation(1000, Animation.FOREVER, sprites.tiles, new int[]{266});
+
         this.locked = locked;
         hitBox = new Rect(left, top, left+width, top+height);
 
+        layer = -2; // so the lock is behind Toad
         type = Collision.DOOR + Collision.PASS_THROUGH;
         radius = width / 2.0;
         px = hitBox.centerX();
@@ -30,8 +40,21 @@ public class DoorBox extends DoorThing {
         triggered = false;
     }
 
-    public void trigger(){
+    public boolean trigger(Key key){
+        if (locked){
+            if (key == null) return false;
+            locked = false;
+            key.keyUsed();
+        }
         triggered = true;
+        return true;
+    }
+
+    @Override
+    public void draw(@NotNull Camera camera, int frameMs){
+        if (locked){
+            camera.drawSprite(anim, hitBox);
+        }
     }
 
     public int think(SimulationManager level, int ms) {

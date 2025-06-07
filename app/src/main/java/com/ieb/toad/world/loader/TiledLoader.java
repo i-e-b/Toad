@@ -25,7 +25,6 @@ import com.ieb.toad.world.portals.DoorBox;
 import com.ieb.toad.world.portals.DoorThing;
 import com.ieb.toad.world.portals.PotBox;
 
-import org.jetbrains.annotations.NotNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -70,6 +69,7 @@ public class TiledLoader {
     public int backgroundColor; // argb32 background color for the level
     public int chunkWidth; // size of level chunks, in tile count
     public int chunkHeight; // size of level chunks, in tile count
+    int thingIndex; // counted when adding things. Used for randomising depth of grass
 
     public final List<Thing> fgThings; // used for platforms, creeps and player
     public final List<Thing> bgThings; // used for collectables and grass
@@ -284,23 +284,29 @@ public class TiledLoader {
             Coin coin = new Coin(spriteMgr);
             coin.px = cx; coin.py = cy;
             bgThings.add(coin);
+            thingIndex++;
         } else if (tileId>=CHERRY_START_TILE && tileId <=CHERRY_END_TILE){
             Cherry cherry = new Cherry(spriteMgr);
             cherry.px = cx;cherry.py = cy;
             cherry.advanceAnim(tileId - CHERRY_START_TILE);
             bgThings.add(cherry);
+            thingIndex++;
         } else if (tileId>=GRASS_START_TILE && tileId <=GRASS_END_TILE){
             Grass grass = new Grass(spriteMgr);
             grass.px = cx;grass.py = by;
+            if ((thingIndex&1) > 0) grass.layer = -2;
             grass.advanceAnim(tileId - GRASS_START_TILE);
             bgThings.add(grass);
+            thingIndex++;
         } else if (tileId==POTION_TILE){
             Thing potion = new Potion(spriteMgr);
             potion.px = cx;potion.py = by;
             bgThings.add(potion);
+            thingIndex++;
         } else if (tileId==KEY_TILE){
             Thing key = new Key(spriteMgr, cx, by);
             fgThings.add(key);
+            thingIndex++;
         } else {
             Log.w(TAG, "processItemTileLayer: unknown tile spawn '"+ tileId +"' in chunk at "+ ix +","+ iy);
         }
@@ -367,9 +373,11 @@ public class TiledLoader {
             switch (type){
                 case "player":
                     toad = new Toad(spriteMgr);
+                    toad.layer = -1; // behind most things (best for the look of carrying)
                     toad.px = x;
                     toad.py = y - toad.radius;
                     fgThings.add(toad);
+                    thingIndex++;
                     break;
 
                 case "shyguy":
@@ -377,6 +385,7 @@ public class TiledLoader {
                     shy.px = x;
                     shy.py = y - shy.radius;
                     fgThings.add(shy);
+                    thingIndex++;
                     break;
 
                 case "snifit":
@@ -384,6 +393,7 @@ public class TiledLoader {
                     snifit.px = x;
                     snifit.py = y - snifit.radius;
                     fgThings.add(snifit);
+                    thingIndex++;
                     break;
 
                 default:
@@ -410,6 +420,7 @@ public class TiledLoader {
             int h = SCALE * (int)getDoubleAttr(attrs, "height");
 
             checkpoints.add(new Rect(x,y,x+w,y+h));
+            thingIndex++;
         }
     }
 
@@ -435,32 +446,44 @@ public class TiledLoader {
             int h = SCALE * (int)getDoubleAttr(attrs, "height");
 
             CameraZone cz = new CameraZone(x,y,w,h);
+            cz.color = 0;
             camZones.add(cz);
 
             // might have a background color:
             if (obj.hasChildNodes()){
-                NodeList props = obj.getChildNodes().item(0).getChildNodes();
-                int propCount = props.getLength();
-                for (int j = 0; j < propCount; j++) {
-                    Node prop = props.item(j);
-                    String propName = prop.getNodeName();
-                    if (propName == null || !propName.equals("property")) continue;
+                Node custom = firstElement(obj.getChildNodes());
+                if (custom != null){
+                    NodeList props = custom.getChildNodes();
+                    int propCount = props.getLength();
+                    for (int j = 0; j < propCount; j++) {
+                        Node prop = props.item(j);
+                        String propName = prop.getNodeName();
+                        if (propName == null || !propName.equals("property")) continue;
 
-                    NamedNodeMap propAttrs = prop.getAttributes();
-                    String key = getStrAttr(propAttrs, "name");
-                    //noinspection SwitchStatementWithTooFewBranches
-                    switch (key){
-                        case "color":
-                            cz.color = getHexAttr(propAttrs, "value");
-                            break;
+                        NamedNodeMap propAttrs = prop.getAttributes();
+                        String key = getStrAttr(propAttrs, "name");
+                        //noinspection SwitchStatementWithTooFewBranches
+                        switch (key){
+                            case "color":
+                                cz.color = getHexAttr(propAttrs, "value");
+                                break;
 
-                        default:
-                            Log.w(TAG, "processCamZones: unknown property '"+key+"' in objId="+objId);
-                            break;
-                    }
-                }
+                            default:
+                                Log.w(TAG, "processCamZones: unknown property '"+key+"' in objId="+objId);
+                                break;
+                        }
+                    }}
             }
         }
+    }
+
+    private Node firstElement(NodeList nodes) {
+        int nodeCount = nodes.getLength();
+        for (int j = 0; j < nodeCount; j++) {
+            Node item = nodes.item(j);
+            if (item.getNodeType() == Node.ELEMENT_NODE) return item;
+        }
+        return null;
     }
 
     private void processWalls(NodeList group) {
@@ -488,40 +511,49 @@ public class TiledLoader {
             switch (type){
                 case "solid":
                     fgThings.add(new SolidPlatform(x, y, w, h));
+                    thingIndex++;
                     break;
 
                 case "oneway":
                     fgThings.add(new OneWayPlatform(x, y, w, h));
+                    thingIndex++;
                     break;
 
                 case "door":
-                    doorThings.add(new DoorBox(x,y,w,h, target, false, objId));
+                    doorThings.add(new DoorBox(spriteMgr, x,y,w,h, target, false, objId));
+                    thingIndex++;
                     break;
 
                 case "locked_door":
-                    doorThings.add(new DoorBox(x,y,w,h, target, true, objId));
+                    doorThings.add(new DoorBox(spriteMgr, x,y,w,h, target, true, objId));
+                    thingIndex++;
                     break;
 
                 case "pot":
                     doorThings.add(new PotBox(x,y,w,h, target, objId));
+                    thingIndex++;
                     break;
 
                 case "portal_up":
                     doorThings.add(new DirectionPortal(x,y,w,h, target, Direction.UP, objId));
+                    thingIndex++;
                     break;
 
                 case "ladder":
                     fgThings.add(new LadderPlatform(x, y, w, h));
+                    thingIndex++;
                     break;
 
                 case "spike":
                     Log.w(TAG, "processWalls: spike platforms not implemented yet");
                     fgThings.add(new SolidPlatform(x, y, w, h));
+                    thingIndex++;
                     break;
 
                 case "death":
                     Log.w(TAG, "processWalls: death platforms not implemented yet");
                     fgThings.add(new DeathPlane(x, y, w, h));
+                    thingIndex++;
                     break;
 
                 default:
@@ -557,7 +589,7 @@ public class TiledLoader {
         if (s.isBlank()) return 0;
         if (s.startsWith("#")) s = s.substring(1);
 
-        return Integer.parseInt(s, 16);
+        return (int)Long.parseLong(s, 16);
     }
 
     private int getIntAttr(NamedNodeMap attrs,String name){

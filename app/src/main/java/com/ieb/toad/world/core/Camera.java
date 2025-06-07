@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.ieb.toad.FirstScreen;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.world.loader.CameraZone;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 /** Helper to draw on a canvas with an offset */
 public class Camera {
+    private final FirstScreen screen;
     private Canvas canvas;
     private int left, top;
     private int cx,cy;
@@ -21,6 +23,11 @@ public class Camera {
     private int width, height;
     private int drawCount;
     private final Paint paint = new Paint();
+    private CameraZone lastZone;
+
+    public Camera(FirstScreen screen) {
+        this.screen = screen;
+    }
 
     /** @noinspection NullableProblems*/
     @Override
@@ -49,14 +56,15 @@ public class Camera {
 
     /** Set the camera offset */
     public void centreOn(double x, double y, List<CameraZone> camZones) {
-        CameraZone zone = null;
+        lastZone = null;
+
         cx = (int)x;
         cy = (int)y;
 
         for (int i = 0; i < camZones.size(); i++) {
             CameraZone cz = camZones.get(i);
             if (cz.rect.contains(cx,cy)) {
-                zone = cz;
+                lastZone = cz;
                 break;
             }
         }
@@ -64,25 +72,27 @@ public class Camera {
         left = cx - (width / 2);
         top = cy - (height / 2);
 
-        if (zone == null) return; // No zone. just centre the cam
+        if (lastZone == null) return; // No zone. just centre the cam
+
+        //screen.setBackgroundColor(lastZone.color);
 
         // Force the view inside the zone
-        if (top < zone.rect.top){
-            top = zone.rect.top;
+        if (top < lastZone.rect.top){
+            top = lastZone.rect.top;
         }
         int bottom = top + height;
-        if (bottom > zone.rect.bottom){
-            int dy = bottom - zone.rect.bottom;
+        if (bottom > lastZone.rect.bottom){
+            int dy = bottom - lastZone.rect.bottom;
             top -= dy;
         }
 
         int right = left + width;
-        if (right > zone.rect.right){
-            int dx = right - zone.rect.right;
+        if (right > lastZone.rect.right){
+            int dx = right - lastZone.rect.right;
             left -= dx;
         }
-        if (left < zone.rect.left){
-            left = zone.rect.left;
+        if (left < lastZone.rect.left){
+            left = lastZone.rect.left;
         }
     }
 
@@ -165,5 +175,12 @@ public class Camera {
     /** Get the rectangle being displayed by the camera */
     public Rect getCoverage() {
         return null;
+    }
+
+    /** Clear canvas to current cam zone color, or the default if none set. */
+    public void clear(int defaultColor) {
+        int color = lastZone.color == 0 ? defaultColor : lastZone.color;
+
+        canvas.drawColor(0xFF000000 | color);
     }
 }

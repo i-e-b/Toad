@@ -24,6 +24,10 @@ public abstract class Thing {
     /** Returned by `preImpactTest` if this thing should not interact with the other */
     public static final boolean SKIP_IMPACT = false;
 
+    /** Visual layer for drawing. Default is zero, Toad is -1.
+     * Higher values draw over lower values. Does not need to be unique. */
+    public int layer = 0;
+
     /** Type of this thing. Should be one of `world.Collision` */
     public int type;
 

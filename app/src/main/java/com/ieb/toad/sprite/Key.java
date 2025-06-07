@@ -18,9 +18,6 @@ public class Key extends ThrowableStuff {
 
     private boolean used;
 
-    // TODO: need to respawn the key back at origin
-    //  if it gets dropped in a pit (or any other despawn)
-
     public Key(final SpriteSheetManager sprites, int cx, int by) {
         super();
 
@@ -44,6 +41,7 @@ public class Key extends ThrowableStuff {
 
     @Override
     public int think(SimulationManager level, int ms) {
+        super.think(level, ms);
         if (used) return REMOVE;
         return KEEP;
     }

@@ -27,7 +27,7 @@ public class FirstScreen extends BaseView {
     public FirstScreen(final Main context) throws IOException {
         super(context);
         frameActive = false;
-        camera = new Camera();
+        camera = new Camera(this);
 
         // TODO: move this out of constructor, show loading screen
         level = new Level(context);
@@ -50,7 +50,7 @@ public class FirstScreen extends BaseView {
         frameActive = true;
         if (lastPhysicsTimeMs > time) lastPhysicsTimeMs = time; // clock wrapped. Shouldn't really happen.
 
-        if (physicsFrameCount > 1){
+        if (physicsFrameCount > 1) {
             // Do simulation
             lastPhysicsTimeMs += level.stepMillis(time - lastPhysicsTimeMs);
         } else {

@@ -8,7 +8,7 @@ public class CameraZone {
      * If the camera is larger than the rect, overflow to the top and right. */
     public final Rect rect;
 
-    /** background color. Zero equal no specific color, use level default. */
+    /** background color. zero equals no specific color, use level default. */
     public int color;
 
     public CameraZone(int left, int top, int width, int height) {

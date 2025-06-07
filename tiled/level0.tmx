@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#b9d9e5" nextlayerid="9" nextobjectid="107">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#b9d9e5" nextlayerid="9" nextobjectid="108">
  <editorsettings>
   <export target="../app/src/main/assets/level0.tmx" format="tmx"/>
  </editorsettings>
@@ -229,8 +229,8 @@
 37,38,515,515,515,515,515,515,515,515,515,515,515,515,515,515,
 63,64,0,515,515,515,515,515,515,515,515,515,515,515,515,515,
 37,38,0,515,515,515,515,515,515,515,515,515,515,515,515,515,
-63,64,39,515,515,515,515,515,515,515,515,515,515,515,515,515,
-37,38,65,515,515,515,515,515,515,515,515,515,515,515,515,515,
+63,64,39,515,515,515,515,515,515,0,515,0,515,515,515,515,
+37,38,65,515,515,515,515,515,0,515,0,515,515,515,515,515,
 63,64,0,515,515,515,515,515,515,515,515,515,515,515,515,515,
 37,38,0,515,515,515,515,515,515,515,515,515,515,515,515,515,
 63,64,0,515,515,515,515,515,515,515,515,515,515,515,515,515,
@@ -325,9 +325,9 @@
 515,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0,
 515,93,93,93,0,0,0,0,0,0,0,0,0,0,0,0,
 119,515,119,119,0,0,0,0,0,0,0,0,0,0,0,0,
-93,515,515,93,0,0,0,0,0,0,0,0,0,0,0,0,
-119,119,515,515,0,0,0,0,0,0,0,0,0,0,0,0,
-93,93,93,515,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,93,0,0,0,0,0,0,0,0,0,0,0,0,
+119,0,515,515,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,515,0,0,0,0,0,0,0,0,0,0,0,0,
 119,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0
 </chunk>
    <chunk x="144" y="0" width="16" height="16">
@@ -608,7 +608,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,
 9,9,0,0,0,0,0,0,0,0,0,0,0,0,9,0,
 63,63,9,0,0,0,0,0,269,0,0,0,240,6,9,0,
-89,89,91,0,0,0,0,9,321,0,0,0,267,9,9,0,
+89,89,91,0,0,0,0,9,321,0,0,0,266,9,9,0,
 0,0,0,0,0,0,0,9,9,9,9,9,9,9,9,0,
 0,0,0,0,0,0,0,88,89,90,423,90,89,90,89,0,
 0,0,0,0,0,0,0,0,93,93,423,93,93,0,93,0,
@@ -1142,7 +1142,7 @@
   <object id="5" type="oneway" x="-144" y="192" width="16" height="8"/>
   <object id="6" type="solid" x="-224" y="224" width="224" height="32"/>
   <object id="7" type="spike" x="-240" y="248" width="16" height="8"/>
-  <object id="8" type="death" x="-256" y="256" width="768" height="16"/>
+  <object id="8" type="death" x="-256" y="256" width="768" height="64"/>
   <object id="10" type="solid" x="32" y="224" width="48" height="31"/>
   <object id="11" type="solid" x="96" y="224" width="48" height="32"/>
   <object id="12" type="oneway" x="48" y="192" width="80" height="8"/>
@@ -1167,7 +1167,7 @@
   <object id="38" name="cave_inner" type="door" x="880" y="160" width="16" height="32"/>
   <object id="39" type="solid" x="864" y="192" width="64" height="44"/>
   <object id="40" type="solid" x="768" y="-80" width="28" height="400"/>
-  <object id="41" type="death" x="768" y="320" width="752" height="16"/>
+  <object id="41" type="death" x="768" y="320" width="752" height="40"/>
   <object id="42" type="solid" x="1520" y="-80" width="16" height="416"/>
   <object id="46" type="solid" x="768" y="-96" width="768" height="16"/>
   <object id="47" name="boss_room" type="locked_door" x="1472" y="32" width="16" height="32"/>
@@ -1199,8 +1199,6 @@
   <object id="77" type="oneway" x="1856" y="176" width="48" height="16"/>
   <object id="79" type="solid" x="-272" y="-96" width="800" height="16"/>
   <object id="80" type="oneway" x="928" y="208" width="64" height="16"/>
-  <object id="81" type="oneway" x="944" y="252" width="32" height="12"/>
-  <object id="82" type="oneway" x="944" y="284" width="32" height="12"/>
   <object id="91" type="death" x="2320" y="224" width="560" height="16"/>
   <object id="92" type="solid" x="2320" y="-52" width="48" height="276"/>
   <object id="93" type="oneway" x="2368" y="128" width="48" height="12"/>
@@ -1213,6 +1211,7 @@
   <object id="101" type="solid" x="2320" y="-64" width="560" height="12"/>
   <object id="103" type="solid" x="1440" y="256" width="80" height="16"/>
   <object id="104" type="ladder" x="1440" y="68" width="16" height="188"/>
+  <object id="107" type="solid" x="796" y="0" width="36" height="64"/>
  </objectgroup>
  <objectgroup color="#5500ff" id="4" name="spawns">
   <object id="9" name="player" x="-184" y="224">
@@ -1256,7 +1255,11 @@
     <property name="color" type="color" value="#ff000000"/>
    </properties>
   </object>
-  <object id="63" x="1732" y="-76" width="376" height="332"/>
+  <object id="63" x="1732" y="-76" width="376" height="332">
+   <properties>
+    <property name="color" type="color" value="#ff000000"/>
+   </properties>
+  </object>
   <object id="90" x="2320" y="-52" width="560" height="276"/>
  </objectgroup>
 </map>

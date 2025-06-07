@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -47,8 +49,9 @@ public class Level implements SimulationManager {
         things = new ArrayList<>();
         constraints = new ArrayList<>();
         things.addAll(level.bgThings);
-        things.addAll(level.fgThings);
         things.addAll(level.doorThings);
+        things.addAll(level.fgThings);
+        things.sort(Comparator.comparing(o -> o.layer));
         lastCheckpoint = level.toad.boundBox();
     }
 
@@ -56,6 +59,9 @@ public class Level implements SimulationManager {
         lastCamera = camera;
         camera.centreOn(level.toad.px, level.toad.py, level.camZones);
         Rect coverage = camera.getCoverage();
+
+        // Wipe to zone color, or level color if none set
+        camera.clear(getBackgroundColor());
 
         // background
         drawLayer(camera, level.getBackgroundChunks(coverage), frameMs);
@@ -73,7 +79,6 @@ public class Level implements SimulationManager {
     }
 
     private void drawLayer(Camera camera, Enumeration<LayerChunk> chunks, int frameMs) {
-        // TODO: need to handle animated tiles somehow
         if (chunks == null) return;
         while (chunks.hasMoreElements()) {
             LayerChunk chunk = chunks.nextElement();
@@ -141,6 +146,7 @@ public class Level implements SimulationManager {
             }
         }
         things.remove(t);
+        things.sort(Comparator.comparing(o -> o.layer));
         t.despawned(this);
     }
 
@@ -178,6 +184,7 @@ public class Level implements SimulationManager {
     @Override
     public void addThing(Thing thing) {
         things.add(thing);
+        things.sort(Comparator.comparing(o -> o.layer));
     }
 
     @Override

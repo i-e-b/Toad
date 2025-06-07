@@ -47,6 +47,8 @@ public class Toad extends Thing {
     private boolean carrying; // true when carrying something
     private boolean atDoor; // standing by a door (not portal or pot)
 
+    private Key key; // null unless currently holding a key
+
     // Note, if grounded && climbing, show grounded animation
 
     public final long JUMP_TIME_MS = 165;
@@ -86,15 +88,14 @@ public class Toad extends Thing {
         // apply control
         mapControls();
         applyControlsToPhysics(ms);
-        applyControlsToWorld(level, ms);
+        applyControlsToWorld(level);
 
         return KEEP;
     }
 
     /** Pick up, throw, etc */
-    private void applyControlsToWorld(SimulationManager level, int ms) {
+    private void applyControlsToWorld(SimulationManager level) {
         handleActionButton(level);
-
 
         // Check for door transition
         if (atDoor && btnUp && !upLock) {
@@ -102,9 +103,9 @@ public class Toad extends Thing {
             StandingAtDoor door = (StandingAtDoor)getConstraint(StandingAtDoor.class);
             if (door != null){
                 upLock = true; // no more door until 'up' is released
-                // TODO: check for key
-                door.travel();
-                level.removeConstraint(door);
+                if (door.travel(key)) {
+                    level.removeConstraint(door);
+                }
             }
         }
     }
@@ -314,6 +315,7 @@ public class Toad extends Thing {
         canClimb = false;
         carrying = false;
         atDoor = false;
+        key = null;
 
         // Update based on current constraints
         for (Constraint c : linkedConstraints()) {
@@ -323,6 +325,7 @@ public class Toad extends Thing {
             } else if (cType == OnLadder.class){
                 canClimb = true;
             } else if (cType == CarryingObject.class) {
+                if (((CarryingObject)c).carried instanceof Key) key = (Key)((CarryingObject)c).carried;
                 carrying = true;
             } else if (cType == StandingAtDoor.class){
                 atDoor = true;
