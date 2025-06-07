@@ -6,6 +6,7 @@ import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
+import com.ieb.toad.sprite.kinds.Creep;
 import com.ieb.toad.world.constraints.CarryingObject;
 import com.ieb.toad.world.constraints.OnLadder;
 import com.ieb.toad.world.constraints.StandingOnCreep;
@@ -100,8 +101,12 @@ public class Toad extends Thing {
                 actionLock = true;
                 level.removeConstraint(carry);
                 carry.carried.px += radius * desireDirection;
-                carry.carried.vx = (desireDirection * 250) + (vx * 2.0);
+                carry.carried.vx = (desireDirection * 250) + vx;
                 carry.carried.vy = Math.abs(vx) * -2.0;
+
+                if (carry.carried instanceof Creep){
+                    ((Creep)carry.carried).thrown();
+                }
                 carrying = false;
             } else {
                 StandingOnCreep over = (StandingOnCreep)getConstraint(StandingOnCreep.class);

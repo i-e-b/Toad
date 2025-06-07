@@ -1,7 +1,5 @@
 package com.ieb.toad.sprite.kinds;
 
-import android.util.Log;
-
 import com.ieb.toad.sprite.Bullet;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.constraints.CarryingObject;
@@ -10,7 +8,7 @@ import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 
-public abstract class WalkingCreep extends Thing {
+public abstract class WalkingCreep extends Creep {
     public double normalRadius;
     final SpriteSheetManager sprites;
 
@@ -27,6 +25,7 @@ public abstract class WalkingCreep extends Thing {
     public boolean grounded; // recently on the ground
     public boolean canShoot;
     public boolean onLedge; // don't walk, face out and wait
+    public boolean isDead; // true when we've been hit by a thrown thing
 
     public WalkingCreep(final SpriteSheetManager sprites) {
         this.sprites = sprites;
@@ -39,17 +38,24 @@ public abstract class WalkingCreep extends Thing {
         gravity = 1.0; // fully affected by gravity
         canShoot = false;
         onLedge = false;
+        isDead = false;
         turnTimer = 0.0;
     }
 
     @Override
     public int think(SimulationManager level, int ms) {
         ax = ay = 0;
-        if (throwTimer > 0.0) throwTimer -= ms;
-        if (turnTimer > 0.0) turnTimer -=ms;
+        if (!isDead){
+            if (throwTimer > 0.0) throwTimer -= ms;
+            if (turnTimer > 0.0) turnTimer -=ms;
+        }
 
         CarryingObject carry = (CarryingObject)getConstraint(CarryingObject.class);
-        if (carry != null) { // being carried
+        if (isDead){
+            gravity = 1.0;
+            thrown = true;
+            carried = false;
+        } else if (carry != null) { // being carried
             type = Collision.CREEP | Collision.PASS_THROUGH;
             gravity = 0.0;
             carried = true;
@@ -63,7 +69,6 @@ public abstract class WalkingCreep extends Thing {
             drag = grounded ? 0.05 : 0.0;
             elasticity = 0.9;
             carried = false;
-            thrown = true;
 
             // flip if on ground for a long time
             if (grounded && recoverTimer > 0.0){
@@ -158,6 +163,8 @@ public abstract class WalkingCreep extends Thing {
     @Override
     public boolean preImpactTest(Thing other) {
         dpx = 0;
+        if (isDead && Collision.hasWall(other.type)) return SKIP_IMPACT;
+
         if (!Collision.hasPlayer(other.type)) return DO_IMPACT; // normal collision for anything but a player
 
         if (throwTimer > 0) {
@@ -166,7 +173,6 @@ public abstract class WalkingCreep extends Thing {
         if (thrown) return DO_IMPACT; // normal impact when flipped
         if (other.canLandOnTop(this)) {
             // Player is above us. adjust px to make it easy to stand on top
-            Log.i("Shy", Boolean.toString(other.canLandOnTop(this)));
             dpx = px;
             px = clamp(other.px, px - radius, px + radius);
             dpx -= px;
@@ -185,8 +191,34 @@ public abstract class WalkingCreep extends Thing {
     public void impactResolve(SimulationManager level, Thing other, boolean impacted) {
         if (!impacted) return;
 
+        if (thrown && !grounded && Collision.hasCreep(other.type)){
+            // We hit another creep. Fall through walls, flip the other creep.
+            if (other instanceof Creep){
+                ((Creep)other).hitCreep(this);
+            }
+            hitCreep(other);
+        }
+
         if (Collision.hasWall(other.type) && this.canLandOnTop(other)) {
             grounded = true;
         }
+    }
+
+    @Override
+    public void hitCreep(Thing hitBy){
+        if (hitBy.speed() < 2.0) return;
+
+        if (!isDead){
+            // do a little hop
+            if (vy > 0) vy -= 500;
+        }
+
+        isDead = true;
+        thrown = true;
+    }
+
+    @Override
+    public void thrown(){
+        thrown = true;
     }
 }

@@ -203,4 +203,9 @@ public abstract class Thing {
     public Rect boundBox(){
         return new Rect((int) (px-radius), (int) (py-radius), (int) (px+radius), (int) (py+radius));
     }
+
+    /** accurate current speed */
+    public double speed() {
+        return Math.sqrt((vx*vx) + (vy*vy));
+    }
 }
