@@ -12,7 +12,7 @@ public class DeathPlane extends Thing {
 
     public DeathPlane(int left, int top, int width, int height) {
         hitBox = new Rect(left, top, left+width, top+height);
-        type = Collision.WALL + Collision.PASS_THROUGH;
+        type = Collision.PASS_THROUGH;
         mass = 10;
         radius = -1; // only the target of collision
         elasticity = 0.2;
@@ -42,7 +42,7 @@ public class DeathPlane extends Thing {
         if (!impacted) return;
 
         if (Collision.hasPlayer(other.type)) level.damagePlayer();
-        if (Collision.hasCreep(other.type)) level.deleteThing(other);
+        if (Collision.hasCreep(other.type)) level.removeThing(other);
         if (Collision.hasBullet(other.type)) level.removeThing(other);
     }
 }

@@ -17,6 +17,8 @@ import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.LadderPlatform;
+import com.ieb.toad.world.portals.DoorBox;
+import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -91,6 +93,12 @@ public class Toad extends Thing {
     /** Pick up, throw, etc */
     private void applyControlsToWorld(SimulationManager level, int ms) {
         handleActionButton(level);
+
+
+        // TODO: move to Toad?
+        if (VirtualGamepad.isUp()) {
+            // if we have a door linked, maybe travel
+        }
     }
 
     private void handleActionButton(SimulationManager level) {
@@ -111,6 +119,10 @@ public class Toad extends Thing {
             } else {
                 StandingOnCreep over = (StandingOnCreep)getConstraint(StandingOnCreep.class);
                 if (over != null) { // Pick up the creep
+                    if (over.bottom instanceof Creep){
+                        ((Creep)over.bottom).carried();
+                    }
+
                     pull_right.reset(); pull_left.reset();
                     actionLock = true;
                     carrying = true;
@@ -259,6 +271,9 @@ public class Toad extends Thing {
                     canClimb = true;
                     grounded = this.canLandOnTop(other);
                 }
+            }
+            else if (wallType == DoorBox.class){
+                // TODO: add a StandingAtDoor constraint
             }
             else if (!grounded && this.canLandOnTop(other)) {
                 level.addConstraint(new StandingOnGround(this, other));

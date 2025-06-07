@@ -141,6 +141,7 @@ public class Level implements SimulationManager {
             }
         }
         things.remove(t);
+        t.despawned(this);
     }
 
     @Override
@@ -172,11 +173,6 @@ public class Level implements SimulationManager {
 
         // Break all constraints and go back to last checkpoint
         level.toad.resetToCheckpoint(this, lastCheckpoint);
-    }
-
-    @Override
-    public void deleteThing(Thing creep){
-        things.remove(creep);
     }
 
     @Override

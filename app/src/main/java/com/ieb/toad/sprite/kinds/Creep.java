@@ -10,4 +10,7 @@ public abstract class Creep extends Thing {
 
     /** Called when this creep is thrown by Toad */
     public abstract void thrown();
+
+    /** Called when this creep is picked up by Toad */
+    public abstract void carried();
 }

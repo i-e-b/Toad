@@ -269,17 +269,46 @@ public class Simulator {
 
         if (d2 >= (rs * rs)) return;
 
+        if (d2 < 0.01) {
+            // objects are in the same place.
+            // we will push them apart arbitrarily
+            obj.px -= obj.radius;
+            other.px += other.radius;
+            return;
+        }
+
         double d = Math.sqrt(d2); // current distance between centres
         if (d < rs) {
             double dd = rs - d; // overlap distance
             double frac = (dd / d); // fraction of current distance (dx,dy) to adjust
             double ms = obj.mass + other.mass;
 
+            double objFrac, otherFrac;
+            if (ms > 0) {
+                objFrac = other.mass / ms;
+                otherFrac = obj.mass / ms;
+            } else {
+                objFrac = 0.5;
+                otherFrac = 0.5;
+            }
+
             // push apart based on mass
-            obj.px += dx * frac * (other.mass / ms);
-            obj.py += dy * frac * (other.mass / ms);
-            other.px -= dx * frac * (obj.mass / ms);
-            other.py -= dy * frac * (obj.mass / ms);
+            double dpx = dx * frac * objFrac;
+            obj.px += limit(dpx, obj.radius);
+
+            double dpy = dy * frac * objFrac;
+            obj.py += limit(dpy, obj.radius);
+
+            double opx = dx * frac * otherFrac;
+            other.px -= limit(opx, other.radius);
+
+            double opy = dy * frac * otherFrac;
+            other.py -= limit(opy, other.radius);
         }
+    }
+
+    private double limit(double val, double range) {
+        if (val < -range) return -range;
+        return Math.min(val, range);
     }
 }

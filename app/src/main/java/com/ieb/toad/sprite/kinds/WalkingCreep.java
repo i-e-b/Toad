@@ -215,10 +215,17 @@ public abstract class WalkingCreep extends Creep {
 
         isDead = true;
         thrown = true;
+        gravity = 1.0;
     }
 
     @Override
     public void thrown(){
         thrown = true;
+    }
+
+    @Override
+    public void carried() {
+        carried = true;
+        type = Collision.CREEP | Collision.PASS_THROUGH;
     }
 }

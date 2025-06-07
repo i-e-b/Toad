@@ -63,6 +63,7 @@ public class DoorBox extends DoorThing {
         if (other.px < hitBox.left || other.px > hitBox.right) return SKIP_IMPACT;
         if (other.py < hitBox.top || other.py > hitBox.bottom) return SKIP_IMPACT;
 
+        // TODO: move to Toad?
         if (VirtualGamepad.isUp()) triggered = true; // handled in `think()`
         return DO_IMPACT;
     }

@@ -20,9 +20,6 @@ public interface SimulationManager {
     /** Player is damaged. Reset to last checkpoint. */
     void damagePlayer();
 
-    /** Creep has been killed */
-    void deleteThing(Thing creep);
-
     /** Add a thing to the simulation */
     void addThing(Thing thing);
 

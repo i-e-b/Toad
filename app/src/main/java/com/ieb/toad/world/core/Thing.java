@@ -132,6 +132,12 @@ public abstract class Thing {
      */
     protected void constrainRemoved(Constraint c) {}
 
+    /** [Optional Override]
+     * Perform any actions when this thing is removed.
+     * You cannot reverse the removal, but could respawn if needed. */
+    public void despawned(SimulationManager level) {}
+
+
     protected final double clamp(double v, double min, double max) {
         return Math.min(Math.max(v, min), max);
     }

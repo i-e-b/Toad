@@ -8,6 +8,7 @@ import com.ieb.toad.Main;
 import com.ieb.toad.sprite.Cherry;
 import com.ieb.toad.sprite.Coin;
 import com.ieb.toad.sprite.Grass;
+import com.ieb.toad.sprite.Key;
 import com.ieb.toad.sprite.Potion;
 import com.ieb.toad.sprite.Shy;
 import com.ieb.toad.sprite.Snifit;
@@ -297,6 +298,9 @@ public class TiledLoader {
             Thing potion = new Potion(spriteMgr);
             potion.px = cx;potion.py = by;
             bgThings.add(potion);
+        } else if (tileId==KEY_TILE){
+            Thing key = new Key(spriteMgr, cx, by);
+            fgThings.add(key);
         } else {
             Log.w(TAG, "processItemTileLayer: unknown tile spawn '"+ tileId +"' in chunk at "+ ix +","+ iy);
         }
@@ -444,6 +448,7 @@ public class TiledLoader {
 
                     NamedNodeMap propAttrs = prop.getAttributes();
                     String key = getStrAttr(propAttrs, "name");
+                    //noinspection SwitchStatementWithTooFewBranches
                     switch (key){
                         case "color":
                             cz.color = getHexAttr(propAttrs, "value");
