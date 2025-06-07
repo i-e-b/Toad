@@ -15,14 +15,13 @@ import org.jetbrains.annotations.NotNull;
  * On wall hit, they gain gravity. Will bounce off the hit wall,
  * then fall with no collision until offscreen, then despawn. */
 public class Bullet extends Thing {
+    public final double SPEED = 500;
 
     private final Animation anim;
+    private final double direction;
 
     private double lifeTimer;
-    private boolean falling;
-
-    private final double direction;
-    private final double SPEED = 500;
+    private boolean falling, flicker;
 
     public Bullet(final SpriteSheetManager sprites, int direction, double x, double y) {
         anim = new Animation(1000, Animation.FOREVER, sprites.dude, Flip.None, new int[]{30});
@@ -30,6 +29,7 @@ public class Bullet extends Thing {
 
         falling = false; // switched on hit
         lifeTimer = 10_000.0; // destroy bullet after timer expires, regardless of anything else
+        flicker = false;
         type = Collision.BULLET + Collision.PASS_THROUGH; // pass through is removed on impact
         radius = 4.0;
         px = x;
@@ -53,7 +53,9 @@ public class Bullet extends Thing {
 
     @Override
     public void draw(@NotNull Camera camera, int frameMs) {
-        camera.drawSprite(anim, px, py, radius);
+        if (lifeTimer < 500) flicker = !flicker;
+
+        if (!flicker) camera.drawSprite(anim, px, py, radius);
     }
 
     @Override

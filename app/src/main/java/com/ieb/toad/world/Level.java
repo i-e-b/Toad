@@ -175,7 +175,7 @@ public class Level implements SimulationManager {
     }
 
     @Override
-    public void killCreep(Thing creep){
+    public void deleteThing(Thing creep){
         things.remove(creep);
     }
 

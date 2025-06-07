@@ -21,7 +21,7 @@ public interface SimulationManager {
     void damagePlayer();
 
     /** Creep has been killed */
-    void killCreep(Thing creep);
+    void deleteThing(Thing creep);
 
     /** Add a thing to the simulation */
     void addThing(Thing thing);
