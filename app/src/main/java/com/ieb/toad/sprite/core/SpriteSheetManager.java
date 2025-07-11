@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.ieb.toad.Main;
 
@@ -17,7 +16,7 @@ import java.util.List;
 /** A helper for loading images, and doing basic manipulation */
 public class SpriteSheetManager {
 
-    public final SpriteSheet toad, dude, stuff;
+    public final SpriteSheet toad, dude, stuff, birdo;
     public final TileSheet tiles;
 
     // We slice up the input image into tiles using a start and stop pixel.
@@ -52,18 +51,25 @@ public class SpriteSheetManager {
         Bitmap tileImg = BitmapFactory.decodeStream(tileFile, hitBox, options);
         tileFile.close();
 
+        InputStream birdoFile = assets.open("birdo.png");
+        Bitmap birdoImg = BitmapFactory.decodeStream(birdoFile, hitBox, options);
+        birdoFile.close();
+
         if (toadImg == null || dudeImg == null) throw new IOException("Failed to load asset images");
         if (stuffImg == null || tileImg == null) throw new IOException("Failed to load asset images");
+        if (birdoImg == null) throw new IOException("Failed to load asset images");
 
         // Find tiles in the bitmaps
         List<Rect> toadTiles = findTiles(toadImg);
         List<Rect> dudeTiles = findTiles(dudeImg);
         List<Rect> stuffTiles = findTiles(stuffImg);
+        List<Rect> birdoTiles = findTiles(birdoImg);
 
         // Create the sprite sheets
         toad = new SpriteSheet(toadImg, toadTiles);
         dude = new SpriteSheet(dudeImg, dudeTiles);
         stuff = new SpriteSheet(stuffImg, stuffTiles);
+        birdo = new SpriteSheet(birdoImg, birdoTiles);
 
         tiles = new TileSheet(tileImg, 16, 1, 26, 26);
     }
