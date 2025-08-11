@@ -12,7 +12,7 @@
             "scaleInDock": 1
         },
         "level tiles.tsx": {
-            "scaleInDock": 1.6219,
+            "scaleInDock": 1,
             "scaleInEditor": 1.43
         },
         "level0.js": {
@@ -27,11 +27,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 1.0243,
-            "selectedLayer": 7,
+            "scale": 1.1981,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 1074.3922678902666,
-                "y": 74.1970125939666
+                "x": 2622.9029296385943,
+                "y": 140.22201819547615
             }
         }
     },

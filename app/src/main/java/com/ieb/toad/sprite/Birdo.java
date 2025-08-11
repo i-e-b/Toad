@@ -1,6 +1,8 @@
 package com.ieb.toad.sprite;
 
-public class Birdo {
+import com.ieb.toad.world.core.Thing;
+
+public class Birdo extends Thing {
     // TODO:
     //  - hit box based
     //  - multiple hit-points

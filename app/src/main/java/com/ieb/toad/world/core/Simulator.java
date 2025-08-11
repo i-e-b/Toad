@@ -269,7 +269,7 @@ public class Simulator {
 
         if (d2 >= (rs * rs)) return;
 
-        if (d2 < 0.01) {
+        if (d2 < 0.001) {
             // objects are in the same place.
             // we will push them apart arbitrarily
             obj.px -= obj.radius;
