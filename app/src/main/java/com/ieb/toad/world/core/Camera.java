@@ -179,7 +179,8 @@ public class Camera {
 
     /** Clear canvas to current cam zone color, or the default if none set. */
     public void clear(int defaultColor) {
-        int color = lastZone.color == 0 ? defaultColor : lastZone.color;
+        int color = defaultColor;
+        if (lastZone != null && lastZone.color != 0) color = lastZone.color;
 
         canvas.drawColor(0xFF000000 | color);
     }

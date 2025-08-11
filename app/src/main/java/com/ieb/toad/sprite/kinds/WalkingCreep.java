@@ -53,6 +53,7 @@ public abstract class WalkingCreep extends Creep {
         CarryingObject carry = (CarryingObject)getConstraint(CarryingObject.class);
         if (isDead){
             gravity = 1.0;
+            drag = 0.0;
             thrown = true;
             carried = false;
         } else if (carry != null) { // being carried

@@ -146,7 +146,7 @@ public class Simulator {
                 boolean collides = ((self.type | other.type) & Collision.PASS_THROUGH) != Collision.PASS_THROUGH;
                 double time = impactTime(self, other);
 
-                if (time < 0) { // objects are overlapping
+                if (time <= 0) { // objects are overlapping
                     impacted = true;
                     if (collides){
                         pushApart(self, other); // ensure we're not overlapping
@@ -184,7 +184,7 @@ public class Simulator {
         double dSqr = (dx * dx) + (dy * dy);
 
         // First, do a cheap collision test
-        if (dSqr < rSqr){ // objects are overlapping
+        if (dSqr < (rSqr - 1.0)){ // objects are overlapping
             return -1;
         } else if (dSqr <= rSqr * 2) { // if impact is likely
             double t = impactFraction(obj, other); // do exact collision test
@@ -244,18 +244,23 @@ public class Simulator {
         double nx = (ix1 - ix2) / (obj.radius + other.radius);
         double ny = (iy1 - iy2) / (obj.radius + other.radius);
 
+        // optional: normalise nx,ny
+        double nSum = Math.sqrt((nx * nx) + (ny*ny));
+        nx /= nSum;
+        ny /= nSum;
+
         double a1 = obj.vx * nx + obj.vy * ny;
         double a2 = other.vx * nx + other.vy * ny;
 
-        double p = 2 * (a1 - a2) / (obj.mass + other.mass);
-        double coe = obj.elasticity * other.elasticity;
+        double coe = Math.min(1.0, obj.elasticity * other.elasticity);
+        double p = coe * 2 * (a1 - a2) / (obj.mass + other.mass);
 
         // apply to velocity of both objects
-        obj.vx -= coe * p * nx * other.mass;
-        obj.vy -= coe * p * ny * other.mass;
+        obj.vx -= p * nx * other.mass;
+        obj.vy -= p * ny * other.mass;
 
-        other.vx += coe * p * nx * obj.mass;
-        other.vy += coe * p * ny * obj.mass;
+        other.vx += p * nx * obj.mass;
+        other.vy += p * ny * obj.mass;
     }
 
     /**
@@ -269,42 +274,52 @@ public class Simulator {
 
         if (d2 >= (rs * rs)) return;
 
-        if (d2 < 0.001) {
+        if (d2 < 0.1) {
             // objects are in the same place.
             // we will push them apart arbitrarily
             obj.px -= obj.radius;
             other.px += other.radius;
+            // share velocity to prevent 'zipping'
+            double avx = (obj.vx + other.vx) / 2.0;
+            double avy = (obj.vy + other.vy) / 2.0;
+            obj.vx = avx;
+            obj.vy = avy;
+            other.vx = avx;
+            other.vy = avy;
             return;
         }
 
         double d = Math.sqrt(d2); // current distance between centres
-        if (d < rs) {
-            double dd = rs - d; // overlap distance
-            double frac = (dd / d); // fraction of current distance (dx,dy) to adjust
-            double ms = obj.mass + other.mass;
+        if (d >= rs) return; // not really overlapping
 
-            double objFrac, otherFrac;
-            if (ms > 0) {
-                objFrac = other.mass / ms;
-                otherFrac = obj.mass / ms;
-            } else {
-                objFrac = 0.5;
-                otherFrac = 0.5;
-            }
+        double dd = rs - d; // overlap distance
+        double frac = (dd / d); // fraction of current distance (dx,dy) to adjust
+        double ms = obj.mass + other.mass;
 
-            // push apart based on mass
-            double dpx = dx * frac * objFrac;
-            obj.px += limit(dpx, obj.radius);
+        if (frac < 0.00001) return; // just barely touching
+        if (frac > 1.0) frac = 1.0;
 
-            double dpy = dy * frac * objFrac;
-            obj.py += limit(dpy, obj.radius);
-
-            double opx = dx * frac * otherFrac;
-            other.px -= limit(opx, other.radius);
-
-            double opy = dy * frac * otherFrac;
-            other.py -= limit(opy, other.radius);
+        double objFrac, otherFrac;
+        if (ms > 0.01) {
+            objFrac = Math.min(1.0, other.mass / ms);
+            otherFrac = Math.min(1.0, obj.mass / ms);
+        } else { // if tiny mass, just push apart equally
+            objFrac = 0.5;
+            otherFrac = 0.5;
         }
+
+        // push apart based on mass
+        double dpx = dx * frac * objFrac;
+        obj.px += limit(dpx, obj.radius);
+
+        double dpy = dy * frac * objFrac;
+        obj.py += limit(dpy, obj.radius);
+
+        double opx = dx * frac * otherFrac;
+        other.px -= limit(opx, other.radius);
+
+        double opy = dy * frac * otherFrac;
+        other.py -= limit(opy, other.radius);
     }
 
     private double limit(double val, double range) {
