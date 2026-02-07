@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Runs a leapfrog integrator for the physics
  */
-public class Simulator {
+public class PhysicsEngine {
 
     /**
      * steps per time period
@@ -42,7 +42,7 @@ public class Simulator {
     private final List<Constraint> brokenConstraints = new ArrayList<>(16);
     private final List<Thing> deadThings = new ArrayList<>(16);
 
-    public Simulator(SimulationManager level) {
+    public PhysicsEngine(SimulationManager level) {
         this.level = level;
     }
 

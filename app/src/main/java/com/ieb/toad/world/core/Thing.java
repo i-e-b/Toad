@@ -149,8 +149,8 @@ public abstract class Thing {
 
     /** Returns true only if this thing COULD land on the other */
     public final boolean canLandOnTop(Thing other){
-        double bottomOfThis = py + radius - (Simulator.h * vy) - 1;
-        double topOfOther = other.py - other.radius + (Simulator.h * other.vy) + 1;
+        double bottomOfThis = py + radius - (PhysicsEngine.h * vy) - 1;
+        double topOfOther = other.py - other.radius + (PhysicsEngine.h * other.vy) + 1;
         return bottomOfThis <= topOfOther;
     }
 

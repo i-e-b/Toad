@@ -6,14 +6,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.ieb.toad.world.core.Camera;
-import com.ieb.toad.world.Level;
+import com.ieb.toad.world.Simulation;
+import com.ieb.toad.world.loader.TiledLoader;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
 @SuppressLint("ViewConstructor")
-public class FirstScreen extends BaseView {
+public class LevelScreen extends BaseView {
     private final Paint mPaint = new Paint();
     private final Camera camera;
 
@@ -22,21 +23,25 @@ public class FirstScreen extends BaseView {
     private long lastPhysicsTimeMs, lastDrawTimeMs;
     private double totalSeconds;
 
-    private final Level level;
+    private final Simulation simulation;
 
-    public FirstScreen(final Main context) throws IOException {
+    public LevelScreen(final Main context, int levelToLoad) throws IOException {
         super(context);
         frameActive = false;
         camera = new Camera(this);
 
         // TODO: move this out of constructor, show loading screen
-        level = new Level(context);
+        // TODO: show loading message, do this out of constructor
+
+        var level = new TiledLoader(context);
+        var loadedOk = level.loadLevel(levelToLoad);
+        simulation = new Simulation(level);
 
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(false);
         mPaint.setDither(false);
         mPaint.setBlendMode(BlendMode.SRC_OVER);
-        this.setBackgroundColor(level.getBackgroundColor());
+        this.setBackgroundColor(simulation.getBackgroundColor());
     }
 
     /** Action on timer. Does physics and triggered frame draw
@@ -52,7 +57,7 @@ public class FirstScreen extends BaseView {
 
         if (physicsFrameCount > 1) {
             // Do simulation
-            lastPhysicsTimeMs += level.stepMillis(time - lastPhysicsTimeMs);
+            lastPhysicsTimeMs += simulation.stepMillis(time - lastPhysicsTimeMs);
         } else {
             lastPhysicsTimeMs = time;
         }
@@ -64,8 +69,7 @@ public class FirstScreen extends BaseView {
 
     /** Override to perform background actions */
     protected void OnBackgroundTimerTick(){
-        if (!level.loadedOk) return;
-        level.backgroundUpdates(camera);
+        simulation.backgroundUpdates(camera);
     }
 
     @Override
@@ -73,14 +77,6 @@ public class FirstScreen extends BaseView {
         // dimensions of screen last time we did a paint.
         int width = getWidth();
         int height = getHeight();
-
-        // check loaded level
-        if (!level.loadedOk){
-            mPaint.setARGB(255,200,0,0);
-            Os.setSize(mPaint, 50);
-            Os.boxText(canvas, "Level not loaded!", 10.0f, 80.0f, mPaint);
-            return;
-        }
 
         VirtualGamepad.setTouchSize(width, height);
 
@@ -103,7 +99,7 @@ public class FirstScreen extends BaseView {
 
         camera.resetCount();
         camera.use(canvas);
-        level.Draw(camera, (int)frameMs);
+        simulation.Draw(camera, (int)frameMs);
 
         VirtualGamepad.draw(canvas, mPaint, width);
 

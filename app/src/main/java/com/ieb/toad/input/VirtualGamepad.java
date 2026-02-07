@@ -152,9 +152,11 @@ public class VirtualGamepad {
 
         int keyCode = event.getKeyCode();
         switch (keyCode){
+            // Lift/throw
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
-            case KeyEvent.KEYCODE_SPACE: {
+            case KeyEvent.KEYCODE_Z:
+            case KeyEvent.KEYCODE_X: {
                 if (scanCode != PAD_A && scanCode != PAD_B && scanCode != PAD_X && scanCode != PAD_Y
                 && scanCode != PAD_R3 && scanCode != PAD_L3) {
                     ButtonX = isDown ? 1.0f : 0.0f;
@@ -162,12 +164,15 @@ public class VirtualGamepad {
                 break;
             }
 
+            // Move
             case KeyEvent.KEYCODE_DPAD_RIGHT: DPadHorz = isDown ? 1.0f : 0.0f; break;
             case KeyEvent.KEYCODE_DPAD_LEFT: DPadHorz = isDown ? -1.0f : 0.0f; break;
             case KeyEvent.KEYCODE_DPAD_DOWN: DPadVert = isDown ? 1.0f : 0.0f; break;
             case KeyEvent.KEYCODE_DPAD_UP: DPadVert = isDown ? -1.0f : 0.0f; break;
 
+            // Jump
             case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_SPACE:
                 ButtonA = isDown ? 1.0f : 0.0f;
                 break;
 

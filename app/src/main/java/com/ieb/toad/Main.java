@@ -64,7 +64,7 @@ public class Main extends Activity {
 
     public void showFirstScreen() throws IOException {
         if (view != null) view.StopTimer();
-        FirstScreen v = new FirstScreen(this);
+        LevelScreen v = new LevelScreen(this, 0);
         setContentView(v);
         view = v;
         view.StartTimer();

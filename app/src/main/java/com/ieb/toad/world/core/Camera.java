@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.ieb.toad.FirstScreen;
+import com.ieb.toad.LevelScreen;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.world.loader.CameraZone;
 
@@ -15,7 +15,7 @@ import java.util.List;
 
 /** Helper to draw on a canvas with an offset */
 public class Camera {
-    private final FirstScreen screen;
+    private final LevelScreen screen;
     private Canvas canvas;
     private int left, top;
     private int cx,cy;
@@ -25,7 +25,7 @@ public class Camera {
     private final Paint paint = new Paint();
     private CameraZone lastZone;
 
-    public Camera(FirstScreen screen) {
+    public Camera(LevelScreen screen) {
         this.screen = screen;
     }
 
