@@ -1,16 +1,15 @@
 package com.ieb.toad.world.core;
 
-import android.graphics.Rect;
-
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
-public abstract class Thing {
+public abstract class Thing implements Serializable {
 
     /** Returned by `think`. This thing should be removed from the simulation */
     public static final int REMOVE = -1;
@@ -210,8 +209,8 @@ public abstract class Thing {
     private static final Collection<Constraint> emptyConstraints = new LinkedList<>();
 
     /** get bounds of impact circle */
-    public Rect boundBox(){
-        return new Rect((int) (px-radius), (int) (py-radius), (int) (px+radius), (int) (py+radius));
+    public TRect boundBox(){
+        return new TRect((int) (px-radius), (int) (py-radius), (int) (px+radius), (int) (py+radius));
     }
 
     /** accurate current speed */

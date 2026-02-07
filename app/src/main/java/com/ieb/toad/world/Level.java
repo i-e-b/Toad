@@ -1,12 +1,14 @@
 package com.ieb.toad.world;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.ieb.toad.Main;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.Simulator;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.loader.LayerChunk;
 import com.ieb.toad.world.loader.TiledLoader;
@@ -14,9 +16,13 @@ import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
@@ -24,7 +30,8 @@ import java.util.List;
 /**
  * A level with walls, creeps, and a player
  */
-public class Level implements SimulationManager {
+public class Level implements SimulationManager, Serializable {
+    private static final String TAG = "Level";
 
     /**
      * Set of things for the level
@@ -35,8 +42,41 @@ public class Level implements SimulationManager {
     private final PointThing sampleThing; // Used for hit detection
     private final TiledLoader level;
     public final boolean loadedOk;
-    private Rect lastCheckpoint;
+    private TRect lastCheckpoint;
     private Camera lastCamera;
+
+    /** Save the level state to a byte array */
+    public byte[] save(){
+        try {
+            var fos = new ByteArrayOutputStream();
+            var oos = new ObjectOutputStream(fos);
+            oos.writeObject(things);
+            oos.writeObject(constraints);
+            oos.close();
+            fos.close();
+            System.out.println("Object has been serialized");
+            return fos.toByteArray();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to store check-point", e);
+            return null;
+        }
+    }
+
+    /** Restore level state from a byte array */
+    public static Level restore(byte[] state){
+        try {
+            var fis = new ByteArrayInputStream(state);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            List<Thing> things = (List<Thing>) ois.readObject();
+            List<Constraint> constraints = (List<Constraint>) ois.readObject();
+            ois.close();
+            fis.close();
+            return null;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to read check-point", e);
+            return null;
+        }
+    }
 
     public Level(Main context) throws IOException {
         simulator = new Simulator(this);
@@ -102,8 +142,16 @@ public class Level implements SimulationManager {
         // Check for checkpoint
         int tx = (int)level.toad.px;
         int ty = (int)level.toad.py;
-        for (Rect checkpoint : level.checkpoints) {
-            if (checkpoint.contains(tx,ty)) lastCheckpoint = checkpoint;
+        for (TRect checkpoint : level.checkpoints) {
+            if (checkpoint.contains(tx,ty)) {
+                if (checkpoint != lastCheckpoint){
+                    var preTime = System.currentTimeMillis();
+                    this.save(); // TODO: kick up an event for this?
+                    var saveTime = System.currentTimeMillis() - preTime;
+                    Log.i(TAG, "Saved checkpoint in "+saveTime+"ms");
+                }
+                lastCheckpoint = checkpoint;
+            }
         }
 
         // return simulated time

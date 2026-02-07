@@ -15,6 +15,7 @@ import com.ieb.toad.sprite.Snifit;
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Direction;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.DeathPlane;
 import com.ieb.toad.world.platforms.LadderPlatform;
@@ -75,7 +76,7 @@ public class TiledLoader {
     public final List<Thing> bgThings; // used for collectables and grass
     public final List<DoorThing> doorThings; // used for doors and portals
     public final List<CameraZone> camZones; // camera pinning and similar effects
-    public final List<Rect> checkpoints; // checkpoint zones
+    public final List<TRect> checkpoints; // checkpoint zones
     public Toad toad;
 
     private final Dictionary<String, LayerChunk> backgroundChunks, mainChunks, foregroundChunks;
@@ -419,7 +420,7 @@ public class TiledLoader {
             int w = SCALE * (int)getDoubleAttr(attrs, "width");
             int h = SCALE * (int)getDoubleAttr(attrs, "height");
 
-            checkpoints.add(new Rect(x,y,x+w,y+h));
+            checkpoints.add(new TRect(x,y,x+w,y+h));
             thingIndex++;
         }
     }

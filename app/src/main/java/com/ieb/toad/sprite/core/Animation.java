@@ -3,10 +3,12 @@ package com.ieb.toad.sprite.core;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import java.io.Serializable;
+
 /** Single animation for a sprite. Has set of:
  * source rect for the texture,
  * and frame time in ms. */
-public class Animation {
+public class Animation implements Serializable {
     /** cycle animation forever */
     public static final int FOREVER = -1;
     /** cycle forever, flipping horizontal on each cycle */

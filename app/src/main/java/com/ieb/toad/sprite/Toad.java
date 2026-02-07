@@ -1,7 +1,5 @@
 package com.ieb.toad.sprite;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.Flip;
@@ -16,6 +14,7 @@ import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.platforms.LadderPlatform;
 import com.ieb.toad.world.portals.DoorBox;
@@ -333,7 +332,7 @@ public class Toad extends Thing {
         }
     }
 
-    public void resetToCheckpoint(SimulationManager level, Rect lastCheckpoint) {
+    public void resetToCheckpoint(SimulationManager level, TRect lastCheckpoint) {
         // Reset to last checkpoint
         px = lastCheckpoint.centerX();
         py = lastCheckpoint.bottom - radius - 3.0;

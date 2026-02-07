@@ -1,9 +1,11 @@
 package com.ieb.toad.world.core;
 
+import java.io.Serializable;
+
 /**
  * Base for constraint types.
  */
-public abstract class Constraint {
+public abstract class Constraint implements Serializable {
     /** Constraint is no longer valid and should be removed */
     public static final int BROKEN = -1;
     /** Constraint is still valid */

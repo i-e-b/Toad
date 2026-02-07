@@ -19,7 +19,7 @@ public class Camera {
     private Canvas canvas;
     private int left, top;
     private int cx,cy;
-    private Rect dstRect, srcRect;
+    private TRect dstRect, srcRect;
     private int width, height;
     private int drawCount;
     private final Paint paint = new Paint();
@@ -42,8 +42,8 @@ public class Camera {
         height = canvas.getHeight();
         left = 0;
         top = 0;
-        dstRect = new Rect();
-        srcRect = new Rect();
+        dstRect = new TRect();
+        srcRect = new TRect();
     }
 
     public void resetCount(){
@@ -96,7 +96,7 @@ public class Camera {
         }
     }
 
-    public void drawRect(Rect rect) {
+    public void drawRect(TRect rect) {
         dstRect.set(rect.left - left, rect.top - top, rect.right - left, rect.bottom - top);
 
         // skip if offscreen
@@ -104,7 +104,7 @@ public class Camera {
         if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
-        canvas.drawRect(dstRect, paint);
+        canvas.drawRect(dstRect.rect(), paint);
     }
 
     public void drawBitmap(Bitmap img, int left, int top, int scale) {
@@ -121,7 +121,7 @@ public class Camera {
         if (dstRect.right < 0 || dstRect.left > width) return;
         if (dstRect.bottom < 0 || dstRect.top > height) return;
 
-        canvas.drawBitmap(img, srcRect, dstRect, null);
+        canvas.drawBitmap(img, srcRect.rect(), dstRect.rect(), null);
     }
 
     public void setARGB(int a, int r, int g, int b) {
@@ -147,7 +147,7 @@ public class Camera {
         if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
-        canvas.drawBitmap(a.bitmap(), a.rect(), dstRect, null);
+        canvas.drawBitmap(a.bitmap(), a.rect(), dstRect.rect(), null);
     }
 
     /** Draw an animation sprite over a circle.
@@ -169,7 +169,7 @@ public class Camera {
         if (dstRect.bottom < 0 || dstRect.top > height) return;
 
         drawCount++;
-        canvas.drawBitmap(a.bitmap(), src, dstRect, null);
+        canvas.drawBitmap(a.bitmap(), src, dstRect.rect(), null);
     }
 
     /** Get the rectangle being displayed by the camera */
