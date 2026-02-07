@@ -1,13 +1,12 @@
 package com.ieb.toad.world.portals;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.sprite.Key;
 import com.ieb.toad.sprite.core.Animation;
 import com.ieb.toad.sprite.core.SpriteSheetManager;
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DoorBox extends DoorThing {
     private final Animation anim;
-    private final Rect hitBox;
+    private final TRect hitBox;
 
     private boolean locked;
     private boolean triggered;
@@ -30,7 +29,7 @@ public class DoorBox extends DoorThing {
         anim = new Animation(1000, Animation.FOREVER, sprites.tiles, new int[]{266});
 
         this.locked = locked;
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
 
         layer = -2; // so the lock is behind Toad
         type = Collision.DOOR + Collision.PASS_THROUGH;
@@ -53,7 +52,7 @@ public class DoorBox extends DoorThing {
     @Override
     public void draw(@NotNull Camera camera, int frameMs){
         if (locked){
-            camera.drawSprite(anim, hitBox);
+            camera.drawSprite(anim, hitBox.rect());
         }
     }
 

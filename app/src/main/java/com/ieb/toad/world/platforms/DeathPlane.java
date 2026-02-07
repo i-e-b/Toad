@@ -1,17 +1,16 @@
 package com.ieb.toad.world.platforms;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 public class DeathPlane extends Thing {
     /** Hit box relative to the world */
-    public Rect hitBox;
+    public TRect hitBox;
 
     public DeathPlane(int left, int top, int width, int height) {
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
         type = Collision.PASS_THROUGH;
         mass = 10;
         radius = -1; // only the target of collision

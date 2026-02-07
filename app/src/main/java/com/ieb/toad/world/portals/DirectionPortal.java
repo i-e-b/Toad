@@ -1,14 +1,13 @@
 package com.ieb.toad.world.portals;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.Direction;
 import com.ieb.toad.world.core.SimulationManager;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 public class DirectionPortal extends DoorThing {
-    private final Rect hitBox;
+    private final TRect hitBox;
     private final int triggerDirections;
 
     private boolean triggered, onHold;
@@ -17,7 +16,7 @@ public class DirectionPortal extends DoorThing {
         super(target, objId);
 
         triggerDirections = direction;
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
 
         type = Collision.DOOR + Collision.PASS_THROUGH;
         radius = 10;

@@ -10,7 +10,7 @@ import com.ieb.toad.world.core.Thing;
 
 public abstract class WalkingCreep extends Creep {
     public double normalRadius;
-    final SpriteSheetManager sprites;
+    private transient final SpriteSheetManager sprites;
 
     double throwTimer,      // timer to turn off collision for a short time after being thrown
             recoverTimer,   // timer for getting up if we are thrown bt not carried

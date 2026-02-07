@@ -1,11 +1,13 @@
 package com.ieb.toad.world;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.ieb.toad.world.core.Camera;
 import com.ieb.toad.world.core.Constraint;
 import com.ieb.toad.world.core.SimulationManager;
 import com.ieb.toad.world.core.PhysicsEngine;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 import com.ieb.toad.world.loader.LayerChunk;
 import com.ieb.toad.world.loader.TiledLoader;
@@ -13,7 +15,11 @@ import com.ieb.toad.world.portals.DoorThing;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -23,6 +29,7 @@ import java.util.List;
  * A level with walls, creeps, and a player
  */
 public class Simulation implements SimulationManager {
+    private static final String TAG = "Simulation";
 
     /**
      * Set of things for the level
@@ -32,8 +39,57 @@ public class Simulation implements SimulationManager {
     private final PhysicsEngine physics;
     private final PointThing sampleThing; // Used for hit detection
     private final TiledLoader level;
-    private Rect lastCheckpoint;
+    private transient Rect lastCheckpoint;
+    private transient byte[] lastSaveState;
+
     private Camera lastCamera;
+
+    public Simulation(TiledLoader level, List<Thing> things, List<Constraint> constraints) {
+        physics = new PhysicsEngine(this);
+        sampleThing = new PointThing();
+
+        this.level = level;
+
+        this.things = things;
+        this.constraints = constraints;
+        lastCheckpoint = level.toad.boundBox();
+    }
+
+    /** Save the level state to a byte array */
+    public byte[] save(){
+        try {
+            var fos = new ByteArrayOutputStream();
+            var oos = new ObjectOutputStream(fos);
+            oos.writeObject(things);
+            oos.writeObject(constraints);
+            oos.close();
+            fos.close();
+            System.out.println("Object has been serialized");
+            return fos.toByteArray();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to store check-point", e);
+            return null;
+        }
+    }
+
+    /** Restore level state from a byte array */
+    public static Simulation restore(byte[] state, TiledLoader level){
+        try {
+            var fis = new ByteArrayInputStream(state);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            List<Thing> things = (List<Thing>) ois.readObject();
+            List<Constraint> constraints = (List<Constraint>) ois.readObject();
+            ois.close();
+            fis.close();
+
+            var result = new Simulation(level, things, constraints);
+
+            return result;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to read check-point", e);
+            return null;
+        }
+    }
 
     public Simulation(TiledLoader level) {
         physics = new PhysicsEngine(this);
@@ -96,7 +152,16 @@ public class Simulation implements SimulationManager {
         int tx = (int)level.toad.px;
         int ty = (int)level.toad.py;
         for (Rect checkpoint : level.checkpoints) {
-            if (checkpoint.contains(tx,ty)) lastCheckpoint = checkpoint;
+            if (checkpoint.contains(tx,ty)) {
+                // TODO: need to handle leaving this checkpoint and re-entering without hitting a different one
+                if (checkpoint != lastCheckpoint){
+                    var preTime = System.currentTimeMillis();
+                    lastSaveState = this.save(); // TODO: kick up an event for this?
+                    var saveTime = System.currentTimeMillis() - preTime;
+                    Log.i(TAG, "Saved checkpoint in "+saveTime+"ms");
+                }
+                lastCheckpoint = checkpoint;
+            }
         }
 
         // return simulated time
@@ -170,6 +235,15 @@ public class Simulation implements SimulationManager {
     @Override
     public void damagePlayer() {
         // TODO: animate damage (pop animation?)
+
+        if (lastSaveState != null){
+            var preTime = System.currentTimeMillis();
+            var reSim = Simulation.restore(lastSaveState, level);
+            var restoreTime = System.currentTimeMillis() - preTime;
+            Log.i(TAG, "Save state restored in " + restoreTime + "ms");
+            if (reSim != null) Log.i(TAG, "Things:"+reSim.things.size()+"; Constraints:"+reSim.constraints.size()+";");
+            else Log.w(TAG, "restoration failed");
+        }
 
         // Break all constraints and go back to last checkpoint
         level.toad.resetToCheckpoint(this, lastCheckpoint);

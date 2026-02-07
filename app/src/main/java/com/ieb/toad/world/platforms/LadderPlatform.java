@@ -1,19 +1,18 @@
 package com.ieb.toad.world.platforms;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.sprite.Toad;
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 public class LadderPlatform extends Thing {
 
     /** Hit box relative to the world */
-    public Rect hitBox;
+    public TRect hitBox;
     private final double halfWidth;
 
     public LadderPlatform(int left, int top, int width, int height) {
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
         type = Collision.WALL | Collision.PASS_THROUGH;
         mass = 10;
         halfWidth = width / 2.0;

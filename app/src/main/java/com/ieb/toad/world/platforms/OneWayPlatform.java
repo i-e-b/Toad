@@ -1,18 +1,17 @@
 package com.ieb.toad.world.platforms;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 /** Platform that is only solid from the top */
 public class OneWayPlatform extends Thing {
 
     /** Hit box relative to the world */
-    public Rect hitBox;
+    public TRect hitBox;
 
     public OneWayPlatform(int left, int top, int width, int height) {
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
         type = Collision.WALL;
         mass = 10;
         radius = -1; // only the target of collision

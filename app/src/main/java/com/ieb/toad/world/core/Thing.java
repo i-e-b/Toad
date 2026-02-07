@@ -4,13 +4,14 @@ import android.graphics.Rect;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 /** Represents a physical object in a level.
  * Masses are kg, distances are 32px per metre. Time is seconds. */
-public abstract class Thing {
+public abstract class Thing implements Serializable {
 
     /** Returned by `think`. This thing should be removed from the simulation */
     public static final int REMOVE = -1;

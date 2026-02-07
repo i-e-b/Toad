@@ -1,10 +1,9 @@
 package com.ieb.toad.world.portals;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.input.VirtualGamepad;
 import com.ieb.toad.world.core.Collision;
 import com.ieb.toad.world.core.SimulationManager;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 /**
@@ -13,13 +12,13 @@ import com.ieb.toad.world.core.Thing;
  * as a door to the next portal.
  */
 public class PotBox extends DoorThing {
-    private final Rect hitBox;
+    private final TRect hitBox;
 
     private boolean triggered, onHold;
 
     public PotBox(int left, int top, int width, int height, String target, int objId) {
         super(target, objId);
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
 
         type = Collision.DOOR + Collision.WALL;
         mass = 10;

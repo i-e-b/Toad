@@ -48,7 +48,7 @@ public class LevelScreen extends BaseView {
      * @param time system time in milliseconds
      */
     @Override
-    protected void OnSimulationTimerTick(long time){
+    protected synchronized void OnSimulationTimerTick(long time){
         if (frameActive) return;
 
         // Do frame logic, call invalidate
@@ -68,7 +68,7 @@ public class LevelScreen extends BaseView {
     }
 
     /** Override to perform background actions */
-    protected void OnBackgroundTimerTick(){
+    protected synchronized void OnBackgroundTimerTick(){
         simulation.backgroundUpdates(camera);
     }
 

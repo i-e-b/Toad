@@ -1,19 +1,18 @@
 package com.ieb.toad.world.platforms;
 
-import android.graphics.Rect;
-
 import com.ieb.toad.world.core.Collision;
+import com.ieb.toad.world.core.TRect;
 import com.ieb.toad.world.core.Thing;
 
 public class ConveyorPlatform extends Thing {
 
     /** Hit box relative to the world */
-    public Rect hitBox;
+    public TRect hitBox;
 
     private final double speed;
 
     public ConveyorPlatform(int left, int top, int width, int height, double speed) {
-        hitBox = new Rect(left, top, left+width, top+height);
+        hitBox = new TRect(left, top, left+width, top+height);
         this.speed = speed;
         type = Collision.WALL;
         mass = 10;

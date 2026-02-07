@@ -75,10 +75,10 @@ public abstract class BaseView extends View {
     protected int BackgroundTimerTickRate(){ return 200; /* 50 = 20fps; 33 = 30fps; */ }
 
     /** Override to perform per-simulation-tick actions */
-    protected void OnSimulationTimerTick(long time){}
+    protected synchronized void OnSimulationTimerTick(long time){}
 
     /** Override to perform background actions */
-    protected void OnBackgroundTimerTick(){}
+    protected synchronized void OnBackgroundTimerTick(){}
 
     @Override
     protected void onVisibilityChanged(@NotNull View changedView, int visibility) {

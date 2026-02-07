@@ -3,10 +3,14 @@ package com.ieb.toad.sprite.core;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import com.ieb.toad.world.core.TRect;
+
+import java.io.Serializable;
+
 /** Single animation for a sprite. Has set of:
  * source rect for the texture,
  * and frame time in ms. */
-public class Animation {
+public class Animation implements Serializable {
     /** cycle animation forever */
     public static final int FOREVER = -1;
     /** cycle forever, flipping horizontal on each cycle */
@@ -19,8 +23,8 @@ public class Animation {
 
     private int flip; // bitmap to use. See sprite.core.Flip
 
-    private final Rect[] src; // rectangles relative to the sprite sheet texture.
-    private final Bitmap[] bitmap; // bitmaps in flip directions
+    private final TRect[] src; // rectangles relative to the sprite sheet texture.
+    private transient Bitmap[] bitmap; // bitmaps in flip directions
     private final int[] time; // time that each frame should be shown for.
     private final int frameCount;
 
@@ -43,11 +47,11 @@ public class Animation {
         frameDur = 0;
         frameIdx = 0;
         frameCount = tileIndexes.length;
-        src = new Rect[frameCount];
+        src = new TRect[frameCount];
         time = new int[frameCount];
         for (int i = 0; i < frameCount; i++) {
             int offset = tileIndexes[i];
-            src[i] = sheet.tiles[offset];
+            src[i] = new TRect(sheet.tiles[offset]);
             time[i] = frameTime;
         }
         bitmap = new Bitmap[sheet.bitmap.length];
@@ -67,11 +71,11 @@ public class Animation {
         frameDur = 0;
         frameIdx = 0;
         frameCount = tileIndexes.length;
-        src = new Rect[frameCount];
+        src = new TRect[frameCount];
         time = new int[frameCount];
         for (int i = 0; i < frameCount; i++) {
             int offset = tileIndexes[i];
-            src[i] = sheet.tiles[offset];
+            src[i] = new TRect(sheet.tiles[offset]);
             time[i] = frameTime;
         }
         bitmap = new Bitmap[1];
@@ -79,8 +83,8 @@ public class Animation {
     }
 
     public Rect rect() {
-        if (frameIdx >= src.length) return src[0];
-        return src[frameIdx];
+        if (frameIdx >= src.length) return src[0].rect();
+        return src[frameIdx].rect();
     }
 
     public boolean isEnded(){
